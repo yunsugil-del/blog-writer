@@ -509,31 +509,54 @@
 
   function extractSourcesHTML(candidate) {
     try {
-      const chunks = candidate?.groundingMetadata?.groundingChunks;
-      if (!Array.isArray(chunks) || chunks.length === 0) {
+      const meta = candidate?.groundingMetadata;
+      if (!meta) {
         return `<div class="source-box"><div class="source-title">🔎 참고한 검색 출처</div><div class="source-empty">검색 출처를 확인할 수 없습니다.</div></div>`;
       }
 
       const uniqueSources = [];
       const seenUrls = new Set();
 
-      for (const chunk of chunks) {
-        const web = chunk.web;
-        if (web && web.uri && !seenUrls.has(web.uri)) {
-          seenUrls.add(web.uri);
-          uniqueSources.push({
-            title: web.title || '공식 웹페이지 정보',
-            uri: web.uri
-          });
+      if (Array.isArray(meta.groundingChunks)) {
+        for (const chunk of meta.groundingChunks) {
+          const web = chunk.web;
+          if (web && web.uri && !seenUrls.has(web.uri)) {
+            seenUrls.add(web.uri);
+            uniqueSources.push({
+              title: web.title || '공식 웹페이지 정보',
+              uri: web.uri
+            });
+          }
         }
-        if (uniqueSources.length >= 5) break;
+      }
+
+      if (uniqueSources.length === 0 && Array.isArray(meta.webSearchSources)) {
+        for (const src of meta.webSearchSources) {
+          if (src.uri && !seenUrls.has(src.uri)) {
+            seenUrls.add(src.uri);
+            uniqueSources.push({
+              title: src.title || '검색 출처',
+              uri: src.uri
+            });
+          }
+        }
+      }
+
+      if (uniqueSources.length === 0 && Array.isArray(meta.webSearchQueries) && meta.webSearchQueries.length > 0) {
+        const queryList = meta.webSearchQueries.map(q => `<li>🔍 실시간 검증 검색어: <strong>${escapeHtml(q)}</strong></li>`).join('');
+        return `
+          <div class="source-box">
+            <div class="source-title">🔎 실시간 Google 팩트 검색 완료</div>
+            <ul class="source-list">${queryList}</ul>
+          </div>
+        `;
       }
 
       if (uniqueSources.length === 0) {
         return `<div class="source-box"><div class="source-title">🔎 참고한 검색 출처</div><div class="source-empty">검색 출처를 확인할 수 없습니다.</div></div>`;
       }
 
-      const listHtml = uniqueSources.map(s => `
+      const listHtml = uniqueSources.slice(0, 5).map(s => `
         <li class="source-item">
           <span class="source-name">${escapeHtml(s.title)}</span>
           <a class="source-url" href="${escapeHtml(s.uri)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s.uri)}</a>
