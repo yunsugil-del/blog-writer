@@ -20,114 +20,121 @@ margin: 0;
 background: var(--bg);
 color: var(--ink);
 font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
-padding: 24px 14px 80px;
+padding: 30px 20px 80px;
 }
 .container { max-width: 860px; margin: 0 auto; }
-.header { text-align: center; margin-bottom: 22px; }
-.header h1 { font-size: 22px; color: var(--primary); margin: 0 0 4px; font-weight: 800; }
-.header p { color: var(--ink-soft); font-size: 13px; margin: 0; }
+.header { text-align: center; margin-bottom: 24px; }
+.header h1 { font-size: 24px; color: var(--primary); margin: 0 0 6px; font-weight: 800; }
+.header p { color: var(--ink-soft); font-size: 14px; margin: 0; }
 
 .card-panel {
 background: var(--white);
 border: 1px solid var(--border);
 border-radius: 12px;
-padding: 20px;
+padding: 24px;
 box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-margin-bottom: 16px;
+margin-bottom: 20px;
 }
 
-.section-title { font-size: 13.5px; font-weight: 700; margin-bottom: 10px; color: var(--ink); }
+.section-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--ink); }
 
-.chip-group { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+.chip-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
 .chip {
-padding: 8px 14px;
-border-radius: 6px;
+padding: 10px 16px;
+border-radius: 8px;
 border: 1px solid var(--border);
 background: var(--bg);
 color: var(--ink-soft);
-font-size: 13px;
+font-size: 14px;
 font-weight: 600;
 cursor: pointer;
+user-select: none;
+transition: all 0.2s;
 }
-.chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.chip:hover { border-color: var(--primary); }
+.chip.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
 
-.input-row { display: flex; gap: 6px; }
+.input-row { display: flex; gap: 8px; }
 input[type="text"] {
 flex: 1;
-padding: 12px 14px;
+padding: 14px 16px;
 border: 1px solid var(--border);
 border-radius: 8px;
-font-size: 14px;
+font-size: 15px;
 outline: none;
 }
 input[type="text"]:focus { border-color: var(--primary); }
 
 button.btn {
-padding: 12px 18px;
+padding: 14px 20px;
 border-radius: 8px;
 font-weight: 700;
-font-size: 13.5px;
+font-size: 15px;
 border: none;
 cursor: pointer;
 white-space: nowrap;
+transition: opacity 0.2s;
 }
 button.btn-primary { background: var(--primary); color: #fff; }
+button.btn-primary:hover { opacity: 0.9; }
 button.btn-primary:disabled { background: var(--border); cursor: not-allowed; }
 
-.title-list { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
+.title-list { display: flex; flex-direction: column; gap: 10px; margin: 18px 0; }
 .title-item {
-padding: 12px 14px;
+padding: 14px 16px;
 border: 1.5px solid var(--border);
 border-radius: 8px;
 background: var(--white);
-font-size: 13.5px;
+font-size: 14.5px;
 cursor: pointer;
 display: flex;
 align-items: center;
-gap: 8px;
+gap: 10px;
 line-height: 1.4;
+transition: all 0.15s;
 }
+.title-item:hover { border-color: var(--primary); }
 .title-item.selected { border-color: var(--primary); background: var(--primary-light); font-weight: 700; color: var(--primary); }
 
 .result-panel {
 background: var(--white);
 border: 1px solid var(--border);
 border-radius: 12px;
-padding: 26px 18px;
+padding: 30px 24px;
 margin-top: 20px;
 line-height: 1.9;
-font-size: 15px;
+font-size: 15.5px;
 }
-.result-panel h1 { font-size: 20px; margin-bottom: 20px; line-height: 1.4; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+.result-panel h1 { font-size: 22px; margin-bottom: 24px; line-height: 1.4; border-bottom: 2px solid var(--border); padding-bottom: 12px; }
 
 .quote-box {
-margin: 30px 0 14px;
+margin: 30px 0 16px;
 text-align: center;
 background: #F8FAFC;
 border-left: 4px solid var(--primary);
 border-radius: 6px;
-padding: 14px 16px;
+padding: 16px 20px;
 }
-.quote-text { font-size: 16px; font-weight: 700; color: var(--ink); }
+.quote-text { font-size: 16.5px; font-weight: 700; color: var(--ink); }
 
-.thumb-wrap { text-align: center; margin-bottom: 24px; }
-.thumb-wrap img { width: 100%; max-width: 480px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-.card-wrap { text-align: center; margin: 20px 0; }
-.card-wrap img { width: 100%; max-width: 500px; border-radius: 6px; box-shadow: 0 3px 8px rgba(0,0,0,0.06); }
+.thumb-wrap { text-align: center; margin-bottom: 26px; }
+.thumb-wrap img { width: 100%; max-width: 500px; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+.card-wrap { text-align: center; margin: 22px 0; }
+.card-wrap img { width: 100%; max-width: 520px; border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); }
 
-.toolbar { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; }
+.toolbar { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
 .btn-copy {
 background: #fff;
 border: 1.5px solid var(--primary);
 color: var(--primary);
 border-radius: 6px;
-padding: 10px 16px;
-font-size: 13px;
+padding: 10px 18px;
+font-size: 14px;
 font-weight: 700;
 cursor: pointer;
 }
 .btn-copy:hover { background: var(--primary); color: #fff; }
-.status-msg { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--primary); text-align: center; }
+.status-msg { margin-top: 12px; font-size: 13.5px; font-weight: 600; color: var(--primary); text-align: center; }
 </style>
 </head>
 <body>
@@ -135,29 +142,29 @@ cursor: pointer;
 <div class="container">
 <div class="header">
 <h1>블로그 라이터 Pro</h1>
-<p>Gemini 3.6 Flash 기반 ➔ 썸네일 & 카드뉴스 ➔ 원클릭 포스팅 원고</p>
+<p>키워드 입력 ➔ 제목 5개 추천 ➔ 썸네일 & 카드뉴스 ➔ 원고 완벽 생성</p>
 </div>
 
 <div class="card-panel">
 <div class="section-title">1. 카테고리 선택</div>
 <div class="chip-group">
-<div class="chip active" onclick="setCategory('경제/복지/지원금')">📊 경제·복지·지원금</div>
-<div class="chip" onclick="setCategory('생활/상식')">📋 생활·상식</div>
-<div class="chip" onclick="setCategory('재테크/부동산')">💰 재테크·부동산</div>
+<div class="chip active" onclick="setCategory('경제/복지/지원금', this)">📊 경제·복지·지원금</div>
+<div class="chip" onclick="setCategory('생활/상식', this)">📋 생활·상식</div>
+<div class="chip" onclick="setCategory('재테크/부동산', this)">💰 재테크·부동산</div>
 </div>
 
 <div class="section-title">2. 키워드 입력</div>
 <div class="input-row">
-<input id="kw-input" type="text" placeholder="예: ISA 계좌 개편, 청년도약계좌 만기" />
+<input id="kw-input" type="text" placeholder="키워드를 입력하세요 (예: ISA 계좌 개편, 청년도약계좌)" onkeypress="if(event.keyCode===13) suggestTitles();" />
 <button class="btn btn-primary" id="btn-suggest" onclick="suggestTitles()">제목 5개 추천</button>
 </div>
 <div id="suggest-status"></div>
 
 <div id="title-selection-area" style="display: none;">
-<div class="section-title" style="margin-top: 20px;">3. 마음에 드는 제목 선택</div>
+<div class="section-title" style="margin-top: 24px;">3. 마음에 드는 제목 선택</div>
 <div class="title-list" id="title-list"></div>
 
-<button class="btn btn-primary" style="width: 100%; padding: 13px; margin-top: 10px;" id="btn-generate" onclick="generateStructuredPost()">
+<button class="btn btn-primary" style="width: 100%; padding: 15px; margin-top: 12px;" id="btn-generate" onclick="generateStructuredPost()">
 ✍️ 썸네일 + 카드 3장 + 본문 원클릭 생성
 </button>
 </div>
@@ -169,14 +176,15 @@ cursor: pointer;
 
 <script>
 const PROXY_ENDPOINT = "https://wispy-brook-5781.yunsugil.workers.dev";
-
 let selectedCategory = '경제/복지/지원금';
 let selectedTitle = '';
 
-function setCategory(cat) {
+function setCategory(cat, targetElement) {
 selectedCategory = cat;
-document.querySelectorAll('.chip').forEach(el => el.classList.remove('active'));
-event.target.classList.add('active');
+document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+if (targetElement) {
+targetElement.classList.add('active');
+}
 }
 
 function getTodayString() {
@@ -184,8 +192,7 @@ return new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", 
 }
 
 function safeParseJSON(rawText, type = 'any') {
-if (!rawText || typeof rawText !== 'string') throw new Error("응답이 비어있습니다.");
-
+if (!rawText || typeof rawText !== 'string') throw new Error("응답 본문이 비어 있습니다.");
 let cleaned = rawText.replace(/json/gi, '').replace(//g, '').trim();
 
 if (type === 'array' || type === 'any') {
@@ -209,11 +216,9 @@ const lines = cleaned.split('\n')
 .filter(l => l.length > 5);
 
 if (lines.length >= 3) return lines.slice(0, 5);
-
-throw new Error("데이터 구조 분석에 실패했습니다.");
+throw new Error("데이터 파싱 실패");
 }
 
-// 1. 제목 5개 추천
 async function suggestTitles() {
 const keyword = document.getElementById('kw-input').value.trim();
 if (!keyword) { alert("키워드를 입력해 주세요."); return; }
@@ -224,10 +229,10 @@ const titleArea = document.getElementById('title-selection-area');
 const list = document.getElementById('title-list');
 
 btn.disabled = true;
-status.innerHTML = <div class="status-msg"&gt;Gemini 3.6 Flash로 제목을 추출하고 있습니다...&lt;/div>;
+status.innerHTML = <div class="status-msg"&gt;상위 노출용 제목 5개를 생성하고 있습니다...&lt;/div>;
 
 const prompt = 키워드: [${keyword}], 카테고리: [${selectedCategory}], 기준일: [${getTodayString()}]
-네이버 블로그 클릭률(CTR)과 스마트블록 상위 노출에 최적화된 매력적인 제목 5개를 순수 JSON 배열 포맷으로만 작성하라.
+네이버 블로그 클릭률(CTR)과 상위 노출에 최적화된 매력적인 제목 5개를 순수 JSON 배열 포맷으로만 작성하라.
 ```json
 ["제목 1", "제목 2", "제목 3", "제목 4", "제목 5"]
 ````;
@@ -240,13 +245,10 @@ body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }] }
 });
 
 const data = await res.json();
-
-if (data.error) {
-throw new Error(typeof data.error === 'object' ? data.error.message : data.error);
-}
+if (data.error) throw new Error(typeof data.error === 'object' ? data.error.message : data.error);
 
 const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-if (!rawText) throw new Error("응답 본문이 비어 있습니다.");
+if (!rawText) throw new Error("서버 응답 오류");
 
 const titles = safeParseJSON(rawText, 'array');
 
@@ -257,7 +259,7 @@ selectedTitle = titles[0];
 titleArea.style.display = 'block';
 status.innerHTML = '';
 } catch (e) {
-status.innerHTML = <div style="color:red; font-size:13px; margin-top:6px;"&gt;오류:${e.message}</div>`;
+status.innerHTML = <div style="color:red; font-size:13.5px; margin-top:8px;"&gt;오류:${e.message}</div>`;
 } finally {
 btn.disabled = false;
 }
@@ -270,7 +272,6 @@ el.querySelector('input').checked = true;
 selectedTitle = titleText;
 }
 
-// 대표 썸네일 (800x800)
 function createMainThumbnail(subTag, mainTitle) {
 const canvas = document.createElement('canvas');
 canvas.width = 800; canvas.height = 800;
@@ -319,7 +320,6 @@ ctx.fillText('핵심 조건 · 금액 · 신청 절차 완벽 정리', 60, 720);
 return canvas.toDataURL('image/png');
 }
 
-// 카드뉴스 캔버스 (1000x650)
 function createCardImage(num, title, p1, p2) {
 const canvas = document.createElement('canvas');
 canvas.width = 1000; canvas.height = 650;
@@ -375,7 +375,6 @@ ctx.fillText('※ 상세 내용은 본문 가이드를 참고해 주세요.', 50
 return canvas.toDataURL('image/png');
 }
 
-// 2. 본문 및 카드뉴스 자동 생성
 async function generateStructuredPost() {
 const genBtn = document.getElementById('btn-generate');
 const status = document.getElementById('status-area');
@@ -410,16 +409,11 @@ try {
 const res = await fetch(PROXY_ENDPOINT, {
 method: 'POST',
 headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify({
-contents: [{ role: 'user', parts: [{ text: prompt }] }]
-})
+body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }] })
 });
 
 const data = await res.json();
-
-if (data.error) {
-throw new Error(typeof data.error === 'object' ? data.error.message : data.error);
-}
+if (data.error) throw new Error(typeof data.error === 'object' ? data.error.message : data.error);
 
 const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 if (!rawText) throw new Error("응답 본문이 비어 있습니다.");
@@ -432,10 +426,7 @@ const cardImg2 = createCardImage("02", doc.card2?.title, doc.card2?.point1, doc.
 const cardImg3 = createCardImage("03", doc.card3?.title, doc.card3?.point1, doc.card3?.point2);
 
 resultArea.innerHTML = &lt;div class="result-panel" id="blog-content"&gt; &lt;div class="thumb-wrap"&gt;&lt;img src="${mainThumb}" alt="대표 썸네일" /></div>
-
-<h1>$`{selectedTitle}</h1>
-
-<p>`${(doc.intro || '').replace(/\n/g, '<br/>')}</p>
+<h1>{(doc.intro || '').replace(/\n/g, '<br/>')}</p>
 
 <div class="quote-box"><div class="quote-text">“ {cardImg1}" alt="요약카드1" /></div>
 <p>$`{(doc.section1_body || '').replace(/\n/g, '<br/>')}</p>
@@ -453,7 +444,7 @@ resultArea.innerHTML = &lt;div class="result-panel" id="blog-content"&gt; &lt;di
 </div>
 
 <div class="toolbar">
-<span style="font-size:13px; font-weight:700; color:var(--primary);">✓ 원고 완성</span>
+<span style="font-size:14px; font-weight:700; color:var(--primary);">✓ 원고 완성</span>
 <button class="btn-copy" id="copy-btn">📋 서식 전체 복사</button>
 </div>
 `;
@@ -472,7 +463,7 @@ alert("썸네일, 카드 3장, 본문이 복사되었습니다!\n네이버 블�
 
 status.innerHTML = '';
 } catch (e) {
-status.innerHTML = <div style="color:red; font-size:13px; text-align:center;"&gt;생성 오류:${e.message}</div>`;
+status.innerHTML = <div style="color:red; font-size:14px; text-align:center;"&gt;생성 오류:${e.message}</div>`;
 } finally {
 genBtn.disabled = false;
 }
