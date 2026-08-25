@@ -132,7 +132,6 @@
     }
     .img-down-btn:hover { background: #0369A1; }
 
-    /* [출처 기능 추가] 출처 박스 UI 스타일 */
     .source-box {
       margin-top: 28px;
       padding: 18px 20px;
@@ -211,7 +210,7 @@
 
     <div class="section-title">2. 키워드 입력</div>
     <div class="input-row">
-      <input id="kw-input" type="text" placeholder="키워드를 입력하세요 (예: 2026 청년미래적금)" />
+      <input id="kw-input" type="text" placeholder="키워드를 입력하세요 (예: 에어컨 전기세 절약, 청년미래적금)" />
       <button class="btn btn-primary" id="btn-suggest">제목 5개 추천</button>
     </div>
     <div id="suggest-status"></div>
@@ -249,7 +248,6 @@
     return new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
   }
 
-  // XSS 방지 HTML Escape 함수
   function escapeHtml(str) {
     return String(str ?? '')
       .replace(/&/g, '&amp;')
@@ -392,6 +390,17 @@
     return currentY;
   }
 
+  // 썸네일 하단 서브문구 동적 분기 함수
+  function getThumbnailFooter() {
+    if (selectedCategory === '생활/상식') {
+      return '핵심 원인 · 해결 방법 · 생활 팁 완벽 정리';
+    }
+    if (selectedCategory === '재테크/부동산') {
+      return '핵심 숫자 · 비교 · 전략 · 주의사항 정리';
+    }
+    return '핵심 조건 · 금액 · 신청 절차 완벽 정리';
+  }
+
   function createMainThumbnail(subTag, mainTitle) {
     const canvas = document.createElement('canvas');
     canvas.width = 800; canvas.height = 800;
@@ -425,7 +434,7 @@
 
     ctx.fillStyle = '#E5E7EB';
     ctx.font = '24px sans-serif';
-    ctx.fillText('핵심 조건 · 금액 · 신청 절차 완벽 정리', 60, 720);
+    ctx.fillText(getThumbnailFooter(), 60, 720); // 카테고리별 하단 문구 적용
 
     return canvas.toDataURL('image/png');
   }
@@ -494,7 +503,6 @@
     document.body.removeChild(a);
   }
 
-  // [출처 기능 추가] Grounding Metadata에서 중복 없는 출처 최대 5개 추출 및 HTML 렌더링
   function extractSourcesHTML(candidate) {
     try {
       const chunks = candidate?.groundingMetadata?.groundingChunks;
@@ -514,7 +522,7 @@
             uri: web.uri
           });
         }
-        if (uniqueSources.length >= 5) break; // 최대 5개 제한
+        if (uniqueSources.length >= 5) break;
       }
 
       if (uniqueSources.length === 0) {
@@ -547,39 +555,160 @@
     const resultArea = document.getElementById('result-area');
 
     btnGenerate.disabled = true;
-    status.innerHTML = `<div class="status-msg">실시간 팩트체크 및 원고 렌더링 중입니다...</div>`;
+    status.innerHTML = `<div class="status-msg">카테고리 맞춤형 원고 및 카드뉴스를 렌더링하고 있습니다...</div>`;
     resultArea.innerHTML = '';
 
-    const prompt = `너는 신뢰성 1위의 대한민국 전문 블로그 칼럼니스트다.
+    // 카테고리별 맞춤 프롬프트 주입
+    const prompt = `너는 대한민국에서 신뢰도 높은 블로그 콘텐츠를 작성하는 전문 칼럼니스트다.
+
 [기본 정보]
 - 원본 키워드: "${currentKeyword}"
 - 카테고리: "${selectedCategory}"
 - 선택된 제목: "${selectedTitle}"
 - 기준일: [${getTodayString()}]
 
-[실시간 검색 기반 팩트체크 지침 - 절대 준수]
-1. 반드시 구글 검색을 활용하여 정부 공식 발표, 법령, 공공기관 1차 출처를 우선 검증하라.
-2. 기준일 현재 확정되지 않은 일정이나 금액을 임의로 단정(창작)하지 말 것.
-3. 미확정/루머 이슈는 "현재 공식 발표 예정 상태", "부적격 주의사항" 형태로 객관적으로 기술하라.
-4. 나이, 소득 기준, 지원 금액 등 숫자는 철저히 사실에 기반하여 서술하라.
+[공통 작성 원칙]
+1. 반드시 구글 검색을 활용하여 최신 정보를 확인하라.
+2. 정부기관, 공공기관, 법령, 금융기관, 공식 발표 등 신뢰도 높은 1차 출처를 우선 사용하라.
+3. 확인되지 않은 정보, 루머, 예상 수치, 과거 정보를 현재 사실처럼 단정하지 말 것.
+4. 날짜, 금액, 세율, 금리, 자격조건, 통계 등 숫자는 검색 결과와 교차 검증할 것.
+5. 검색 결과가 서로 다르면 차이를 설명하고 가장 신뢰할 수 있는 출처를 우선할 것.
+6. 독자가 실제로 궁금해할 내용을 중심으로 작성할 것.
+7. 과장된 표현이나 낚시성 표현을 피할 것.
+8. 제목의 내용과 본문의 내용이 정확히 일치하도록 작성할 것.
+9. 전문용어는 쉽게 풀어서 설명할 것.
+10. 동일한 내용을 반복해서 길게 작성하지 말 것.
 
-본문 내용과 카드뉴스 3장용 요약을 아래 순수 JSON 객체 포맷으로만 작성하라.
-\`\`\`json
+[카테고리별 작성 방식]
+
+${selectedCategory === '경제/복지/지원금' ? `
+### 경제·복지·지원금 카테고리
+
+이 카테고리는 정부정책, 지원금, 복지제도, 세금, 경제지원 제도 등을 다룬다.
+
+글의 핵심 구조:
+1. 제도가 무엇인지 쉽게 설명
+2. 누가 받을 수 있는지
+3. 지원금액·혜택·조건
+4. 신청방법 및 일정
+5. 놓치기 쉬운 조건과 주의사항
+6. FAQ
+
+특히 다음 정보를 정확하게 확인하라:
+- 대상
+- 나이
+- 소득 및 재산 기준
+- 지원 금액
+- 신청 기간
+- 신청 방법
+- 중복 수급 가능 여부
+- 제외 대상
+
+카드뉴스:
+card1 = 핵심 혜택 및 지원 내용
+card2 = 대상·조건·신청 방법
+card3 = 주의사항 및 놓치기 쉬운 내용
+
+인용구 역시 정책·혜택 정보를 요약하는 형태로 작성하라.
+` : selectedCategory === '생활/상식' ? `
+### 생활·상식 카테고리
+
+이 카테고리는 일상생활에서 실제로 도움이 되는 정보, 생활꿀팁, 건강하지 않은 과장정보를 배제한 생활상식, 소비생활 정보를 다룬다.
+
+지원금이나 신청제도처럼 억지로 작성하지 말고,
+독자가 "왜 그런지", "어떻게 하면 되는지"를 이해할 수 있도록 작성하라.
+
+글의 핵심 구조:
+1. 독자가 궁금해할 만한 상황이나 문제 제시
+2. 정확한 원인 또는 원리 설명
+3. 실제로 도움이 되는 해결방법
+4. 상황별 활용 팁 또는 비교
+5. 잘못 알려진 정보와 주의사항
+6. FAQ
+
+예를 들어 음식, 가전제품, 청소, 생활비 절약, 소비생활 등의 주제라면
+구체적인 상황과 실제 행동방법을 중심으로 작성하라.
+
+카드뉴스:
+card1 = 핵심 사실 또는 원인
+card2 = 실제 해결방법·활용방법
+card3 = 주의사항·잘못 알려진 정보
+
+인용구 역시 생활정보를 한 문장으로 요약하는 형태로 작성하라.
+
+건강 관련 내용이 포함된다면 의료적 진단이나 치료를 단정하지 말고,
+공신력 있는 의료기관이나 정부기관의 정보를 우선하여 작성하라.
+` : selectedCategory === '재테크/부동산' ? `
+### 재테크·부동산 카테고리
+
+이 카테고리는 예적금, 투자, 세금, 대출, 부동산, 주택시장, 금융상품 및 개인 재무 관련 정보를 다룬다.
+
+지원금 신청 글처럼 작성하지 말 것.
+
+글의 핵심 구조:
+1. 현재 상황과 배경
+2. 핵심 숫자·조건·제도
+3. 장점과 단점 또는 선택지 비교
+4. 실제 상황에서 어떻게 판단할지
+5. 리스크와 주의사항
+6. FAQ
+
+금리, 대출한도, 세율, 취득세, 양도세, 청약조건, 부동산 가격, 수익률 등
+변동 가능성이 높은 정보는 반드시 최신 검색 결과를 확인하라.
+
+투자와 부동산 관련 내용에서는
+"무조건 오른다", "확실한 수익", "지금 반드시 사야 한다" 등의 단정적 표현을 사용하지 말 것.
+
+개인의 투자 판단을 대신하지 말고,
+조건별 장단점과 리스크를 객관적으로 설명하라.
+
+카드뉴스:
+card1 = 핵심 숫자·시장 상황
+card2 = 비교·선택 기준·실전 전략
+card3 = 리스크·주의사항
+
+인용구 역시 금융·부동산 핵심 내용을 요약하는 형태로 작성하라.
+` : ''}
+
+[본문 구성]
+
+위 카테고리의 작성방식을 반드시 적용하여 아래 JSON 객체를 작성하라.
+
 {
-  "intro": "도입부 인사말 및 배경 설명 (줄바꿈 포함 4~5문장)",
-  "section1_quote": "소제목 1 인용구 텍스트",
-  "card1": { "title": "카드 1 제목", "point1": "핵심 팩트 요약 1", "point2": "세부 내용 문구 2" },
-  "section1_body": "소제목 1 상세 설명 글 (줄바꿈 포함)",
-  "section2_quote": "소제목 2 인용구 텍스트",
-  "card2": { "title": "카드 2 제목", "point1": "핵심 자격/절차 요약 1", "point2": "세부 내용 문구 2" },
-  "section2_body": "소제목 2 상세 설명 및 신청 절차 글",
-  "section3_quote": "소제목 3 필수 주의사항 인용구",
-  "card3": { "title": "카드 3 제목", "point1": "주의사항 요약 1", "point2": "주의사항 요약 2" },
-  "section3_body": "소제목 3 주의사항 및 실무 팁",
-  "faq": "자주 묻는 질문 Q&A 3개 (문단 형태)",
-  "hashtags": "#정보공유 #필수혜택 #정부정책 #완벽정리"
+  "intro": "도입부 및 배경 설명. 독자가 계속 읽고 싶도록 자연스럽게 작성.",
+  "section1_quote": "첫 번째 핵심 내용을 한 문장으로 요약",
+  "card1": {
+    "title": "카드뉴스 1 제목",
+    "point1": "핵심 내용 1",
+    "point2": "핵심 내용 2"
+  },
+  "section1_body": "첫 번째 핵심 내용 상세 설명",
+  
+  "section2_quote": "두 번째 핵심 내용을 한 문장으로 요약",
+  "card2": {
+    "title": "카드뉴스 2 제목",
+    "point1": "핵심 내용 1",
+    "point2": "핵심 내용 2"
+  },
+  "section2_body": "두 번째 핵심 내용 상세 설명",
+  
+  "section3_quote": "세 번째 핵심 내용을 한 문장으로 요약",
+  "card3": {
+    "title": "카드뉴스 3 제목",
+    "point1": "핵심 내용 1",
+    "point2": "핵심 내용 2"
+  },
+  "section3_body": "세 번째 핵심 내용 상세 설명",
+  
+  "faq": "독자가 많이 물어볼 만한 질문과 답변 3개",
+  "hashtags": "검색에 도움이 되는 관련 해시태그 5~8개"
 }
-\`\`\``;
+
+[중요]
+- 위 JSON의 필드명은 절대 변경하지 말 것.
+- JSON 외의 설명은 절대 출력하지 말 것.
+- 카드뉴스 내용도 본문과 실제로 일치해야 한다.
+`;
 
     try {
       const res = await fetch(PROXY_ENDPOINT, {
@@ -596,11 +725,17 @@
       if (!rawText) throw new Error("응답 본문이 비어 있습니다.");
 
       const doc = safeParseJSON(rawText, 'object');
-
-      // [출처 기능 추가] 검색 출처 HTML 추출
       const sourcesHtml = extractSourcesHTML(candidate);
 
-      const mainThumb = createMainThumbnail("정책·금융 가이드", selectedTitle);
+      // 카테고리별 썸네일 상단 태그 동적 분기
+      let thumbnailTag = '정책·금융 가이드';
+      if (selectedCategory === '생활/상식') {
+        thumbnailTag = '생활·상식 가이드';
+      } else if (selectedCategory === '재테크/부동산') {
+        thumbnailTag = '재테크·부동산 가이드';
+      }
+
+      const mainThumb = createMainThumbnail(thumbnailTag, selectedTitle);
       const cardImg1 = createCardImage("01", doc.card1?.title, doc.card1?.point1, doc.card1?.point2);
       const cardImg2 = createCardImage("02", doc.card2?.title, doc.card2?.point1, doc.card2?.point2);
       const cardImg3 = createCardImage("03", doc.card3?.title, doc.card3?.point1, doc.card3?.point2);
@@ -632,8 +767,6 @@
           <p>${formatBody(doc.faq)}</p>
 
           <p style="color:var(--primary); font-weight:700; margin-top:24px;">${escapeHtml(doc.hashtags || '')}</p>
-
-          <!-- [출처 기능 추가] 해시태그 하단에 분리 렌더링 -->
           ${sourcesHtml}
         </div>
 
