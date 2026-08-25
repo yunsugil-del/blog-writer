@@ -119,12 +119,12 @@
     .img-down-btn {
       display: block;
       width: 100%;
-      max-width: 300px;
+      max-width: 320px;
       margin: 8px auto 24px;
       background: #0284C7;
       color: #fff;
       border: none;
-      padding: 8px 12px;
+      padding: 9px 14px;
       border-radius: 6px;
       font-size: 13px;
       font-weight: 700;
@@ -153,7 +153,7 @@
 <div class="container">
   <div class="header">
     <h1>블로그 라이터 Pro</h1>
-    <p>고클릭률(CTR) 특화 제목 & 카드뉴스 자동 생성</p>
+    <p>실시간 검색 검증 & 팩트 가드레일 자동화</p>
   </div>
 
   <div class="card-panel">
@@ -166,7 +166,7 @@
 
     <div class="section-title">2. 키워드 입력</div>
     <div class="input-row">
-      <input id="kw-input" type="text" placeholder="키워드를 입력하세요 (예: 청년미래적금, ISA 계좌)" />
+      <input id="kw-input" type="text" placeholder="키워드를 입력하세요 (예: 2026 청년미래적금)" />
       <button class="btn btn-primary" id="btn-suggest">제목 5개 추천</button>
     </div>
     <div id="suggest-status"></div>
@@ -188,6 +188,7 @@
 <script>
   const PROXY_ENDPOINT = "https://wispy-brook-5781.yunsugil.workers.dev";
   let selectedCategory = '경제/복지/지원금';
+  let currentKeyword = '';
   let selectedTitle = '';
 
   const chips = document.querySelectorAll('.chip');
@@ -201,6 +202,20 @@
 
   function getTodayString() {
     return new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
+  }
+
+  // XSS 방지 HTML Escape 함수
+  function escapeHtml(str) {
+    return String(str ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function formatBody(text) {
+    return escapeHtml(text).replace(/\n/g, '<br/>');
   }
 
   function safeParseJSON(rawText, type) {
@@ -243,30 +258,24 @@
     const keyword = kwInput.value.trim();
     if (!keyword) { alert("키워드를 입력해 주세요."); return; }
 
+    currentKeyword = keyword; // 전역 키워드 저장
+
     const status = document.getElementById('suggest-status');
     const titleArea = document.getElementById('title-selection-area');
     const list = document.getElementById('title-list');
 
     btnSuggest.disabled = true;
-    status.innerHTML = `<div class="status-msg">고수익·고클릭률 제목 5개를 추출 중입니다...</div>`;
+    status.innerHTML = `<div class="status-msg">실시간 최신 검색을 기반으로 제목 5개를 추출 중입니다...</div>`;
 
-    // 대폭 강화된 고클릭률 프롬프트
-    const prompt = `키워드: [${keyword}], 카테고리: [${selectedCategory}], 기준일: [${getTodayString()}]
-너는 월 순수익 1,000만원 이상의 상위 0.1% 네이버 블로그 마케팅 전문가다.
-사용자가 검색 결과에서 무조건 클릭하고 싶어지는 초고효율 제목 5개를 작성하라.
+    const prompt = `키워드: [${currentKeyword}], 카테고리: [${selectedCategory}], 기준일: [${getTodayString()}]
+구글 실시간 검색을 바탕으로 최신 팩트에 부합하는 매력적인 블로그 제목 5개를 작성하라.
 
-[제목 작성 5대 치트키 공식]
-1. [손실 회피형]: "조건 놓치면 OOO만원 날립니다", "신청 안 하면 손해인 이유" 등 공포/경각심 자극
-2. [비교/갈아타기형]: "A vs B 둘 중 뭘 골라야 할까?", "기존 상품에서 갈아타야 하는 이유"
-3. [구체적 수치형]: "월 O만원으로 OOO만원 만들기", "수익률 3배 차이 나는 핵심 꿀팁" 등 명확한 숫자/금액 포함
-4. [타깃 맞춤형]: "직장인 필수", "무주택자 주목", "2030 청년 필독" 등 독자 타깃 명시
-5. [완벽 가이드형]: "신청 자격부터 부적격 탈락 피하는 실무 팁 총정리"
+[원칙]
+1. 허위 날짜나 미확정 사실을 단정하지 말 것.
+2. 손실 회피, 비교, 구체적 혜택, 타깃 독자 명시 기법을 활용할 것.
+3. 22자~32자 내외로 간결하게 작성할 것.
 
-[제약 사항]
-- 진부하고 뻔한 표현(~에 대해 알아봅시다, ~안내 등)은 절대 금지.
-- 스마트폰 검색 화면에서 잘리지 않도록 22자~32자 내외로 작성할 것.
-
-반드시 순수 JSON 배열 포맷으로만 응답하라.
+순수 JSON 배열 포맷으로만 응답하라.
 \`\`\`json
 ["제목 1", "제목 2", "제목 3", "제목 4", "제목 5"]
 \`\`\``;
@@ -290,7 +299,7 @@
       titles.forEach((t, idx) => {
         const item = document.createElement('div');
         item.className = `title-item ${idx === 0 ? 'selected' : ''}`;
-        item.innerHTML = `<input type="radio" name="title_r" ${idx === 0 ? 'checked' : ''} /> <span>${t}</span>`;
+        item.innerHTML = `<input type="radio" name="title_r" ${idx === 0 ? 'checked' : ''} /> <span>${escapeHtml(t)}</span>`;
         item.addEventListener('click', () => {
           document.querySelectorAll('.title-item').forEach(el => el.classList.remove('selected'));
           item.classList.add('selected');
@@ -308,6 +317,36 @@
     } finally {
       btnSuggest.disabled = false;
     }
+  }
+
+  // 캔버스 한글 픽셀 기반 줄바꿈 렌더링 함수
+  function renderKoreanText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 3) {
+    const chars = Array.from(text);
+    let line = '';
+    let currentY = y;
+    let lineCount = 0;
+
+    for (let i = 0; i < chars.length; i++) {
+      let testLine = line + chars[i];
+      if (ctx.measureText(testLine).width > maxWidth && i > 0) {
+        ctx.fillText(line, x, currentY);
+        line = chars[i];
+        currentY += lineHeight;
+        lineCount++;
+        if (lineCount >= maxLines - 1) {
+          // 남은 글자가 너무 길면 말줄임
+          const remaining = chars.slice(i).join('');
+          if (ctx.measureText(remaining).width > maxWidth) {
+            ctx.fillText(remaining.substring(0, 15) + '...', x, currentY);
+            return currentY;
+          }
+        }
+      } else {
+        line = testLine;
+      }
+    }
+    ctx.fillText(line, x, currentY);
+    return currentY;
   }
 
   function createMainThumbnail(subTag, mainTitle) {
@@ -332,23 +371,13 @@
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 46px sans-serif';
     
-    const words = mainTitle.split(' ');
-    let line = '', y = 230;
-    for (let n = 0; n < words.length; n++) {
-      let testLine = line + words[n] + ' ';
-      if (ctx.measureText(testLine).width > 660 && n > 0) {
-        ctx.fillText(line, 60, y);
-        line = words[n] + ' ';
-        y += 66;
-      } else { line = testLine; }
-    }
-    ctx.fillText(line, 60, y);
+    const lastY = renderKoreanText(ctx, mainTitle, 60, 240, 680, 68, 4);
 
     ctx.strokeStyle = '#F59E0B';
     ctx.lineWidth = 5;
     ctx.beginPath();
-    ctx.moveTo(60, y + 36);
-    ctx.lineTo(260, y + 36);
+    ctx.moveTo(60, lastY + 36);
+    ctx.lineTo(260, lastY + 36);
     ctx.stroke();
 
     ctx.fillStyle = '#E5E7EB';
@@ -377,7 +406,7 @@
 
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 36px sans-serif';
-    ctx.fillText(title || '핵심 요약 포인트', 50, 160);
+    renderKoreanText(ctx, title || '핵심 요약 포인트', 50, 160, 900, 48, 1);
 
     ctx.strokeStyle = '#F59E0B';
     ctx.lineWidth = 3;
@@ -392,23 +421,23 @@
     ctx.fill();
 
     ctx.fillStyle = '#F8FAFC';
-    ctx.font = 'bold 28px sans-serif';
-    ctx.fillText(p1 || '핵심 기준 및 주요 요건 확인', 95, 290);
+    ctx.font = 'bold 27px sans-serif';
+    renderKoreanText(ctx, p1 || '핵심 기준 및 주요 요건 확인', 95, 290, 850, 38, 2);
 
     if (p2) {
       ctx.fillStyle = '#F59E0B';
       ctx.beginPath();
-      ctx.arc(68, 380, 8, 0, Math.PI * 2);
+      ctx.arc(68, 390, 8, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = '#E2E8F0';
-      ctx.font = '26px sans-serif';
-      ctx.fillText(p2, 95, 390);
+      ctx.font = '25px sans-serif';
+      renderKoreanText(ctx, p2, 95, 400, 850, 36, 2);
     }
 
     ctx.fillStyle = '#64748B';
     ctx.font = '20px sans-serif';
-    ctx.fillText('※ 상세 내용은 본문 가이드를 참고해 주세요.', 50, 570);
+    ctx.fillText('※ 상세 내용은 본문 가이드를 참고해 주세요.', 50, 580);
 
     return canvas.toDataURL('image/png');
   }
@@ -430,21 +459,31 @@
     const resultArea = document.getElementById('result-area');
 
     btnGenerate.disabled = true;
-    status.innerHTML = `<div class="status-msg">원고 본문과 카드뉴스 3장을 렌더링하고 있습니다...</div>`;
+    status.innerHTML = `<div class="status-msg">실시간 팩트체크 및 원고 렌더링 중입니다...</div>`;
     resultArea.innerHTML = '';
 
-    const prompt = `너는 대한민국 최상위 블로그 전문 필자다. 기준일: [${getTodayString()}]
-선택된 제목: "${selectedTitle}"
+    const prompt = `너는 신뢰성 1위의 대한민국 전문 블로그 칼럼니스트다.
+[기본 정보]
+- 원본 키워드: "${currentKeyword}"
+- 카테고리: "${selectedCategory}"
+- 선택된 제목: "${selectedTitle}"
+- 기준일: [${getTodayString()}]
 
-본문 내용과 카드뉴스 3장용 문구를 아래 순수 JSON 객체 포맷으로만 작성하라.
+[실시간 검색 기반 팩트체크 지침 - 절대 준수]
+1. 반드시 구글 검색을 활용하여 정부 공식 발표, 법령, 공공기관 1차 출처를 우선 검증하라.
+2. 기준일 현재 확정되지 않은 일정이나 금액을 임의로 단정(창작)하지 말 것.
+3. 미확정/루머 이슈는 "현재 공식 발표 예정 상태", "부적격 주의사항" 형태로 객관적으로 기술하라.
+4. 나이, 소득 기준, 지원 금액 등 숫자는 철저히 사실에 기반하여 서술하라.
+
+본문 내용과 카드뉴스 3장용 요약을 아래 순수 JSON 객체 포맷으로만 작성하라.
 \`\`\`json
 {
   "intro": "도입부 인사말 및 배경 설명 (줄바꿈 포함 4~5문장)",
   "section1_quote": "소제목 1 인용구 텍스트",
-  "card1": { "title": "카드 1 제목", "point1": "핵심 요약 문구 1", "point2": "세부 내용 문구 2" },
+  "card1": { "title": "카드 1 제목", "point1": "핵심 팩트 요약 1", "point2": "세부 내용 문구 2" },
   "section1_body": "소제목 1 상세 설명 글 (줄바꿈 포함)",
   "section2_quote": "소제목 2 인용구 텍스트",
-  "card2": { "title": "카드 2 제목", "point1": "핵심 요약 문구 1", "point2": "세부 내용 문구 2" },
+  "card2": { "title": "카드 2 제목", "point1": "핵심 자격/절차 요약 1", "point2": "세부 내용 문구 2" },
   "section2_body": "소제목 2 상세 설명 및 신청 절차 글",
   "section3_quote": "소제목 3 필수 주의사항 인용구",
   "card3": { "title": "카드 3 제목", "point1": "주의사항 요약 1", "point2": "주의사항 요약 2" },
@@ -477,30 +516,30 @@
       resultArea.innerHTML = `
         <div class="result-panel" id="blog-content">
           <div class="thumb-wrap"><img id="img-thumb" src="${mainThumb}" alt="대표 썸네일" /></div>
-          <button class="img-down-btn" id="btn-dl-thumb">⬇️ 썸네일 이미지 다운로드</button>
+          <button class="img-down-btn" id="btn-dl-thumb">⬇️ 썸네일 다운로드</button>
           
-          <h1>${selectedTitle}</h1>
-          <p>${(doc.intro || '').replace(/\n/g, '<br/>')}</p>
+          <h1>${escapeHtml(selectedTitle)}</h1>
+          <p>${formatBody(doc.intro)}</p>
 
-          <div class="quote-box"><div class="quote-text">“ ${doc.section1_quote || '핵심 혜택 요약'} ”</div></div>
+          <div class="quote-box"><div class="quote-text">“ ${escapeHtml(doc.section1_quote || '핵심 혜택 요약')} ”</div></div>
           <div class="card-wrap"><img id="img-card1" src="${cardImg1}" alt="요약카드1" /></div>
           <button class="img-down-btn" id="btn-dl-card1">⬇️ 카드뉴스 1 다운로드</button>
-          <p>${(doc.section1_body || '').replace(/\n/g, '<br/>')}</p>
+          <p>${formatBody(doc.section1_body)}</p>
 
-          <div class="quote-box"><div class="quote-text">“ ${doc.section2_quote || '상세 요건 및 신청 방법'} ”</div></div>
+          <div class="quote-box"><div class="quote-text">“ ${escapeHtml(doc.section2_quote || '상세 요건 및 신청 방법')} ”</div></div>
           <div class="card-wrap"><img id="img-card2" src="${cardImg2}" alt="요약카드2" /></div>
           <button class="img-down-btn" id="btn-dl-card2">⬇️ 카드뉴스 2 다운로드</button>
-          <p>${(doc.section2_body || '').replace(/\n/g, '<br/>')}</p>
+          <p>${formatBody(doc.section2_body)}</p>
 
-          <div class="quote-box"><div class="quote-text">“ ${doc.section3_quote || '실무자 필수 주의사항'} ”</div></div>
+          <div class="quote-box"><div class="quote-text">“ ${escapeHtml(doc.section3_quote || '실무자 필수 주의사항')} ”</div></div>
           <div class="card-wrap"><img id="img-card3" src="${cardImg3}" alt="요약카드3" /></div>
           <button class="img-down-btn" id="btn-dl-card3">⬇️ 카드뉴스 3 다운로드</button>
-          <p>${(doc.section3_body || '').replace(/\n/g, '<br/>')}</p>
+          <p>${formatBody(doc.section3_body)}</p>
 
           <div class="quote-box"><div class="quote-text">“ 자주 묻는 질문 (FAQ) ”</div></div>
-          <p>${(doc.faq || '').replace(/\n/g, '<br/>')}</p>
+          <p>${formatBody(doc.faq)}</p>
 
-          <p style="color:var(--primary); font-weight:700; margin-top:24px;">${doc.hashtags || ''}</p>
+          <p style="color:var(--primary); font-weight:700; margin-top:24px;">${escapeHtml(doc.hashtags || '')}</p>
         </div>
 
         <div class="toolbar">
@@ -508,10 +547,12 @@
         </div>
       `;
 
-      document.getElementById('btn-dl-thumb').addEventListener('click', () => downloadImage(mainThumb, 'thumbnail.png'));
-      document.getElementById('btn-dl-card1').addEventListener('click', () => downloadImage(cardImg1, 'card_01.png'));
-      document.getElementById('btn-dl-card2').addEventListener('click', () => downloadImage(cardImg2, 'card_02.png'));
-      document.getElementById('btn-dl-card3').addEventListener('click', () => downloadImage(cardImg3, 'card_03.png'));
+      // 키워드가 포함된 이미지 파일명 다운로드 설정
+      const cleanKw = (currentKeyword || '블로그').replace(/[^가-힣a-zA-Z0-9]/g, '_');
+      document.getElementById('btn-dl-thumb').addEventListener('click', () => downloadImage(mainThumb, `${cleanKw}_썸네일.png`));
+      document.getElementById('btn-dl-card1').addEventListener('click', () => downloadImage(cardImg1, `${cleanKw}_카드01.png`));
+      document.getElementById('btn-dl-card2').addEventListener('click', () => downloadImage(cardImg2, `${cleanKw}_카드02.png`));
+      document.getElementById('btn-dl-card3').addEventListener('click', () => downloadImage(cardImg3, `${cleanKw}_카드03.png`));
 
       document.getElementById('copy-btn').addEventListener('click', function() {
         const content = document.getElementById('blog-content');
@@ -522,7 +563,7 @@
         sel.addRange(range);
         document.execCommand('copy');
         sel.removeAllRanges();
-        alert("본문 텍스트가 복사되었습니다!\n네이버 블로그 에디터에 붙여넣으신 뒤, 다운로드한 이미지를 사진 아이콘으로 추가해 주세요.");
+        alert("본문 텍스트가 복사되었습니다!\n네이버 블로그 에디터에 붙여넣으신 뒤 다운로드한 이미지를 삽입하세요.");
       });
 
       status.innerHTML = '';
