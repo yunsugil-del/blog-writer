@@ -7,189 +7,183 @@
   <style>
     :root {
       --primary: #4F46E5;
+      --primary-hover: #4338CA;
       --primary-light: #EEF2FF;
-      --ink: #1F2937;
-      --ink-soft: #6B7280;
-      --bg: #F9FAFB;
+      --ink: #0F172A;
+      --ink-soft: #64748B;
+      --bg: #F8FAFC;
       --white: #FFFFFF;
-      --border: #E5E7EB;
+      --border: #E2E8F0;
+      --card-border: #E2E8F0;
+      --danger: #EF4444;
+      --success: #10B981;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       background: var(--bg);
       color: var(--ink);
-      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
-      padding: 30px 20px 80px;
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", sans-serif;
+      padding: 40px 20px 80px;
     }
     .container { max-width: 860px; margin: 0 auto; }
-    .header { text-align: center; margin-bottom: 24px; }
-    .header h1 { font-size: 24px; color: var(--primary); margin: 0 0 6px; font-weight: 800; }
-    .header p { color: var(--ink-soft); font-size: 14px; margin: 0; }
+    
+    .header { text-align: center; margin-bottom: 36px; }
+    .header h1 { font-size: 28px; color: var(--primary); margin: 0 0 6px; font-weight: 800; }
+    .header p { color: var(--ink-soft); font-size: 15px; margin: 0; }
 
-    .card-panel {
+    .card {
       background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-      margin-bottom: 20px;
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px 28px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      margin-bottom: 24px;
+    }
+    
+    .label {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 10px;
+      display: block;
     }
 
-    .section-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--ink); }
-    
-    .chip-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-    .chip {
-      padding: 10px 16px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--bg);
+    .category-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+    .cat-btn {
+      background: var(--white);
+      border: 1.5px solid var(--border);
       color: var(--ink-soft);
+      padding: 10px 18px;
+      border-radius: 10px;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
-      user-select: none;
+      transition: all 0.2s ease;
     }
-    .chip.active { background: var(--primary); color: #fff; border-color: var(--primary); font-weight: 700; }
+    .cat-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 4px 10px rgba(79,70,229,0.25);
+    }
 
-    .input-row { display: flex; gap: 8px; }
+    .input-row {
+      display: flex;
+      gap: 12px;
+    }
     input[type="text"] {
       flex: 1;
       padding: 14px 16px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
       font-size: 15px;
       outline: none;
+      transition: border-color 0.2s;
     }
-    input[type="text"]:focus { border-color: var(--primary); }
-
-    button.btn {
-      padding: 14px 20px;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 15px;
-      border: none;
-      cursor: pointer;
-      white-space: nowrap;
+    input[type="text"]:focus {
+      border-color: var(--primary);
     }
-    button.btn-primary { background: var(--primary); color: #fff; }
-    button.btn-primary:disabled { background: var(--border); cursor: not-allowed; }
-
-    .title-list { display: flex; flex-direction: column; gap: 10px; margin: 18px 0; }
-    .title-item {
-      padding: 14px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      background: var(--white);
-      font-size: 14.5px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      line-height: 1.4;
-    }
-    .title-item.selected { border-color: var(--primary); background: var(--primary-light); font-weight: 700; color: var(--primary); }
-
-    .result-panel {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 30px 24px;
-      margin-top: 20px;
-      line-height: 1.9;
-      font-size: 15.5px;
-    }
-    .result-panel h1 { font-size: 22px; margin-bottom: 24px; line-height: 1.4; border-bottom: 2px solid var(--border); padding-bottom: 12px; }
-    
-    .quote-box {
-      margin: 30px 0 16px;
-      text-align: center;
-      background: #F8FAFC;
-      border-left: 4px solid var(--primary);
-      border-radius: 6px;
-      padding: 16px 20px;
-    }
-    .quote-text { font-size: 16.5px; font-weight: 700; color: var(--ink); }
-
-    .thumb-wrap { text-align: center; margin-bottom: 10px; }
-    .thumb-wrap img { width: 100%; max-width: 500px; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
-    .card-wrap { text-align: center; margin: 10px 0; }
-    .card-wrap img { width: 100%; max-width: 520px; border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); }
-
-    .img-down-btn {
-      display: block;
-      width: 100%;
-      max-width: 320px;
-      margin: 8px auto 24px;
-      background: #0284C7;
+    .btn-main {
+      background: var(--primary);
       color: #fff;
       border: none;
-      padding: 9px 14px;
-      border-radius: 6px;
-      font-size: 13px;
+      padding: 14px 24px;
+      border-radius: 10px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
     }
-    .img-down-btn:hover { background: #0369A1; }
+    .btn-main:hover { background: var(--primary-hover); }
+    .btn-main:disabled { background: var(--border); cursor: not-allowed; }
 
-    .source-box {
-      margin-top: 28px;
-      padding: 18px 20px;
-      background: #F1F5F9;
-      border-radius: 8px;
-      border: 1px solid #CBD5E1;
-      font-size: 13.5px;
-      line-height: 1.6;
+    .titles-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 14px;
     }
-    .source-title {
-      font-weight: 700;
-      color: #334155;
-      margin-bottom: 10px;
+    .title-item {
       display: flex;
       align-items: center;
-      gap: 6px;
-    }
-    .source-list {
-      list-style-type: none;
-      padding-left: 0;
-      margin: 0;
-    }
-    .source-item {
-      margin-bottom: 10px;
-      padding-left: 12px;
-      border-left: 2px solid var(--primary);
-    }
-    .source-name {
+      justify-content: space-between;
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 14.5px;
       font-weight: 600;
       color: var(--ink);
     }
-    .source-url {
-      display: block;
-      color: #2563EB;
-      word-break: break-all;
-      text-decoration: none;
-      font-size: 12.5px;
+    .title-item button {
+      background: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid #C7D2FE;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
     }
-    .source-url:hover { text-decoration: underline; }
-    .source-empty {
-      color: var(--ink-soft);
-      font-style: italic;
+    .title-item button:hover {
+      background: var(--primary);
+      color: #fff;
     }
 
-    .toolbar { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-    .btn-copy {
-      background: #fff;
-      border: 2px solid var(--primary);
-      color: var(--primary);
+    .meta-box {
+      background: #F1F5F9;
       border-radius: 8px;
-      padding: 14px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #475569;
+      margin-bottom: 20px;
+      line-height: 1.5;
     }
-    .btn-copy:hover { background: var(--primary); color: #fff; }
-    .status-msg { margin-top: 12px; font-size: 13.5px; font-weight: 600; color: var(--primary); text-align: center; }
+    .meta-box strong { color: var(--ink); }
+
+    .article-body {
+      background: #FAFBFD;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      line-height: 1.8;
+      font-size: 15px;
+      color: var(--ink);
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .status-msg {
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .status-error { color: var(--danger); }
+    .status-loading { color: var(--primary); }
+
+    .copy-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .btn-copy {
+      background: #0F172A;
+      color: #fff;
+      border: none;
+      padding: 9px 16px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -200,53 +194,163 @@
     <p>실시간 검색 검증 & 팩트 가드레일 자동화</p>
   </div>
 
-  <div class="card-panel">
-    <div class="section-title">1. 카테고리 선택</div>
-    <div class="chip-group">
-      <div class="chip active" data-cat="경제/복지/지원금">📊 경제·복지·지원금</div>
-      <div class="chip" data-cat="생활/상식">📋 생활·상식</div>
-      <div class="chip" data-cat="재테크/부동산">💰 재테크·부동산</div>
+  <div class="card">
+    <span class="label">1. 카테고리 선택</span>
+    <div class="category-group">
+      <button class="cat-btn active" data-cat="경제·복지·지원금">📊 경제·복지·지원금</button>
+      <button class="cat-btn" data-cat="생활·상식">📋 생활·상식</button>
+      <button class="cat-btn" data-cat="재테크·부동산">💰 재테크·부동산</button>
     </div>
 
-    <div class="section-title">2. 키워드 입력</div>
+    <span class="label">2. 키워드 입력</span>
     <div class="input-row">
-      <input id="kw-input" type="text" placeholder="키워드를 입력하세요 (예: 2026 근로장려금, 에어컨 전기세 절약)" />
-      <button class="btn btn-primary" id="btn-suggest">제목 5개 추천</button>
+      <input type="text" id="keyword-input" placeholder="예: 2026년 근로장려금 신청자격 및 지급일" />
+      <button class="btn-main" id="btn-titles">제목 5개 추천</button>
     </div>
-    <div id="suggest-status"></div>
+    <div id="status-title" class="status-msg"></div>
 
-    <div id="title-selection-area" style="display: none;">
-      <div class="section-title" style="margin-top: 24px;">3. 마음에 드는 제목 선택</div>
-      <div class="title-list" id="title-list"></div>
-
-      <button class="btn btn-primary" style="width: 100%; padding: 15px; margin-top: 12px;" id="btn-generate">
-        ✍️ 원고 및 이미지 세트 생성하기
-      </button>
+    <div id="titles-wrapper" style="display:none; margin-top: 24px;">
+      <span class="label">3. 마음에 드는 제목 선택 (클릭 시 자동 글 생성)</span>
+      <div class="titles-list" id="titles-container"></div>
     </div>
   </div>
 
-  <div id="status-area"></div>
-  <div id="result-area"></div>
+  <div class="card" id="article-card" style="display:none;">
+    <div class="copy-toolbar">
+      <button class="btn-copy" id="btn-copy-article">📋 본문 전체 복사</button>
+    </div>
+
+    <div id="meta-container" class="meta-box"></div>
+    <div id="article-content" class="article-body"></div>
+  </div>
 </div>
 
 <script>
-  const PROXY_ENDPOINT = "https://://blog-writer.yunsugil.workers.dev";
-  let selectedCategory = '경제/복지/지원금';
-  let currentKeyword = '';
-  let selectedTitle = '';
+  // Cloudflare Worker 연동 주소
+  const WORKER_URL = "https://blog-writer.yunsugil.workers.dev";
 
-  const chips = document.querySelectorAll('.chip');
-  chips.forEach(chip => {
-    chip.addEventListener('click', () => {
-      chips.forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      selectedCategory = chip.getAttribute('data-cat');
+  let selectedCategory = "경제·복지·지원금";
+
+  const catButtons = document.querySelectorAll('.cat-btn');
+  const keywordInput = document.getElementById('keyword-input');
+  const btnTitles = document.getElementById('btn-titles');
+  const statusTitle = document.getElementById('status-title');
+  const titlesWrapper = document.getElementById('titles-wrapper');
+  const titlesContainer = document.getElementById('titles-container');
+  const articleCard = document.getElementById('article-card');
+  const metaContainer = document.getElementById('meta-container');
+  const articleContent = document.getElementById('article-content');
+  const btnCopyArticle = document.getElementById('btn-copy-article');
+
+  // URL 파라미터로 넘어온 키워드 자동 채우기 (?kw=키워드)
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const kw = params.get('kw');
+    if (kw) {
+      keywordInput.value = kw;
+    }
+  });
+
+  catButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      catButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedCategory = btn.getAttribute('data-cat');
     });
   });
 
-  function getTodayString() {
-    return new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
+  // 1. 제목 5개 추천 요청
+  btnTitles.addEventListener('click', async () => {
+    const kw = keywordInput.value.trim();
+    if (!kw) {
+      alert("키워드를 입력해 주세요.");
+      return;
+    }
+
+    btnTitles.disabled = true;
+    statusTitle.className = "status-msg status-loading";
+    statusTitle.innerText = "🔍 구글 최신 정보 검색 및 클릭률 높은 제목 생성 중...";
+    titlesWrapper.style.display = "none";
+    titlesContainer.innerHTML = "";
+
+    try {
+      const res = await fetch(`${WORKER_URL}/api/generate-titles`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category: selectedCategory, keyword: kw })
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "제목 생성 실패");
+
+      renderTitles(data.titles);
+      statusTitle.innerText = "";
+      titlesWrapper.style.display = "block";
+
+    } catch (err) {
+      statusTitle.className = "status-msg status-error";
+      statusTitle.innerText = `오류: ${err.message}`;
+    } finally {
+      btnTitles.disabled = false;
+    }
+  });
+
+  function renderTitles(titles) {
+    titlesContainer.innerHTML = "";
+    titles.forEach((item, idx) => {
+      const row = document.createElement('div');
+      row.className = "title-item";
+      row.innerHTML = `
+        <span>${idx + 1}. ${escapeHtml(item.title)}</span>
+        <button onclick="selectTitle('${escapeHtml(item.title).replace(/'/g, "\\'")}')">이 제목으로 작성 ➔</button>
+      `;
+      titlesContainer.appendChild(row);
+    });
   }
+
+  // 2. 본문 작성 요청
+  window.selectTitle = async function(chosenTitle) {
+    const kw = keywordInput.value.trim();
+    articleCard.style.display = "block";
+    metaContainer.innerHTML = "⏳ <strong>글 작성 진행 중...</strong> 최신 팩트와 검색 데이터를 대조 검증하고 있습니다. (약 15~20초 소요)";
+    articleContent.innerHTML = "작성 중...";
+    articleCard.scrollIntoView({ behavior: 'smooth' });
+
+    try {
+      const res = await fetch(`${WORKER_URL}/api/generate-article`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: selectedCategory,
+          keyword: kw,
+          title: chosenTitle
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "본문 생성 실패");
+
+      metaContainer.innerHTML = `
+        <strong>선택 제목:</strong> ${escapeHtml(chosenTitle)}<br/>
+        <strong>SEO 메타 설명:</strong> ${escapeHtml(data.metaDescription || '')}<br/>
+        <strong>추천 태그:</strong> ${(data.tags || []).map(t => `#${escapeHtml(t)}`).join(' ')}
+      `;
+
+      articleContent.innerText = data.article || "";
+
+    } catch (err) {
+      metaContainer.innerHTML = `<span style="color:var(--danger)">❌ 오류 발생: ${escapeHtml(err.message)}</span>`;
+      articleContent.innerText = "";
+    }
+  };
+
+  btnCopyArticle.addEventListener('click', () => {
+    const text = articleContent.innerText;
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      alert("블로그 본문이 클립보드에 복사되었습니다!");
+    });
+  });
 
   function escapeHtml(str) {
     return String(str ?? '')
@@ -255,581 +359,6 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
-  }
-
-  function formatBody(text) {
-    return escapeHtml(text).replace(/\n/g, '<br/>');
-  }
-
-  function safeParseJSON(rawText, type) {
-    if (!rawText || typeof rawText !== 'string') throw new Error("응답 본문이 비어 있습니다.");
-    var cleaned = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
-
-    if (type === 'array' || type === 'any') {
-      var start = cleaned.indexOf('[');
-      var end = cleaned.lastIndexOf(']');
-      if (start !== -1 && end !== -1 && end > start) {
-        try { return JSON.parse(cleaned.substring(start, end + 1)); } catch (e) {}
-      }
-    }
-
-    if (type === 'object' || type === 'any') {
-      var startObj = cleaned.indexOf('{');
-      var endObj = cleaned.lastIndexOf('}');
-      if (startObj !== -1 && endObj !== -1 && endObj > startObj) {
-        try { return JSON.parse(cleaned.substring(startObj, endObj + 1)); } catch (e) {}
-      }
-    }
-
-    var lines = cleaned.split('\n')
-      .map(function(l) { return l.replace(/^[\d\.\-\*\s]+/, '').replace(/["'\[\]\{\}]/g, '').trim(); })
-      .filter(function(l) { return l.length > 5; });
-    
-    if (lines.length >= 3) return lines.slice(0, 5);
-    throw new Error("데이터 파싱 실패");
-  }
-
-  const kwInput = document.getElementById('kw-input');
-  const btnSuggest = document.getElementById('btn-suggest');
-
-  kwInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' || e.keyCode === 13) suggestTitles();
-  });
-  btnSuggest.addEventListener('click', suggestTitles);
-
-  async function suggestTitles() {
-    const keyword = kwInput.value.trim();
-    if (!keyword) { alert("키워드를 입력해 주세요."); return; }
-
-    currentKeyword = keyword;
-
-    const status = document.getElementById('suggest-status');
-    const titleArea = document.getElementById('title-selection-area');
-    const list = document.getElementById('title-list');
-
-    btnSuggest.disabled = true;
-    status.innerHTML = `<div class="status-msg">Google 실시간 검색 기반 팩트 검증 제목 추출 중...</div>`;
-
-    const prompt = `너는 대한민국의 최신 정보를 조사하여 사실에 기반한 블로그 제목을 추천하는 전문 에디터다.
-
-[기본 정보]
-- 키워드: [${currentKeyword}]
-- 카테고리: [${selectedCategory}]
-- 기준일: [${getTodayString()}]
-
-[작성 원칙]
-1. 반드시 Google Search를 통해 현재 시점의 실제 최신 사실을 확인한 뒤 제목을 작성하라.
-2. 검색 결과에서 확인되지 않은 숫자, 미확정 금액, 추정치를 제목에 포함하지 마라.
-3. 낚시성·과장 표현("무조건 지급", "100% 확정", "전 국민 대상" 등)을 금지하고, 팩트에 부합하는 매력적인 제목 5개를 작성하라.
-4. 길이는 22자~32자 내외로 간결하게 구성하라.
-
-순수 JSON 문자열 배열 포맷으로만 응답하라.
-\`\`\`json
-["제목 1", "제목 2", "제목 3", "제목 4", "제목 5"]
-\`\`\``;
-
-    try {
-      const res = await fetch(PROXY_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }] })
-      });
-
-      const data = await res.json();
-      if (data.error) throw new Error(typeof data.error === 'object' ? data.error.message : data.error);
-
-      const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!rawText) throw new Error("서버 응답 오류");
-
-      const titles = safeParseJSON(rawText, 'array');
-
-      list.innerHTML = '';
-      titles.forEach((t, idx) => {
-        const item = document.createElement('div');
-        item.className = `title-item ${idx === 0 ? 'selected' : ''}`;
-        item.innerHTML = `<input type="radio" name="title_r" ${idx === 0 ? 'checked' : ''} /> <span>${escapeHtml(t)}</span>`;
-        item.addEventListener('click', () => {
-          document.querySelectorAll('.title-item').forEach(el => el.classList.remove('selected'));
-          item.classList.add('selected');
-          item.querySelector('input').checked = true;
-          selectedTitle = t;
-        });
-        list.appendChild(item);
-      });
-
-      selectedTitle = titles[0];
-      titleArea.style.display = 'block';
-      status.innerHTML = '';
-    } catch (e) {
-      status.innerHTML = `<div style="color:red; font-size:13.5px; margin-top:8px;">오류: ${e.message}</div>`;
-    } finally {
-      btnSuggest.disabled = false;
-    }
-  }
-
-  function renderKoreanText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 3) {
-    const chars = Array.from(text);
-    let line = '';
-    let currentY = y;
-    let lineCount = 0;
-
-    for (let i = 0; i < chars.length; i++) {
-      let testLine = line + chars[i];
-      if (ctx.measureText(testLine).width > maxWidth && i > 0) {
-        ctx.fillText(line, x, currentY);
-        line = chars[i];
-        currentY += lineHeight;
-        lineCount++;
-        if (lineCount >= maxLines - 1) {
-          const remaining = chars.slice(i).join('');
-          if (ctx.measureText(remaining).width > maxWidth) {
-            ctx.fillText(remaining.substring(0, 15) + '...', x, currentY);
-            return currentY;
-          }
-        }
-      } else {
-        line = testLine;
-      }
-    }
-    ctx.fillText(line, x, currentY);
-    return currentY;
-  }
-
-  function getThumbnailFooter() {
-    if (selectedCategory === '생활/상식') {
-      return '핵심 원인 · 해결 방법 · 생활 팁 완벽 정리';
-    }
-    if (selectedCategory === '재테크/부동산') {
-      return '핵심 숫자 · 비교 · 전략 · 주의사항 정리';
-    }
-    return '핵심 조건 · 금액 · 신청 절차 완벽 정리';
-  }
-
-  function createMainThumbnail(subTag, mainTitle) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 800; canvas.height = 800;
-    const ctx = canvas.getContext('2d');
-
-    const grad = ctx.createLinearGradient(0, 0, 800, 800);
-    grad.addColorStop(0, '#042F2E');
-    grad.addColorStop(1, '#115E59');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, 800, 800);
-
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-    ctx.lineWidth = 3;
-    ctx.strokeRect(30, 30, 740, 740);
-
-    ctx.fillStyle = '#F59E0B';
-    ctx.font = 'bold 26px sans-serif';
-    ctx.fillText(`● ${subTag || 'SPECIAL GUIDE'}`, 60, 110);
-
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 46px sans-serif';
-    
-    const lastY = renderKoreanText(ctx, mainTitle, 60, 240, 680, 68, 4);
-
-    ctx.strokeStyle = '#F59E0B';
-    ctx.lineWidth = 5;
-    ctx.beginPath();
-    ctx.moveTo(60, lastY + 36);
-    ctx.lineTo(260, lastY + 36);
-    ctx.stroke();
-
-    ctx.fillStyle = '#E5E7EB';
-    ctx.font = '24px sans-serif';
-    ctx.fillText(getThumbnailFooter(), 60, 720);
-
-    return canvas.toDataURL('image/png');
-  }
-
-  function createCardImage(num, title, p1, p2) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1000; canvas.height = 650;
-    const ctx = canvas.getContext('2d');
-
-    ctx.fillStyle = '#0F172A';
-    ctx.fillRect(0, 0, 1000, 650);
-
-    ctx.fillStyle = '#F59E0B';
-    ctx.beginPath();
-    ctx.roundRect(50, 50, 70, 44, 6);
-    ctx.fill();
-
-    ctx.fillStyle = '#0F172A';
-    ctx.font = 'bold 24px sans-serif';
-    ctx.fillText(num, 70, 81);
-
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 36px sans-serif';
-    renderKoreanText(ctx, title || '핵심 요약 포인트', 50, 160, 900, 48, 1);
-
-    ctx.strokeStyle = '#F59E0B';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(50, 195);
-    ctx.lineTo(950, 195);
-    ctx.stroke();
-
-    ctx.fillStyle = '#F59E0B';
-    ctx.beginPath();
-    ctx.arc(68, 280, 8, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = '#F8FAFC';
-    ctx.font = 'bold 27px sans-serif';
-    renderKoreanText(ctx, p1 || '핵심 기준 및 주요 요건 확인', 95, 290, 850, 38, 2);
-
-    if (p2) {
-      ctx.fillStyle = '#F59E0B';
-      ctx.beginPath();
-      ctx.arc(68, 390, 8, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#E2E8F0';
-      ctx.font = '25px sans-serif';
-      renderKoreanText(ctx, p2, 95, 400, 850, 36, 2);
-    }
-
-    ctx.fillStyle = '#64748B';
-    ctx.font = '20px sans-serif';
-    ctx.fillText('※ 상세 내용은 본문 가이드를 참고해 주세요.', 50, 580);
-
-    return canvas.toDataURL('image/png');
-  }
-
-  function downloadImage(dataUrl, filename) {
-    const a = document.createElement('a');
-    a.href = dataUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  }
-
-  function extractSourcesHTML(candidate) {
-    try {
-      const meta = candidate?.groundingMetadata;
-      if (!meta) {
-        return `<div class="source-box"><div class="source-title">🔎 참고한 검색 출처</div><div class="source-empty">검색 출처를 확인할 수 없습니다.</div></div>`;
-      }
-
-      const uniqueSources = [];
-      const seenUrls = new Set();
-
-      if (Array.isArray(meta.groundingChunks)) {
-        for (const chunk of meta.groundingChunks) {
-          const web = chunk.web;
-          if (web && web.uri && !seenUrls.has(web.uri)) {
-            seenUrls.add(web.uri);
-            uniqueSources.push({
-              title: web.title || '공식 웹페이지 정보',
-              uri: web.uri
-            });
-          }
-        }
-      }
-
-      if (uniqueSources.length === 0 && Array.isArray(meta.webSearchSources)) {
-        for (const src of meta.webSearchSources) {
-          if (src.uri && !seenUrls.has(src.uri)) {
-            seenUrls.add(src.uri);
-            uniqueSources.push({
-              title: src.title || '검색 출처',
-              uri: src.uri
-            });
-          }
-        }
-      }
-
-      if (uniqueSources.length === 0 && Array.isArray(meta.webSearchQueries) && meta.webSearchQueries.length > 0) {
-        const queryList = meta.webSearchQueries.map(q => `<li>🔍 실시간 검증 검색어: <strong>${escapeHtml(q)}</strong></li>`).join('');
-        return `
-          <div class="source-box">
-            <div class="source-title">🔎 실시간 Google 팩트 검색 완료</div>
-            <ul class="source-list">${queryList}</ul>
-          </div>
-        `;
-      }
-
-      if (uniqueSources.length === 0) {
-        return `<div class="source-box"><div class="source-title">🔎 참고한 검색 출처</div><div class="source-empty">검색 출처를 확인할 수 없습니다.</div></div>`;
-      }
-
-      const listHtml = uniqueSources.slice(0, 5).map(s => `
-        <li class="source-item">
-          <span class="source-name">${escapeHtml(s.title)}</span>
-          <a class="source-url" href="${escapeHtml(s.uri)}" target="_blank" rel="noopener noreferrer">${escapeHtml(s.uri)}</a>
-        </li>
-      `).join('');
-
-      return `
-        <div class="source-box">
-          <div class="source-title">🔎 참고한 검색 출처 (실시간 팩트 검증 완료)</div>
-          <ul class="source-list">${listHtml}</ul>
-        </div>
-      `;
-    } catch (e) {
-      return `<div class="source-box"><div class="source-title">🔎 참고한 검색 출처</div><div class="source-empty">검색 출처를 확인할 수 없습니다.</div></div>`;
-    }
-  }
-
-  const btnGenerate = document.getElementById('btn-generate');
-  btnGenerate.addEventListener('click', generateStructuredPost);
-
-  async function generateStructuredPost() {
-    const status = document.getElementById('status-area');
-    const resultArea = document.getElementById('result-area');
-
-    btnGenerate.disabled = true;
-    status.innerHTML = `<div class="status-msg">Google 실시간 검색 기반 팩트 교차 검증 및 고품질 원고 생성 중...</div>`;
-    resultArea.innerHTML = '';
-
-    const prompt = `너는 대한민국의 최신 정보를 조사하여 전문적이고 가독성 높은 네이버 블로그 콘텐츠를 작성하는 "팩트 검증 최우선 전문 콘텐츠 에디터"다.
-
-단순히 사전 학습 지식에 의존하지 말고, 반드시 Google Search를 사용하여 현재 시점의 웹 정보를 직접 검색하고 검색 결과를 검토한 후 글을 작성하라.
-
-[기본 정보]
-- 원본 키워드: "${currentKeyword}"
-- 카테고리: "${selectedCategory}"
-- 선택된 제목: "${selectedTitle}"
-- 기준일: [${getTodayString()}]
-
-==================================================
-[최우선 원칙 — 사실 검증]
-==================================================
-
-1. 이 요청에서는 "실시간 검색 → 사실 확인 → 공식 출처 교차검증 → 글 작성" 순서를 반드시 준수하라.
-2. 검색 없이 기존 학습 지식만으로 글을 작성하지 마라.
-3. 키워드와 관련된 최신 정보를 먼저 검색하라.
-4. 특히 다음 정보는 반드시 검색 결과에서 직접 확인된 수치만 작성하라.
-   - 날짜, 연도, 금액, 지원금, 최대 지급액, 소득 기준, 재산 기준, 세율, 금리, 대출 한도, 부동산 가격, 청약 조건, 신청 기간, 시행일, 적용 연도, 지급일, 자격 조건, 통계 수치
-5. 숫자 하나라도 검색 결과에서 직접 확인되지 않았다면 임의로 작성하지 마라.
-6. 과거에 알고 있던 정보를 현재 정보처럼 사용하지 마라.
-7. 미래 연도의 정책(예: 2027년, 2028년 등)은 정부 발표, 법령 개정안, 공공기관 공식자료에서 명확히 확인된 경우에만 언급하라.
-8. 정책 상태("검토 중", "추진 예정", "개정안", "입법예고", "발표", "확정", "시행 예정", "시행 중")를 엄격히 구분하라. 아직 시행 전이라면 절대 "확정 시행된다"고 단정하지 말고 "개정안 발표", "추진 중" 등으로 명확히 구분하라.
-9. 검색 결과에 미래 정책의 구체적인 숫자가 존재하지 않는다면 절대로 추정하여 산출하지 마라.
-10. 검색 결과가 서로 다른 경우 가장 신뢰할 수 있는 공식 출처를 우선하고, 필요한 경우 차이가 있다는 사실을 본문에 설명하라.
-
-==================================================
-[문체 및 작성 품질 가이드 (중요)]
-==================================================
-
-1. [말투 및 톤앤매너]
-- 신뢰감 있고 친절한 전문 블로거의 어조를 유지하라.
-- 문장 종결 어미는 정중하고 부드러운 경어체(~합니다, ~해드립니다, ~확인해 보세요, ~해야 합니다)로 일관되게 작성하라.
-- 딱딱한 공문서 느낌이 아니라, 실생활에서 겪는 고민에 공감하며 해결책을 짚어주는 자연스러운 호흡으로 작성하라.
-
-2. [AI 상투적 표현 완전 금지]
-- "많은 분들이 궁금해하시는", "~인 것 같습니다", "오늘은 ~에 대해 알아보겠습니다", "도움이 되셨길 바랍니다", "살펴보도록 하겠습니다" 등의 전형적인 AI 양산형 표현을 절대 사용하지 마라.
-- 첫 문장부터 본론의 핵심 문제의식이나 중요한 사실을 직접적으로 제시하며 시작하라.
-
-3. [경험·체감 요소 유도]
-- "직접 신청해 보시려는 분들이 가장 헷갈리는 부분은...", "실제 직장인이나 1인 가구라면 이 조건을 먼저 확인하셔야 합니다"처럼 독자의 실제 상황을 짚어주는 문장을 자연스럽게 배치하라.
-
-4. [분량 가이드]
-- 전체 글은 네이버 검색 최적화에 맞추어 충분한 정보량을 가지도록 작성하라.
-- intro: 4~5문장 내외 (주제 배경, 왜 지금 알아야 하는지 명확히 제시)
-- section1_body, section2_body, section3_body: 각각 6~8문장 내외 (핵심 조건, 수치, 실제 적용 방법, 놓치기 쉬운 팁 등을 문단 구분과 함께 상세히 서술)
-- faq: 독자가 가장 자주 묻는 질문 3개와 각각 2~3문장의 명확한 답변
-- 성의 없이 짧게 축약하거나 한두 문장으로 얼버무리지 말고 충실하게 채워라.
-
-==================================================
-[출처 우선순위]
-==================================================
-1순위: 대한민국 정부 및 정부기관 공식 사이트 (정부24, 국세청, 기획재정부, 고용노동부, 보건복지부, 국토교통부, 금융위원회, 금융감독원, 통계청, 법제처, 한국은행, 국민연금공단, 근로복지공단 등)
-2순위: 공공기관 및 공공기관 공식 발표자료
-3순위: 금융기관, 연구기관, 협회 등 공식자료
-4순위: 신뢰할 수 있는 주요 언론사
-5순위: 블로그, 카페, 커뮤니티, SNS (※ 공식 사실의 확정 근거로 사용 절대 금지)
-
-==================================================
-[검색 실패 시 행동 원칙]
-==================================================
-검색 결과에서 확인되지 않은 내용을 사실처럼 작성하지 마라.
-확인되지 않은 경우 다음과 같이 명확히 기술하라:
-- "현재 확인 가능한 공식 자료에서는 해당 내용이 확정된 것으로 확인되지 않습니다."
-- "현재 공식 발표 자료에서 구체적인 금액은 확인되지 않습니다."
-절대로 빈칸을 AI의 추측이나 임의의 숫자로 채우지 마라. "그럴듯한 글"보다 "틀리지 않는 글"이 최우선이다.
-
-==================================================
-[카테고리별 작성 방식]
-==================================================
-
-${selectedCategory === '경제/복지/지원금' ? `
-### 경제·복지·지원금 카테고리
-글의 핵심 구조:
-1. 제도가 무엇인지 쉽게 설명
-2. 누가 받을 수 있는지 (대상, 나이, 소득/재산 기준)
-3. 지원금액·혜택·조건
-4. 신청방법 및 일정
-5. 놓치기 쉬운 조건과 주의사항 (중복 수급, 제외 대상)
-6. FAQ
-
-카드뉴스:
-card1 = 핵심 혜택 및 지원 내용
-card2 = 대상·조건·신청 방법
-card3 = 주의사항 및 놓치기 쉬운 내용
-` : selectedCategory === '생활/상식' ? `
-### 생활·상식 카테고리
-지원금 신청 글처럼 작성하지 말고, 독자가 "왜 그런지", "어떻게 하면 되는지"를 명쾌하게 이해하도록 작성하라.
-
-글의 핵심 구조:
-1. 독자가 궁금해할 만한 상황이나 문제 제시
-2. 정확한 원인 또는 원리 설명
-3. 실제로 도움이 되는 해결방법
-4. 상황별 활용 팁 또는 비교
-5. 잘못 알려진 정보와 주의사항
-6. FAQ
-
-카드뉴스:
-card1 = 핵심 사실 또는 원인
-card2 = 실제 해결방법·활용방법
-card3 = 주의사항·잘못 알려진 정보
-` : selectedCategory === '재테크/부동산' ? `
-### 재테크·부동산 카테고리
-지원금 신청 글처럼 작성하지 말 것. 단정적 투자 권유 표현("무조건 오른다", "확실한 수익" 등) 절대 금지.
-
-글의 핵심 구조:
-1. 현재 시장 상황과 배경
-2. 핵심 숫자·조건·제도 (금리, 대출한도, 세율 등)
-3. 장점과 단점 또는 선택지 비교
-4. 실제 상황에서 어떻게 판단할지 (실전 가이드)
-5. 리스크와 주의사항
-6. FAQ
-
-카드뉴스:
-card1 = 핵심 숫자·시장 상황
-card2 = 비교·선택 기준·실전 전략
-card3 = 리스크·주의사항
-` : ''}
-
-==================================================
-[최종 JSON 포맷 출력]
-==================================================
-위의 모든 검색 및 사실 검증 절차를 완료한 후에만 아래 순수 JSON 객체를 작성하라.
-
-{
-  "intro": "도입부 및 배경 설명 (4~5문장). AI 상투어구 없이 자연스럽고 설득력 있게 작성.",
-  "section1_quote": "첫 번째 핵심 내용을 한 문장으로 요약",
-  "card1": {
-    "title": "카드뉴스 1 제목",
-    "point1": "핵심 내용 1",
-    "point2": "핵심 내용 2"
-  },
-  "section1_body": "첫 번째 핵심 내용 상세 설명 (6~8문장). 수치와 핵심 조건을 정확히 서술.",
-  
-  "section2_quote": "두 번째 핵심 내용을 한 문장으로 요약",
-  "card2": {
-    "title": "카드뉴스 2 제목",
-    "point1": "핵심 내용 1",
-    "point2": "핵심 내용 2"
-  },
-  "section2_body": "두 번째 핵심 내용 상세 설명 (6~8문장). 실전 적용법 및 자격 조건 상세 서술.",
-  
-  "section3_quote": "세 번째 핵심 내용을 한 문장으로 요약",
-  "card3": {
-    "title": "카드뉴스 3 제목",
-    "point1": "핵심 내용 1",
-    "point2": "핵심 내용 2"
-  },
-  "section3_body": "세 번째 핵심 내용 상세 설명 (6~8문장). 주의사항, 제외 대상, 헷갈리기 쉬운 팁 서술.",
-  
-  "faq": "독자가 가장 궁금해할 핵심 질문과 답변 3개 (Q: / A: 형식으로 명확히 구분)",
-  "hashtags": "검색 유입에 최적화된 관련 해시태그 5~8개 (#키워드 형식)"
-}
-
-- 위 JSON 필드명 절대 변경 금지
-- JSON 외 다른 텍스트 출력 금지`;
-
-    try {
-      const res = await fetch(PROXY_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }] })
-      });
-
-      const data = await res.json();
-      if (data.error) throw new Error(typeof data.error === 'object' ? data.error.message : data.error);
-
-      const candidate = data?.candidates?.[0];
-      const rawText = candidate?.content?.parts?.[0]?.text;
-      if (!rawText) throw new Error("응답 본문이 비어 있습니다.");
-
-      const doc = safeParseJSON(rawText, 'object');
-      const sourcesHtml = extractSourcesHTML(candidate);
-
-      let thumbnailTag = '정책·금융 가이드';
-      if (selectedCategory === '생활/상식') {
-        thumbnailTag = '생활·상식 가이드';
-      } else if (selectedCategory === '재테크/부동산') {
-        thumbnailTag = '재테크·부동산 가이드';
-      }
-
-      const mainThumb = createMainThumbnail(thumbnailTag, selectedTitle);
-      const cardImg1 = createCardImage("01", doc.card1?.title, doc.card1?.point1, doc.card1?.point2);
-      const cardImg2 = createCardImage("02", doc.card2?.title, doc.card2?.point1, doc.card2?.point2);
-      const cardImg3 = createCardImage("03", doc.card3?.title, doc.card3?.point1, doc.card3?.point2);
-
-      resultArea.innerHTML = `
-        <div class="result-panel" id="blog-content">
-          <div class="thumb-wrap"><img id="img-thumb" src="${mainThumb}" alt="대표 썸네일" /></div>
-          <button class="img-down-btn" id="btn-dl-thumb">⬇️ 썸네일 다운로드</button>
-          
-          <h1>${escapeHtml(selectedTitle)}</h1>
-          <p>${formatBody(doc.intro)}</p>
-
-          <div class="quote-box"><div class="quote-text">“ ${escapeHtml(doc.section1_quote || '핵심 혜택 요약')} ”</div></div>
-          <div class="card-wrap"><img id="img-card1" src="${cardImg1}" alt="요약카드1" /></div>
-          <button class="img-down-btn" id="btn-dl-card1">⬇️ 카드뉴스 1 다운로드</button>
-          <p>${formatBody(doc.section1_body)}</p>
-
-          <div class="quote-box"><div class="quote-text">“ ${escapeHtml(doc.section2_quote || '상세 요건 및 신청 방법')} ”</div></div>
-          <div class="card-wrap"><img id="img-card2" src="${cardImg2}" alt="요약카드2" /></div>
-          <button class="img-down-btn" id="btn-dl-card2">⬇️ 카드뉴스 2 다운로드</button>
-          <p>${formatBody(doc.section2_body)}</p>
-
-          <div class="quote-box"><div class="quote-text">“ ${escapeHtml(doc.section3_quote || '실무자 필수 주의사항')} ”</div></div>
-          <div class="card-wrap"><img id="img-card3" src="${cardImg3}" alt="요약카드3" /></div>
-          <button class="img-down-btn" id="btn-dl-card3">⬇️ 카드뉴스 3 다운로드</button>
-          <p>${formatBody(doc.section3_body)}</p>
-
-          <div class="quote-box"><div class="quote-text">“ 자주 묻는 질문 (FAQ) ”</div></div>
-          <p>${formatBody(doc.faq)}</p>
-
-          <p style="color:var(--primary); font-weight:700; margin-top:24px;">${escapeHtml(doc.hashtags || '')}</p>
-          ${sourcesHtml}
-        </div>
-
-        <div class="toolbar">
-          <button class="btn-copy" id="copy-btn">📋 본문 서식 전체 복사 (텍스트만)</button>
-        </div>
-      `;
-
-      const cleanKw = (currentKeyword || '블로그').replace(/[^가-힣a-zA-Z0-9]/g, '_');
-      document.getElementById('btn-dl-thumb').addEventListener('click', () => downloadImage(mainThumb, `${cleanKw}_썸네일.png`));
-      document.getElementById('btn-dl-card1').addEventListener('click', () => downloadImage(cardImg1, `${cleanKw}_카드01.png`));
-      document.getElementById('btn-dl-card2').addEventListener('click', () => downloadImage(cardImg2, `${cleanKw}_카드02.png`));
-      document.getElementById('btn-dl-card3').addEventListener('click', () => downloadImage(cardImg3, `${cleanKw}_카드03.png`));
-
-      document.getElementById('copy-btn').addEventListener('click', function() {
-        const content = document.getElementById('blog-content');
-        const range = document.createRange();
-        range.selectNodeContents(content);
-        const sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-        document.execCommand('copy');
-        sel.removeAllRanges();
-        alert("본문 텍스트가 복사되었습니다!\n네이버 블로그 에디터에 붙여넣으신 뒤 다운로드한 이미지를 삽입하세요.");
-      });
-
-      status.innerHTML = '';
-    } catch (e) {
-      status.innerHTML = `<div style="color:red; font-size:14px; text-align:center;">생성 오류: ${e.message}</div>`;
-    } finally {
-      btnGenerate.disabled = false;
-    }
   }
 </script>
 </body>
