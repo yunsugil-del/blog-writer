@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>블로그 라이터 Pro</title>
+<style>
+:root {
+--primary: #4F46E5;
+--primary-light: #EEF2FF;
+--ink: #1F2937;
+--ink-soft: #6B7280;
+--bg: #F9FAFB;
+--white: #FFFFFF;
+--border: #E5E7EB;
+}
+* { box-sizing: border-box; }
+body {
+margin: 0;
+background: var(--bg);
+color: var(--ink);
+font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
+padding: 24px 14px 80px;
+}
+.container { max-width: 860px; margin: 0 auto; }
+.header { text-align: center; margin-bottom: 22px; }
+.header h1 { font-size: 22px; color: var(--primary); margin: 0 0 4px; font-weight: 800; }
+.header p { color: var(--ink-soft); font-size: 13px; margin: 0; }
+
+.card-panel {
+background: var(--white);
+border: 1px solid var(--border);
+border-radius: 12px;
+padding: 20px;
+box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+margin-bottom: 16px;
+}
+
+.section-title { font-size: 13.5px; font-weight: 700; margin-bottom: 10px; color: var(--ink); }
+
+.chip-group { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+.chip {
+padding: 8px 14px;
+border-radius: 6px;
+border: 1px solid var(--border);
+background: var(--bg);
+color: var(--ink-soft);
+font-size: 13px;
+font-weight: 600;
+cursor: pointer;
+}
+.chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+.input-row { display: flex; gap: 6px; }
+input[type="text"] {
+flex: 1;
+padding: 12px 14px;
+border: 1px solid var(--border);
+border-radius: 8px;
+font-size: 14px;
+outline: none;
+}
+input[type="text"]:focus { border-color: var(--primary); }
+
+button.btn {
+padding: 12px 18px;
+border-radius: 8px;
+font-weight: 700;
+font-size: 13.5px;
+border: none;
+cursor: pointer;
+white-space: nowrap;
+}
+button.btn-primary { background: var(--primary); color: #fff; }
+button.btn-primary:disabled { background: var(--border); cursor: not-allowed; }
+
+.title-list { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; }
+.title-item {
+padding: 12px 14px;
+border: 1.5px solid var(--border);
+border-radius: 8px;
+background: var(--white);
+font-size: 13.5px;
+cursor: pointer;
+display: flex;
+align-items: center;
+gap: 8px;
+line-height: 1.4;
+}
+.title-item.selected { border-color: var(--primary); background: var(--primary-light); font-weight: 700; color: var(--primary); }
+
+.result-panel {
+background: var(--white);
+border: 1px solid var(--border);
+border-radius: 12px;
+padding: 26px 18px;
+margin-top: 20px;
+line-height: 1.9;
+font-size: 15px;
+}
+.result-panel h1 { font-size: 20px; margin-bottom: 20px; line-height: 1.4; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+
+.quote-box {
+margin: 30px 0 14px;
+text-align: center;
+background: #F8FAFC;
+border-left: 4px solid var(--primary);
+border-radius: 6px;
+padding: 14px 16px;
+}
+.quote-text { font-size: 16px; font-weight: 700; color: var(--ink); }
+
+.thumb-wrap { text-align: center; margin-bottom: 24px; }
+.thumb-wrap img { width: 100%; max-width: 480px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.card-wrap { text-align: center; margin: 20px 0; }
+.card-wrap img { width: 100%; max-width: 500px; border-radius: 6px; box-shadow: 0 3px 8px rgba(0,0,0,0.06); }
+
+.toolbar { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; }
+.btn-copy {
+background: #fff;
+border: 1.5px solid var(--primary);
+color: var(--primary);
+border-radius: 6px;
+padding: 10px 16px;
+font-size: 13px;
+font-weight: 700;
+cursor: pointer;
+}
+.btn-copy:hover { background: var(--primary); color: #fff; }
+.status-msg { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--primary); text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="container">
+<div class="header">
+<h1>블로그 라이터 Pro</h1>
+<p>Gemini 3.6 Flash 기반 ➔ 썸네일 & 카드뉴스 ➔ 원클릭 포스팅 원고</p>
+</div>
+
+<div class="card-panel">
+<div class="section-title">1. 카테고리 선택</div>
+<div class="chip-group">
+<div class="chip active" onclick="setCategory('경제/복지/지원금')">📊 경제·복지·지원금</div>
+<div class="chip" onclick="setCategory('생활/상식')">📋 생활·상식</div>
+<div class="chip" onclick="setCategory('재테크/부동산')">💰 재테크·부동산</div>
+</div>
+
+<div class="section-title">2. 키워드 입력</div>
+<div class="input-row">
+<input id="kw-input" type="text" placeholder="예: ISA 계좌 개편, 청년도약계좌 만기" />
+<button class="btn btn-primary" id="btn-suggest" onclick="suggestTitles()">제목 5개 추천</button>
+</div>
+<div id="suggest-status"></div>
+
+<div id="title-selection-area" style="display: none;">
+<div class="section-title" style="margin-top: 20px;">3. 마음에 드는 제목 선택</div>
+<div class="title-list" id="title-list"></div>
+
+<button class="btn btn-primary" style="width: 100%; padding: 13px; margin-top: 10px;" id="btn-generate" onclick="generateStructuredPost()">
+✍️ 썸네일 + 카드 3장 + 본문 원클릭 생성
+</button>
+</div>
+</div>
+
+<div id="status-area"></div>
+<div id="result-area"></div>
+</div>
+
+<script>
+const PROXY_ENDPOINT = "https://wispy-brook-5781.yunsugil.workers.dev";
+
+let selectedCategory = '경제/복지/지원금';
+let selectedTitle = '';
+
+function setCategory(cat) {
+selectedCategory = cat;
+document.querySelectorAll('.chip').forEach(el => el.classList.remove('active'));
+event.target.classList.add('active');
+}
+
+function getTodayString() {
+return new Date().toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" });
+}
+
+function safeParseJSON(rawText, type = 'any') {
+if (!rawText || typeof rawText !== 'string') throw new Error("응답이 비어있습니다.");
+
+let cleaned = rawText.replace(/json/gi, '').replace(//g, '').trim();
+
+if (type === 'array' || type === 'any') {
+const start = cleaned.indexOf('[');
+const end = cleaned.lastIndexOf(']');
+if (start !== -1 && end !== -1 && end > start) {
+try { return JSON.parse(cleaned.substring(start, end + 1)); } catch (e) {}
+}
+}
+
+if (type === 'object' || type === 'any') {
+const start = cleaned.indexOf('{');
+const end = cleaned.lastIndexOf('}');
+if (start !== -1 && end !== -1 && end > start) {
+try { return JSON.parse(cleaned.substring(start, end + 1)); } catch (e) {}
+}
+}
+
+const lines = cleaned.split('\n')
+.map(l => l.replace(/^[\d.-*\s]+/, '').replace(/["'[]{}]/g, '').trim())
+.filter(l => l.length > 5);
+
+if (lines.length >= 3) return lines.slice(0, 5);
+
+throw new Error("데이터 구조 분석에 실패했습니다.");
+}
+
+// 1. 제목 5개 추천
+async function suggestTitles() {
+const keyword = document.getElementById('kw-input').value.trim();
+if (!keyword) { alert("키워드를 입력해 주세요."); return; }
+
+const btn = document.getElementById('btn-suggest');
+const status = document.getElementById('suggest-status');
+const titleArea = document.getElementById('title-selection-area');
+const list = document.getElementById('title-list');
+
+btn.disabled = true;
+status.innerHTML = <div class="status-msg"&gt;Gemini 3.6 Flash로 제목을 추출하고 있습니다...&lt;/div>;
+
+const prompt = 키워드: [${keyword}], 카테고리: [${selectedCategory}], 기준일: [${getTodayString()}]
+네이버 블로그 클릭률(CTR)과 스마트블록 상위 노출에 최적화된 매력적인 제목 5개를 순수 JSON 배열 포맷으로만 작성하라.
+```json
+["제목 1", "제목 2", "제목 3", "제목 4", "제목 5"]
+````;
+
+try {
+const res = await fetch(PROXY_ENDPOINT, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }] })
+});
+
+const data = await res.json();
+
+if (data.error) {
+throw new Error(typeof data.error === 'object' ? data.error.message : data.error);
+}
+
+const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+if (!rawText) throw new Error("응답 본문이 비어 있습니다.");
+
+const titles = safeParseJSON(rawText, 'array');
+
+list.innerHTML = titles.map((t, idx) => &lt;div class="title-item${idx === 0 ? 'selected' : ''}" onclick="pickTitle(this, '{idx === 0 ? 'checked' : ''} />
+<span>${t}&lt;/span&gt; &lt;/div&gt;).join('');
+
+selectedTitle = titles[0];
+titleArea.style.display = 'block';
+status.innerHTML = '';
+} catch (e) {
+status.innerHTML = <div style="color:red; font-size:13px; margin-top:6px;"&gt;오류:${e.message}</div>`;
+} finally {
+btn.disabled = false;
+}
+}
+
+function pickTitle(el, titleText) {
+document.querySelectorAll('.title-item').forEach(i => i.classList.remove('selected'));
+el.classList.add('selected');
+el.querySelector('input').checked = true;
+selectedTitle = titleText;
+}
+
+// 대표 썸네일 (800x800)
+function createMainThumbnail(subTag, mainTitle) {
+const canvas = document.createElement('canvas');
+canvas.width = 800; canvas.height = 800;
+const ctx = canvas.getContext('2d');
+
+const grad = ctx.createLinearGradient(0, 0, 800, 800);
+grad.addColorStop(0, '#042F2E');
+grad.addColorStop(1, '#115E59');
+ctx.fillStyle = grad;
+ctx.fillRect(0, 0, 800, 800);
+
+ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+ctx.lineWidth = 3;
+ctx.strokeRect(30, 30, 740, 740);
+
+ctx.fillStyle = '#F59E0B';
+ctx.font = 'bold 26px sans-serif';
+ctx.fillText(● ${subTag || 'SPECIAL GUIDE'}`, 60, 110);
+
+ctx.fillStyle = '#FFFFFF';
+ctx.font = 'bold 48px sans-serif';
+
+const words = mainTitle.split(' ');
+let line = '', y = 240;
+for (let n = 0; n < words.length; n++) {
+let testLine = line + words[n] + ' ';
+if (ctx.measureText(testLine).width > 680 && n > 0) {
+ctx.fillText(line, 60, y);
+line = words[n] + ' ';
+y += 70;
+} else { line = testLine; }
+}
+ctx.fillText(line, 60, y);
+
+ctx.strokeStyle = '#F59E0B';
+ctx.lineWidth = 5;
+ctx.beginPath();
+ctx.moveTo(60, y + 40);
+ctx.lineTo(260, y + 40);
+ctx.stroke();
+
+ctx.fillStyle = '#E5E7EB';
+ctx.font = '24px sans-serif';
+ctx.fillText('핵심 조건 · 금액 · 신청 절차 완벽 정리', 60, 720);
+
+return canvas.toDataURL('image/png');
+}
+
+// 카드뉴스 캔버스 (1000x650)
+function createCardImage(num, title, p1, p2) {
+const canvas = document.createElement('canvas');
+canvas.width = 1000; canvas.height = 650;
+const ctx = canvas.getContext('2d');
+
+ctx.fillStyle = '#0F172A';
+ctx.fillRect(0, 0, 1000, 650);
+
+ctx.fillStyle = '#F59E0B';
+ctx.beginPath();
+ctx.roundRect(50, 50, 70, 44, 6);
+ctx.fill();
+
+ctx.fillStyle = '#0F172A';
+ctx.font = 'bold 24px sans-serif';
+ctx.fillText(num, 70, 81);
+
+ctx.fillStyle = '#FFFFFF';
+ctx.font = 'bold 36px sans-serif';
+ctx.fillText(title || '핵심 요약 포인트', 50, 160);
+
+ctx.strokeStyle = '#F59E0B';
+ctx.lineWidth = 3;
+ctx.beginPath();
+ctx.moveTo(50, 195);
+ctx.lineTo(950, 195);
+ctx.stroke();
+
+ctx.fillStyle = '#F59E0B';
+ctx.beginPath();
+ctx.arc(68, 280, 8, 0, Math.PI * 2);
+ctx.fill();
+
+ctx.fillStyle = '#F8FAFC';
+ctx.font = 'bold 28px sans-serif';
+ctx.fillText(p1 || '핵심 기준 및 주요 요건 확인', 95, 290);
+
+if (p2) {
+ctx.fillStyle = '#F59E0B';
+ctx.beginPath();
+ctx.arc(68, 380, 8, 0, Math.PI * 2);
+ctx.fill();
+
+ctx.fillStyle = '#E2E8F0';
+ctx.font = '26px sans-serif';
+ctx.fillText(p2, 95, 390);
+}
+
+ctx.fillStyle = '#64748B';
+ctx.font = '20px sans-serif';
+ctx.fillText('※ 상세 내용은 본문 가이드를 참고해 주세요.', 50, 570);
+
+return canvas.toDataURL('image/png');
+}
+
+// 2. 본문 및 카드뉴스 자동 생성
+async function generateStructuredPost() {
+const genBtn = document.getElementById('btn-generate');
+const status = document.getElementById('status-area');
+const resultArea = document.getElementById('result-area');
+
+genBtn.disabled = true;
+status.innerHTML = <div class="status-msg"&gt;원고 본문과 카드뉴스 3장을 렌더링하고 있습니다...&lt;/div>;
+resultArea.innerHTML = '';
+
+const prompt = 너는 대한민국 최상위 블로그 전문 필자다. 기준일: [${getTodayString()}]
+선택된 제목: "$`{selectedTitle}"
+
+본문 내용과 카드뉴스 3장용 문구를 아래 순수 JSON 객체 포맷으로만 작성하라.
+```json
+{
+"intro": "도입부 인사말 및 배경 설명 (줄바꿈 포함 4~5문장)",
+"section1_quote": "소제목 1 인용구 텍스트",
+"card1": { "title": "카드 1 제목", "point1": "핵심 요약 문구 1", "point2": "세부 내용 문구 2" },
+"section1_body": "소제목 1 상세 설명 글 (줄바꿈 포함)",
+"section2_quote": "소제목 2 인용구 텍스트",
+"card2": { "title": "카드 2 제목", "point1": "핵심 요약 문구 1", "point2": "세부 내용 문구 2" },
+"section2_body": "소제목 2 상세 설명 및 신청 절차 글",
+"section3_quote": "소제목 3 필수 주의사항 인용구",
+"card3": { "title": "카드 3 제목", "point1": "주의사항 요약 1", "point2": "주의사항 요약 2" },
+"section3_body": "소제목 3 주의사항 및 실무 팁",
+"faq": "자주 묻는 질문 Q&A 3개 (문단 형태)",
+"hashtags": "#정보공유 #필수혜택 #정부정책 #완벽정리"
+}
+````;
+
+try {
+const res = await fetch(PROXY_ENDPOINT, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+contents: [{ role: 'user', parts: [{ text: prompt }] }]
+})
+});
+
+const data = await res.json();
+
+if (data.error) {
+throw new Error(typeof data.error === 'object' ? data.error.message : data.error);
+}
+
+const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+if (!rawText) throw new Error("응답 본문이 비어 있습니다.");
+
+const doc = safeParseJSON(rawText, 'object');
+
+const mainThumb = createMainThumbnail("정책·금융 가이드", selectedTitle);
+const cardImg1 = createCardImage("01", doc.card1?.title, doc.card1?.point1, doc.card1?.point2);
+const cardImg2 = createCardImage("02", doc.card2?.title, doc.card2?.point1, doc.card2?.point2);
+const cardImg3 = createCardImage("03", doc.card3?.title, doc.card3?.point1, doc.card3?.point2);
+
+resultArea.innerHTML = &lt;div class="result-panel" id="blog-content"&gt; &lt;div class="thumb-wrap"&gt;&lt;img src="${mainThumb}" alt="대표 썸네일" /></div>
+
+<h1>$`{selectedTitle}</h1>
+
+<p>`${(doc.intro || '').replace(/\n/g, '<br/>')}</p>
+
+<div class="quote-box"><div class="quote-text">“ {cardImg1}" alt="요약카드1" /></div>
+<p>$`{(doc.section1_body || '').replace(/\n/g, '<br/>')}</p>
+
+<div class="quote-box"><div class="quote-text">“ ${doc.section2_quote || '상세 요건 및 신청 방법'} ”&lt;/div&gt;&lt;/div&gt; &lt;div class="card-wrap"&gt;&lt;img src="${cardImg2}" alt="요약카드2" /></div>
+<p>`${(doc.section2_body || '').replace(/\n/g, '<br/>')}</p>
+
+<div class="quote-box"><div class="quote-text">“ {cardImg3}" alt="요약카드3" /></div>
+<p>$`{(doc.section3_body || '').replace(/\n/g, '<br/>')}</p>
+
+<div class="quote-box"><div class="quote-text">“ 자주 묻는 질문 (FAQ) ”</div></div>
+<p>`${(doc.faq || '').replace(/\n/g, '<br/>')}</p>
+
+<p style="color:var(--primary); font-weight:700; margin-top:24px;">$`{doc.hashtags || ''}</p>
+</div>
+
+<div class="toolbar">
+<span style="font-size:13px; font-weight:700; color:var(--primary);">✓ 원고 완성</span>
+<button class="btn-copy" id="copy-btn">📋 서식 전체 복사</button>
+</div>
+`;
+
+document.getElementById('copy-btn').addEventListener('click', () => {
+const content = document.getElementById('blog-content');
+const range = document.createRange();
+range.selectNodeContents(content);
+const sel = window.getSelection();
+sel.removeAllRanges();
+sel.addRange(range);
+document.execCommand('copy');
+sel.removeAllRanges();
+alert("썸네일, 카드 3장, 본문이 복사되었습니다!\n네이버 블로그 에디터에 붙여넣으세요.");
+});
+
+status.innerHTML = '';
+} catch (e) {
+status.innerHTML = <div style="color:red; font-size:13px; text-align:center;"&gt;생성 오류:${e.message}</div>`;
+} finally {
+genBtn.disabled = false;
+}
+}
+</script>
+</body>
+</html>
