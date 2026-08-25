@@ -226,7 +226,6 @@
 </div>
 
 <script>
-  // Cloudflare Worker 연동 주소
   const WORKER_URL = "https://blog-writer.yunsugil.workers.dev";
 
   let selectedCategory = "경제·복지·지원금";
@@ -242,13 +241,10 @@
   const articleContent = document.getElementById('article-content');
   const btnCopyArticle = document.getElementById('btn-copy-article');
 
-  // URL 파라미터로 넘어온 키워드 자동 채우기 (?kw=키워드)
   window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const kw = params.get('kw');
-    if (kw) {
-      keywordInput.value = kw;
-    }
+    if (kw) keywordInput.value = kw;
   });
 
   catButtons.forEach(btn => {
@@ -258,6 +254,15 @@
       selectedCategory = btn.getAttribute('data-cat');
     });
   });
+
+  // 에러 메시지 추출 헬퍼 함수
+  function parseErrorMessage(errObj) {
+    if (typeof errObj === 'string') return errObj;
+    if (errObj && typeof errObj === 'object') {
+      return errObj.message || errObj.error || JSON.stringify(errObj);
+    }
+    return "알 수 없는 오류가 발생했습니다.";
+  }
 
   // 1. 제목 5개 추천 요청
   btnTitles.addEventListener('click', async () => {
@@ -281,7 +286,9 @@
       });
 
       const data = await res.json();
-      if (!res.ok || data.error) throw new Error(data.error || "제목 생성 실패");
+      if (!res.ok || data.error) {
+        throw new Error(parseErrorMessage(data.error || data.message || data));
+      }
 
       renderTitles(data.titles);
       statusTitle.innerText = "";
@@ -328,7 +335,9 @@
       });
 
       const data = await res.json();
-      if (!res.ok || data.error) throw new Error(data.error || "본문 생성 실패");
+      if (!res.ok || data.error) {
+        throw new Error(parseErrorMessage(data.error || data.message || data));
+      }
 
       metaContainer.innerHTML = `
         <strong>선택 제목:</strong> ${escapeHtml(chosenTitle)}<br/>
