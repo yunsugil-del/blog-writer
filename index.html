@@ -111,22 +111,40 @@
     }
     .quote-text { font-size: 16.5px; font-weight: 700; color: var(--ink); }
 
-    .thumb-wrap { text-align: center; margin-bottom: 26px; }
+    .thumb-wrap { text-align: center; margin-bottom: 10px; }
     .thumb-wrap img { width: 100%; max-width: 500px; border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
-    .card-wrap { text-align: center; margin: 22px 0; }
+    .card-wrap { text-align: center; margin: 10px 0; }
     .card-wrap img { width: 100%; max-width: 520px; border-radius: 6px; box-shadow: 0 3px 10px rgba(0,0,0,0.06); }
 
-    .toolbar { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
-    .btn-copy {
-      background: #fff;
-      border: 1.5px solid var(--primary);
-      color: var(--primary);
+    .img-down-btn {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      margin: 8px auto 24px;
+      background: #0284C7;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
       border-radius: 6px;
-      padding: 10px 18px;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       cursor: pointer;
     }
+    .img-down-btn:hover { background: #0369A1; }
+
+    .toolbar { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+    .btn-copy {
+      background: #fff;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+    }
+    .btn-copy:hover { background: var(--primary); color: #fff; }
     .status-msg { margin-top: 12px; font-size: 13.5px; font-weight: 600; color: var(--primary); text-align: center; }
   </style>
 </head>
@@ -135,7 +153,7 @@
 <div class="container">
   <div class="header">
     <h1>블로그 라이터 Pro</h1>
-    <p>키워드 입력 ➔ 제목 5개 추천 ➔ 썸네일 & 카드뉴스 ➔ 원고 완벽 생성</p>
+    <p>고클릭률(CTR) 특화 제목 & 카드뉴스 자동 생성</p>
   </div>
 
   <div class="card-panel">
@@ -148,7 +166,7 @@
 
     <div class="section-title">2. 키워드 입력</div>
     <div class="input-row">
-      <input id="kw-input" type="text" placeholder="키워드를 입력하세요 (예: ISA 계좌 만기, 청년도약계좌)" />
+      <input id="kw-input" type="text" placeholder="키워드를 입력하세요 (예: 청년미래적금, ISA 계좌)" />
       <button class="btn btn-primary" id="btn-suggest">제목 5개 추천</button>
     </div>
     <div id="suggest-status"></div>
@@ -158,7 +176,7 @@
       <div class="title-list" id="title-list"></div>
 
       <button class="btn btn-primary" style="width: 100%; padding: 15px; margin-top: 12px;" id="btn-generate">
-        ✍️ 썸네일 + 카드 3장 + 본문 원클릭 생성
+        ✍️ 원고 및 이미지 세트 생성하기
       </button>
     </div>
   </div>
@@ -172,7 +190,6 @@
   let selectedCategory = '경제/복지/지원금';
   let selectedTitle = '';
 
-  // 1. 카테고리 칩 선택
   const chips = document.querySelectorAll('.chip');
   chips.forEach(chip => {
     chip.addEventListener('click', () => {
@@ -214,16 +231,12 @@
     throw new Error("데이터 파싱 실패");
   }
 
-  // 2. 키워드 엔터키 및 추천 버튼 연결
   const kwInput = document.getElementById('kw-input');
   const btnSuggest = document.getElementById('btn-suggest');
 
   kwInput.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' || e.keyCode === 13) {
-      suggestTitles();
-    }
+    if (e.key === 'Enter' || e.keyCode === 13) suggestTitles();
   });
-
   btnSuggest.addEventListener('click', suggestTitles);
 
   async function suggestTitles() {
@@ -235,10 +248,25 @@
     const list = document.getElementById('title-list');
 
     btnSuggest.disabled = true;
-    status.innerHTML = `<div class="status-msg">상위 노출용 제목 5개를 생성하고 있습니다...</div>`;
+    status.innerHTML = `<div class="status-msg">고수익·고클릭률 제목 5개를 추출 중입니다...</div>`;
 
+    // 대폭 강화된 고클릭률 프롬프트
     const prompt = `키워드: [${keyword}], 카테고리: [${selectedCategory}], 기준일: [${getTodayString()}]
-네이버 블로그 클릭률(CTR)과 상위 노출에 최적화된 매력적인 제목 5개를 순수 JSON 배열 포맷으로만 작성하라.
+너는 월 순수익 1,000만원 이상의 상위 0.1% 네이버 블로그 마케팅 전문가다.
+사용자가 검색 결과에서 무조건 클릭하고 싶어지는 초고효율 제목 5개를 작성하라.
+
+[제목 작성 5대 치트키 공식]
+1. [손실 회피형]: "조건 놓치면 OOO만원 날립니다", "신청 안 하면 손해인 이유" 등 공포/경각심 자극
+2. [비교/갈아타기형]: "A vs B 둘 중 뭘 골라야 할까?", "기존 상품에서 갈아타야 하는 이유"
+3. [구체적 수치형]: "월 O만원으로 OOO만원 만들기", "수익률 3배 차이 나는 핵심 꿀팁" 등 명확한 숫자/금액 포함
+4. [타깃 맞춤형]: "직장인 필수", "무주택자 주목", "2030 청년 필독" 등 독자 타깃 명시
+5. [완벽 가이드형]: "신청 자격부터 부적격 탈락 피하는 실무 팁 총정리"
+
+[제약 사항]
+- 진부하고 뻔한 표현(~에 대해 알아봅시다, ~안내 등)은 절대 금지.
+- 스마트폰 검색 화면에서 잘리지 않도록 22자~32자 내외로 작성할 것.
+
+반드시 순수 JSON 배열 포맷으로만 응답하라.
 \`\`\`json
 ["제목 1", "제목 2", "제목 3", "제목 4", "제목 5"]
 \`\`\``;
@@ -302,16 +330,16 @@
     ctx.fillText(`● ${subTag || 'SPECIAL GUIDE'}`, 60, 110);
 
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 48px sans-serif';
+    ctx.font = 'bold 46px sans-serif';
     
     const words = mainTitle.split(' ');
-    let line = '', y = 240;
+    let line = '', y = 230;
     for (let n = 0; n < words.length; n++) {
       let testLine = line + words[n] + ' ';
-      if (ctx.measureText(testLine).width > 680 && n > 0) {
+      if (ctx.measureText(testLine).width > 660 && n > 0) {
         ctx.fillText(line, 60, y);
         line = words[n] + ' ';
-        y += 70;
+        y += 66;
       } else { line = testLine; }
     }
     ctx.fillText(line, 60, y);
@@ -319,8 +347,8 @@
     ctx.strokeStyle = '#F59E0B';
     ctx.lineWidth = 5;
     ctx.beginPath();
-    ctx.moveTo(60, y + 40);
-    ctx.lineTo(260, y + 40);
+    ctx.moveTo(60, y + 36);
+    ctx.lineTo(260, y + 36);
     ctx.stroke();
 
     ctx.fillStyle = '#E5E7EB';
@@ -385,7 +413,15 @@
     return canvas.toDataURL('image/png');
   }
 
-  // 3. 본문 생성
+  function downloadImage(dataUrl, filename) {
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
   const btnGenerate = document.getElementById('btn-generate');
   btnGenerate.addEventListener('click', generateStructuredPost);
 
@@ -440,20 +476,25 @@
 
       resultArea.innerHTML = `
         <div class="result-panel" id="blog-content">
-          <div class="thumb-wrap"><img src="${mainThumb}" alt="대표 썸네일" /></div>
+          <div class="thumb-wrap"><img id="img-thumb" src="${mainThumb}" alt="대표 썸네일" /></div>
+          <button class="img-down-btn" id="btn-dl-thumb">⬇️ 썸네일 이미지 다운로드</button>
+          
           <h1>${selectedTitle}</h1>
           <p>${(doc.intro || '').replace(/\n/g, '<br/>')}</p>
 
           <div class="quote-box"><div class="quote-text">“ ${doc.section1_quote || '핵심 혜택 요약'} ”</div></div>
-          <div class="card-wrap"><img src="${cardImg1}" alt="요약카드1" /></div>
+          <div class="card-wrap"><img id="img-card1" src="${cardImg1}" alt="요약카드1" /></div>
+          <button class="img-down-btn" id="btn-dl-card1">⬇️ 카드뉴스 1 다운로드</button>
           <p>${(doc.section1_body || '').replace(/\n/g, '<br/>')}</p>
 
           <div class="quote-box"><div class="quote-text">“ ${doc.section2_quote || '상세 요건 및 신청 방법'} ”</div></div>
-          <div class="card-wrap"><img src="${cardImg2}" alt="요약카드2" /></div>
+          <div class="card-wrap"><img id="img-card2" src="${cardImg2}" alt="요약카드2" /></div>
+          <button class="img-down-btn" id="btn-dl-card2">⬇️ 카드뉴스 2 다운로드</button>
           <p>${(doc.section2_body || '').replace(/\n/g, '<br/>')}</p>
 
           <div class="quote-box"><div class="quote-text">“ ${doc.section3_quote || '실무자 필수 주의사항'} ”</div></div>
-          <div class="card-wrap"><img src="${cardImg3}" alt="요약카드3" /></div>
+          <div class="card-wrap"><img id="img-card3" src="${cardImg3}" alt="요약카드3" /></div>
+          <button class="img-down-btn" id="btn-dl-card3">⬇️ 카드뉴스 3 다운로드</button>
           <p>${(doc.section3_body || '').replace(/\n/g, '<br/>')}</p>
 
           <div class="quote-box"><div class="quote-text">“ 자주 묻는 질문 (FAQ) ”</div></div>
@@ -463,10 +504,14 @@
         </div>
 
         <div class="toolbar">
-          <span style="font-size:14px; font-weight:700; color:var(--primary);">✓ 원고 완성</span>
-          <button class="btn-copy" id="copy-btn">📋 서식 전체 복사</button>
+          <button class="btn-copy" id="copy-btn">📋 본문 서식 전체 복사 (텍스트만)</button>
         </div>
       `;
+
+      document.getElementById('btn-dl-thumb').addEventListener('click', () => downloadImage(mainThumb, 'thumbnail.png'));
+      document.getElementById('btn-dl-card1').addEventListener('click', () => downloadImage(cardImg1, 'card_01.png'));
+      document.getElementById('btn-dl-card2').addEventListener('click', () => downloadImage(cardImg2, 'card_02.png'));
+      document.getElementById('btn-dl-card3').addEventListener('click', () => downloadImage(cardImg3, 'card_03.png'));
 
       document.getElementById('copy-btn').addEventListener('click', function() {
         const content = document.getElementById('blog-content');
@@ -477,7 +522,7 @@
         sel.addRange(range);
         document.execCommand('copy');
         sel.removeAllRanges();
-        alert("썸네일, 카드 3장, 본문이 복사되었습니다!\n네이버 블로그 에디터에 붙여넣으세요.");
+        alert("본문 텍스트가 복사되었습니다!\n네이버 블로그 에디터에 붙여넣으신 뒤, 다운로드한 이미지를 사진 아이콘으로 추가해 주세요.");
       });
 
       status.innerHTML = '';
