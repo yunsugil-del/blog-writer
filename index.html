@@ -259,7 +259,7 @@
       padding: 16px;
       font-size: 14px;
       line-height: 1.8;
-      max-height: 420px;
+      max-height: 440px;
       overflow-y: auto;
       white-space: pre-wrap;
       margin-bottom: 14px;
@@ -344,7 +344,7 @@
       <div style="font-size:13.5px; font-weight:700; margin-bottom:8px;">🎨 생성된 썸네일 & 카드뉴스 (4장)</div>
       <div class="visual-gallery" id="canvas-gallery"></div>
 
-      <div style="font-size:13.5px; font-weight:700; margin-bottom:8px;">📝 작성된 전문 원고</div>
+      <div style="font-size:13.5px; font-weight:700; margin-bottom:8px;">📝 작성된 전문 원고 (복사 전용)</div>
       <div class="preview-box" id="article-text"></div>
       
       <button class="btn-copy-done" id="btn-copy-clipboard">📋 네이버 블로그 서식(HTML) 복사</button>
@@ -357,7 +357,7 @@
 
   let activeCategory = "경제·복지·지원금";
   let currentTitle = "";
-  let currentQuestions = []; // 0단계에서 선택된 독자 질문 3가지 저장
+  let currentQuestions = [];
   let rawArticleJson = null;
 
   const chipBtns = document.querySelectorAll('.chip-btn');
@@ -386,7 +386,6 @@
     });
   });
 
-  // STEP 0: 실시간 트렌드
   btnFetchTrend.addEventListener('click', async () => {
     btnFetchTrend.disabled = true;
     trendMsg.style.color = "var(--primary)";
@@ -439,7 +438,7 @@
 
       card.addEventListener('click', () => {
         mainKeyword.value = t.keyword;
-        currentQuestions = t.questions || []; // 질문 배열 저장
+        currentQuestions = t.questions || [];
         document.getElementById('step1-section').scrollIntoView({ behavior: 'smooth' });
         mainKeyword.focus();
       });
@@ -448,7 +447,6 @@
     });
   }
 
-  // STEP 1: 제목 생성
   btnMakeTitles.addEventListener('click', async () => {
     const kw = mainKeyword.value.trim();
     if (!kw) return alert("키워드를 입력하거나 위 트렌드 카드를 선택하세요.");
@@ -509,7 +507,6 @@
     });
   }
 
-  // STEP 2: 본문 및 카드뉴스 생성 (독자 질문 함께 전송)
   btnMakeArticle.addEventListener('click', async () => {
     if (!currentTitle) return alert("제목을 먼저 선택해 주세요.");
 
@@ -526,7 +523,7 @@
           category: activeCategory,
           keyword: mainKeyword.value.trim(),
           title: currentTitle,
-          questions: currentQuestions // 질문 배열 전달
+          questions: currentQuestions
         })
       });
       const data = await res.json();
@@ -545,16 +542,19 @@
     }
   });
 
+  // 본문 텍스트 뷰어 (메타 요약 제거, 이미지 삽입 가이드 추가, 태그 맨 하단)
   function renderArticle(data) {
-    let preview = `[SEO 메타 요약]\n${data.metaDescription}\n\n`;
-    preview += `[추천 태그]\n${data.tags.map(t => `#${t}`).join(' ')}\n\n`;
-    preview += `[도입부]\n${data.intro}\n\n`;
-    data.sections.forEach(sec => {
-      preview += `■ ${sec.step}: ${sec.title}\n`;
-      preview += `💡 팩트 요약: ${sec.cardHighlight}\n`;
+    let preview = `[📷 대표 썸네일 이미지 들어갈 자리]\n\n`;
+    preview += `${data.intro}\n\n`;
+    data.sections.forEach((sec, idx) => {
+      preview += `■ ${sec.step}: ${sec.title}\n\n`;
+      preview += `[📷 챕터 ${idx + 1} 요약 카드뉴스 이미지 들어갈 자리]\n\n`;
+      preview += `💡 핵심 체크: ${sec.cardHighlight}\n\n`;
       preview += `${sec.body}\n\n`;
     });
-    preview += `[마무리]\n${data.outro}\n\n[출처: ${data.source}]`;
+    preview += `${data.outro}\n\n`;
+    preview += `📌 공식 출처: ${data.source}\n\n`;
+    preview += `${data.tags.map(t => `#${t}`).join(' ')}`;
     articleText.innerText = preview;
   }
 
@@ -653,20 +653,33 @@
     canvasGallery.appendChild(box);
   }
 
+  // 네이버 블로그 서식(HTML) 복사: 가이드 박스 + 태그 맨 하단
   btnCopyClipboard.addEventListener('click', () => {
     if (!rawArticleJson) return;
     const d = rawArticleJson;
 
     let html = `
       <div style="font-family: 'Apple SD Gothic Neo', sans-serif; line-height: 1.85; color: #1e293b; max-width: 680px; margin: 0 auto;">
+        
+        <!-- 대표 썸네일 위치 가이드 -->
+        <div style="background: #f1f5f9; border: 2px dashed #94a3b8; border-radius: 8px; padding: 14px; text-align: center; color: #475569; font-weight: 700; margin-bottom: 24px; font-size: 14px;">
+          📷 [여기에 저장한 '대표 썸네일' 이미지를 첨부하세요]
+        </div>
+
         <p style="font-size: 16px; color: #334155; margin-bottom: 28px; line-height: 1.8;">${escapeHtml(d.intro)}</p>
     `;
 
-    d.sections.forEach(sec => {
+    d.sections.forEach((sec, idx) => {
       html += `
         <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-top: 40px; margin-bottom: 14px; border-bottom: 2px solid #2563eb; padding-bottom: 8px;">
           ${escapeHtml(sec.step)}. ${escapeHtml(sec.title)}
         </h2>
+
+        <!-- 카드뉴스 위치 가이드 -->
+        <div style="background: #f1f5f9; border: 2px dashed #94a3b8; border-radius: 8px; padding: 12px; text-align: center; color: #475569; font-weight: 700; margin-bottom: 16px; font-size: 13.5px;">
+          📷 [여기에 저장한 '카드뉴스 ${idx + 1}' 이미지를 첨부하세요]
+        </div>
+
         <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 16px 18px; border-radius: 0 8px 8px 0; margin-bottom: 16px;">
           <strong style="color: #1e40af; font-size: 15px;">💡 핵심 체크:</strong>
           <span style="color: #1e3a8a; font-size: 15px; font-weight: 600;"> ${escapeHtml(sec.cardHighlight)}</span>
@@ -680,7 +693,11 @@
           <p style="font-size: 15.5px; color: #334155; margin: 0 0 12px; line-height: 1.7;">${escapeHtml(d.outro)}</p>
           <p style="font-size: 13.5px; color: #64748b; margin: 0;">📌 공식 출처: <strong>${escapeHtml(d.source)}</strong></p>
         </div>
-        <p style="font-size: 14px; color: #2563eb; margin-top: 24px; font-weight: 600;">${d.tags.map(t => `#${escapeHtml(t)}`).join(' ')}</p>
+        
+        <!-- 맨 하단 태그 배치 -->
+        <p style="font-size: 14.5px; color: #2563eb; margin-top: 28px; font-weight: 700; line-height: 1.6;">
+          ${d.tags.map(t => `#${escapeHtml(t)}`).join(' ')}
+        </p>
       </div>
     `;
 
