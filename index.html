@@ -23,21 +23,22 @@
       background: var(--bg);
       color: var(--ink);
       font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
-      padding: 30px 16px 80px;
+      padding: 24px 16px 80px;
     }
-    .container { max-width: 820px; margin: 0 auto; }
+    .container { max-width: 720px; margin: 0 auto; width: 100%; }
     
-    .header { text-align: center; margin-bottom: 28px; }
-    .header h1 { font-size: 26px; color: var(--primary); margin: 0 0 6px; font-weight: 800; }
-    .header p { color: var(--ink-soft); font-size: 14.5px; margin: 0; }
+    .header { text-align: center; margin-bottom: 24px; }
+    .header h1 { font-size: 24px; color: var(--primary); margin: 0 0 6px; font-weight: 800; }
+    .header p { color: var(--ink-soft); font-size: 14px; margin: 0; }
 
     .card {
       background: var(--white);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 22px;
+      padding: 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.02);
       margin-bottom: 20px;
+      width: 100%;
     }
     
     .label {
@@ -52,13 +53,13 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
     .cat-btn {
       background: var(--white);
       border: 1.5px solid var(--border);
       color: var(--ink-soft);
-      padding: 8px 16px;
+      padding: 9px 14px;
       border-radius: 8px;
       font-size: 13.5px;
       font-weight: 600;
@@ -70,27 +71,34 @@
       border-color: var(--primary);
     }
 
-    .input-row { display: flex; gap: 10px; }
+    /* 모바일 맞춤 세로 풀너비 레이아웃 */
+    .input-box {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
     input[type="text"] {
-      flex: 1;
-      padding: 12px 14px;
+      width: 100%;
+      padding: 13px 14px;
       border: 1.5px solid var(--border);
       border-radius: 8px;
-      font-size: 14.5px;
+      font-size: 15px;
       outline: none;
     }
     input[type="text"]:focus { border-color: var(--primary); }
     
     .btn-main {
+      width: 100%;
       background: var(--primary);
       color: #fff;
       border: none;
-      padding: 12px 20px;
+      padding: 13px;
       border-radius: 8px;
-      font-size: 14.5px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-      white-space: nowrap;
+      text-align: center;
     }
     .btn-main:hover { background: var(--primary-hover); }
     .btn-main:disabled { background: var(--border); cursor: not-allowed; }
@@ -98,16 +106,17 @@
     .titles-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
     .title-item {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
+      flex-direction: column;
+      gap: 8px;
       background: #F8FAFC;
       border: 1px solid var(--border);
-      padding: 12px 16px;
+      padding: 12px 14px;
       border-radius: 8px;
       font-size: 14px;
       font-weight: 600;
     }
     .title-item button {
+      align-self: flex-end;
       background: var(--primary-light);
       color: var(--primary);
       border: 1px solid #C7D2FE;
@@ -122,48 +131,44 @@
       background: var(--white);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 28px 24px;
+      padding: 24px 18px;
       line-height: 1.85;
-      font-size: 15.5px;
+      font-size: 15px;
       color: #1E293B;
+      width: 100%;
     }
     .main-thumb-box {
       text-align: center;
-      margin-bottom: 28px;
-      padding-bottom: 24px;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
       border-bottom: 1px dashed var(--border);
     }
     .main-thumb-box canvas {
-      max-width: 380px;
-      width: 100%;
+      max-width: 100%;
       height: auto;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.06);
       margin-bottom: 10px;
     }
     .section-block {
-      margin: 28px 0;
-      padding: 18px 0;
+      margin: 24px 0;
+      padding: 14px 0;
     }
     .section-title {
-      font-size: 18px;
+      font-size: 17px;
       font-weight: 800;
       color: #0F172A;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      margin-bottom: 12px;
     }
     .inline-card-box {
-      margin: 16px 0 20px;
+      margin: 14px 0 18px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8px;
     }
     .inline-card-box canvas {
-      max-width: 480px;
-      width: 100%;
+      max-width: 100%;
       height: auto;
       border-radius: 10px;
       box-shadow: 0 3px 10px rgba(0,0,0,0.05);
@@ -172,36 +177,37 @@
       background: #10B981;
       color: #fff;
       border: none;
-      padding: 6px 14px;
+      padding: 7px 14px;
       border-radius: 6px;
-      font-size: 12px;
+      font-size: 12.5px;
       font-weight: 700;
       cursor: pointer;
+      width: 100%;
+      max-width: 280px;
     }
     .btn-dl:hover { background: #059669; }
 
     .source-box {
       background: #F1F5F9;
       border-left: 4px solid var(--primary);
-      padding: 14px 16px;
+      padding: 12px 14px;
       border-radius: 0 8px 8px 0;
-      font-size: 13.5px;
-      margin-top: 30px;
+      font-size: 13px;
+      margin-top: 24px;
     }
     .meta-box {
       background: #F8FAFC;
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 12px 16px;
+      padding: 12px 14px;
       font-size: 13px;
       color: var(--ink-soft);
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
     .copy-toolbar {
       display: flex;
       justify-content: flex-end;
-      gap: 8px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
     .btn-copy {
       background: #0F172A;
@@ -213,7 +219,7 @@
       font-weight: 600;
       cursor: pointer;
     }
-    .status-msg { margin-top: 10px; font-size: 13.5px; font-weight: 600; }
+    .status-msg { margin-top: 10px; font-size: 13px; font-weight: 600; }
   </style>
 </head>
 <body>
@@ -221,7 +227,7 @@
 <div class="container">
   <div class="header">
     <h1>블로그 라이터 Pro</h1>
-    <p>스마트 정보 큐레이션 & 인라인 요약 카드</p>
+    <p>실전 검색 블로그 콘텐츠 & 요약 카드</p>
   </div>
 
   <div class="card">
@@ -233,14 +239,14 @@
     </div>
 
     <span class="label">2. 키워드 입력</span>
-    <div class="input-row">
-      <input type="text" id="keyword-input" placeholder="예: 2026년 에어컨 26도 전기세 절약" />
-      <button class="btn-main" id="btn-titles">제목 추천</button>
+    <div class="input-box">
+      <input type="text" id="keyword-input" placeholder="키워드를 입력하세요" />
+      <button class="btn-main" id="btn-titles">제목 추천받기</button>
     </div>
     <div id="status-title" class="status-msg"></div>
 
     <div id="titles-wrapper" style="display:none; margin-top: 20px;">
-      <span class="label">3. 마음에 드는 제목 선택 (클릭 시 자동 글 생성)</span>
+      <span class="label">3. 제목 선택 (클릭 시 자동 글 생성)</span>
       <div class="titles-list" id="titles-container"></div>
     </div>
   </div>
@@ -329,7 +335,7 @@
   window.generateFullArticle = async function(chosenTitle) {
     const kw = keywordInput.value.trim();
     articleWrapper.style.display = "block";
-    metaBox.innerHTML = "⏳ <strong>스마트 정보 큐레이션 작성 중...</strong> (약 10~15초 소요)";
+    metaBox.innerHTML = "⏳ <strong>실전형 블로그 글 작성 중...</strong> (약 10~15초 소요)";
     renderZone.innerHTML = "<p style='text-align:center; color:var(--ink-soft);'>본문과 인라인 요약 카드를 배치하고 있습니다...</p>";
     articleWrapper.scrollIntoView({ behavior: 'smooth' });
 
@@ -351,7 +357,7 @@
       renderZone.innerHTML = "";
       fullRawText = `${chosenTitle}\n\n${data.intro}\n\n`;
 
-      // 1. 대표 썸네일 박스
+      // 1. 대표 썸네일
       const mainThumbDiv = document.createElement('div');
       mainThumbDiv.className = 'main-thumb-box';
       const mainCanvas = document.createElement('canvas');
@@ -375,7 +381,7 @@
       introP.innerText = data.intro;
       renderZone.appendChild(introP);
 
-      // 3. 본문 챕터 + 챕터 바로 아래 요약 카드 배치
+      // 3. 본문 챕터 + 챕터 바로 아래 요약 카드
       if (Array.isArray(data.sections)) {
         data.sections.forEach((sec, i) => {
           const secBlock = document.createElement('div');
@@ -395,7 +401,7 @@
           
           const dlSubBtn = document.createElement('button');
           dlSubBtn.className = 'btn-dl';
-          dlSubBtn.innerText = `💾 ${sec.step || `POINT 0${i+1}`} 요약 카드 다운로드`;
+          dlSubBtn.innerText = `💾 ${sec.step || `POINT 0${i+1}`} 카드 다운로드`;
           dlSubBtn.onclick = () => downloadCanvas(subCanvas, `${sec.step}_요약카드.png`);
 
           cardBox.appendChild(subCanvas);
@@ -412,11 +418,11 @@
         });
       }
 
-      // 4. 아웃트로 및 공식 출처
+      // 4. 마무리 & 공식 출처
       if (data.outro) {
         const outroP = document.createElement('p');
         outroP.style.whiteSpace = "pre-line";
-        outroP.style.marginTop = "24px";
+        outroP.style.marginTop = "20px";
         outroP.innerText = data.outro;
         renderZone.appendChild(outroP);
         fullRawText += `\n${data.outro}\n\n`;
@@ -464,7 +470,7 @@
 
     ctx.fillStyle = '#F59E0B';
     ctx.font = 'bold 22px Pretendard, sans-serif';
-    ctx.fillText('⚡ 2026 핵심 실전 정리', 300, 535);
+    ctx.fillText('⚡ 실전 핵심 총정리', 300, 535);
   }
 
   function drawSubCard(canvas, step, title, highlight) {
