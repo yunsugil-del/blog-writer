@@ -430,7 +430,7 @@
         </div>
         <div class="feed-desc">${escapeHtml(t.whySelected)}</div>
         <div class="feed-qbox">
-          <strong>🤔 독자 핵심 질문:</strong>
+          <strong>🤔 이웃 핵심 질문:</strong>
           <ul>${qList}</ul>
         </div>
         <div class="feed-pick-text">👉 클릭하여 1단계 키워드로 반영</div>
@@ -512,7 +512,7 @@
 
     btnMakeArticle.disabled = true;
     articleMsg.style.color = "var(--primary)";
-    articleMsg.innerText = "🔍 독자 질문 해결, 형광펜 강조 및 팩트 본문 집필 중... (약 6~10초)";
+    articleMsg.innerText = "🔍 이웃 질문 답변 및 담백한 본문 집필 중... (약 6~10초)";
     outputArea.style.display = "none";
 
     try {
@@ -542,7 +542,6 @@
     }
   });
 
-  // 프리뷰 뷰어 (깨짐 방지 및 텍스트 정돈)
   function renderArticle(data) {
     const stripTags = (s) => (s || '').replace(/<[^>]*>/g, '');
 
@@ -552,12 +551,11 @@
     data.sections.forEach((sec, idx) => {
       preview += `■ ${sec.step}: ${sec.title}\n\n`;
       preview += `[📷 챕터 ${idx + 1} 요약 카드뉴스 이미지 들어갈 자리]\n\n`;
-      preview += `💡 핵심 체크: ${sec.cardHighlight}\n\n`;
+      preview += `👉 ${sec.cardHighlight}\n\n`;
       preview += `${stripTags(sec.body)}\n\n`;
 
-      // 가변 테이블 데이터를 카드 형태로 정돈하여 텍스트 표시
       if (sec.table && sec.table.rows && sec.table.rows.length > 0) {
-        preview += `[📌 핵심 비교 요약]\n`;
+        preview += `[📌 핵심 요약]\n`;
         sec.table.rows.forEach(r => {
           preview += `• ${stripTags(r[0])}: ${r.slice(1).map(c => stripTags(c)).join(' / ')}\n`;
         });
@@ -575,9 +573,9 @@
     canvasGallery.innerHTML = "";
 
     const thumbCanvas = createCardCanvas({
-      badge: data.thumbnail?.badge || `${new Date().getFullYear()} 팩트체크`,
+      badge: data.thumbnail?.badge || `${new Date().getFullYear()} 실생활 꿀팁`,
       title: data.thumbnail?.mainTitle || mainKeyword.value.trim(),
-      sub: data.thumbnail?.subTitle || "핵심 총정리 가이드",
+      sub: data.thumbnail?.subTitle || "알아두면 유용한 가이드",
       bgColor: "#1E293B",
       accentColor: "#3B82F6"
     });
@@ -666,7 +664,6 @@
     canvasGallery.appendChild(box);
   }
 
-  // <mark>, <strong> 태그를 네이버 블로그 인라인 서식으로 안전 치환
   function safeHighlightHtml(str) {
     if (!str) return '';
     let safe = escapeHtml(str);
@@ -675,7 +672,7 @@
     return safe;
   }
 
-  // 네이버 블로그 모바일 에디터 완벽 호환 서식 복사 (Table 대신 반응형 비교 카드 박스 적용)
+  // 자연스러운 블로그 서식 복사 (기계적 라벨 제거, 자연스러운 포인트 박스 적용)
   btnCopyClipboard.addEventListener('click', () => {
     if (!rawArticleJson) return;
     const d = rawArticleJson;
@@ -683,7 +680,6 @@
     let html = `
       <div style="font-family: 'Apple SD Gothic Neo', sans-serif; line-height: 1.85; color: #1e293b; max-width: 680px; margin: 0 auto;">
         
-        <!-- 대표 썸네일 위치 가이드 -->
         <div style="background: #f1f5f9; border: 2px dashed #94a3b8; border-radius: 8px; padding: 14px; text-align: center; color: #475569; font-weight: 700; margin-bottom: 24px; font-size: 14px;">
           📷 [여기에 저장한 '대표 썸네일' 이미지를 첨부하세요]
         </div>
@@ -693,29 +689,27 @@
 
     d.sections.forEach((sec, idx) => {
       html += `
-        <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-top: 40px; margin-bottom: 14px; border-bottom: 2px solid #2563eb; padding-bottom: 8px;">
+        <h2 style="font-size: 19px; font-weight: 800; color: #0f172a; margin-top: 36px; margin-bottom: 14px; border-bottom: 2px solid #2563eb; padding-bottom: 8px;">
           ${escapeHtml(sec.step)}. ${escapeHtml(sec.title)}
         </h2>
 
-        <!-- 카드뉴스 위치 가이드 -->
         <div style="background: #f1f5f9; border: 2px dashed #94a3b8; border-radius: 8px; padding: 12px; text-align: center; color: #475569; font-weight: 700; margin-bottom: 16px; font-size: 13.5px;">
           📷 [여기에 저장한 '카드뉴스 ${idx + 1}' 이미지를 첨부하세요]
         </div>
 
-        <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 16px 18px; border-radius: 0 8px 8px 0; margin-bottom: 16px;">
-          <strong style="color: #1e40af; font-size: 15px;">💡 핵심 체크:</strong>
-          <span style="color: #1e3a8a; font-size: 15px; font-weight: 600;"> ${escapeHtml(sec.cardHighlight)}</span>
+        <!-- 딱딱한 라벨 대신 자연스러운 요약 바 -->
+        <div style="background: #f0fdf4; border-left: 4px solid #10b981; padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 16px;">
+          <span style="color: #065f46; font-size: 14.5px; font-weight: 600;">👉 ${escapeHtml(sec.cardHighlight)}</span>
         </div>
         
         <p style="font-size: 16px; color: #334155; margin-bottom: 20px; line-height: 1.8;">${safeHighlightHtml(sec.body)}</p>
       `;
 
-      // 네이버 모바일에서 깨지는 <table> 대신, 깨지지 않는 모바일 최적화 '비교 카드 박스'로 렌더링
       if (sec.table && sec.table.rows && sec.table.rows.length > 0) {
         html += `
           <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 16px; margin: 24px 0;">
             <div style="font-weight: 800; color: #1e293b; font-size: 15px; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">
-              📊 한눈에 보는 핵심 요약
+              📌 한눈에 보는 핵심 요약
             </div>
         `;
         sec.table.rows.forEach((r) => {
@@ -735,7 +729,7 @@
     html += `
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin-top: 40px;">
           <p style="font-size: 15.5px; color: #334155; margin: 0 0 12px; line-height: 1.7;">${safeHighlightHtml(d.outro)}</p>
-          <p style="font-size: 13.5px; color: #64748b; margin: 0;">📌 공식 출처: <strong>${escapeHtml(d.source)}</strong></p>
+          <p style="font-size: 13px; color: #64748b; margin: 0;">📌 공식 출처: <strong>${escapeHtml(d.source)}</strong></p>
         </div>
         
         <p style="font-size: 14.5px; color: #2563eb; margin-top: 28px; font-weight: 700; line-height: 1.6;">
@@ -750,7 +744,7 @@
         'text/plain': new Blob([articleText.innerText], { type: 'text/plain' })
       })
     ]).then(() => {
-      alert("네이버 블로그 모바일 맞춤 서식이 복사되었습니다! 에디터에 붙여넣기(Ctrl+V) 하세요.");
+      alert("네이버 블로그 맞춤 서식이 복사되었습니다! 에디터에 붙여넣기(Ctrl+V) 하세요.");
     }).catch(() => {
       navigator.clipboard.writeText(articleText.innerText);
       alert("텍스트가 복사되었습니다.");
