@@ -6,16 +6,16 @@
   <title>블로그 콘텐츠 스튜디오 Pro</title>
   <style>
     :root {
-      --primary: #2563EB;
-      --primary-dark: #1D4ED8;
-      --primary-subtle: #EFF6FF;
+      --primary: #059669;
+      --primary-dark: #064E3B;
+      --primary-subtle: #ECFDF5;
       --bg: #F8FAFC;
       --card-bg: #FFFFFF;
       --text-main: #0F172A;
       --text-sub: #475569;
       --border: #E2E8F0;
       --accent: #10B981;
-      --accent-dark: #059669;
+      --accent-dark: #047857;
       --warning-bg: #FFFBEB;
       --warning-border: #FDE68A;
       --warning-text: #92400E;
@@ -37,7 +37,7 @@
       align-items: center;
       gap: 6px;
       background: #ECFDF5;
-      color: var(--accent-dark);
+      color: var(--primary-dark);
       font-size: 11.5px;
       font-weight: 700;
       padding: 4px 10px;
@@ -127,7 +127,7 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+      box-shadow: 0 2px 6px rgba(5, 150, 105, 0.2);
     }
     .btn-action:disabled {
       background: #CBD5E1;
@@ -146,10 +146,10 @@
     }
     .custom-input:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+      box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.12);
     }
     .btn-sub-action {
-      background: #1E293B;
+      background: #064E3B;
       color: #FFFFFF;
       border: none;
       padding: 13px;
@@ -241,7 +241,7 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.06);
     }
     .btn-dl-single {
-      background: #334155;
+      background: #064E3B;
       color: #fff;
       border: none;
       padding: 7px;
@@ -267,7 +267,7 @@
     }
     .btn-copy-done {
       width: 100%;
-      background: var(--accent);
+      background: var(--primary);
       color: #fff;
       border: none;
       padding: 14px;
@@ -276,7 +276,7 @@
       font-weight: 700;
       cursor: pointer;
     }
-    .btn-copy-done:hover { background: var(--accent-dark); }
+    .btn-copy-done:hover { background: var(--primary-dark); }
 
     .status-alert {
       text-align: center;
@@ -341,7 +341,7 @@
     <div id="article-msg" class="status-alert"></div>
 
     <div id="output-area" style="display: none; margin-top: 18px;">
-      <div style="font-size:13.5px; font-weight:700; margin-bottom:8px;">🎨 생성된 썸네일 & 카드뉴스 (4장)</div>
+      <div style="font-size:13.5px; font-weight:700; margin-bottom:8px;">🎨 포레스트 매거진 썸네일 & 카드뉴스 (4장)</div>
       <div class="visual-gallery" id="canvas-gallery"></div>
 
       <div style="font-size:13.5px; font-weight:700; margin-bottom:8px;">📝 작성된 전문 원고 (복사 전용)</div>
@@ -568,61 +568,121 @@
     articleText.innerText = preview;
   }
 
+  // 포레스트 매거진(Forest Magazine) 테마 캔버스 렌더링
   function renderVisualGallery(data) {
     canvasGallery.innerHTML = "";
 
+    // 1. 대표 썸네일 (강한 임팩트: 딥 포레스트 그린)
     const thumbCanvas = createCardCanvas({
       badge: data.thumbnail?.badge || `${new Date().getFullYear()} 실생활 꿀팁`,
       title: data.thumbnail?.mainTitle || mainKeyword.value.trim(),
-      sub: data.thumbnail?.subTitle || "알아두면 유용한 가이드",
-      bgColor: "#1E293B",
-      accentColor: "#3B82F6"
+      sub: data.thumbnail?.subTitle || "알아두면 유용한 핵심 가이드",
+      bgColor: "#064E3B",      // 딥 포레스트 그린
+      titleColor: "#FFFFFF",   // 화이트 텍스트
+      subColor: "#A7F3D0",     // 라이트 민트
+      badgeBg: "#10B981",      // 에메랄드 뱃지
+      badgeColor: "#FFFFFF",
+      accentLine: "#34D399",   // 민트 바
+      isBordered: false
     });
-    appendCanvasToGallery(thumbCanvas, "대표 썸네일");
+    appendCanvasToGallery(thumbCanvas, "대표 썸네일 (목록 노출용)");
 
-    const cardBgColors = ["#0F172A", "#1E3A8A", "#064E3B"];
+    // 2. 챕터별 카드뉴스 3종 (밝고 산뜻한 블로그 친화 톤앤매너)
+    const cardThemes = [
+      {
+        bgColor: "#F0FDF4",      // 소프트 에메랄드
+        titleColor: "#064E3B",   // 딥 포레스트 텍스트
+        subColor: "#047857",     // 딥 그린
+        badgeBg: "#D1FAE5",      // 연녹색 뱃지
+        badgeColor: "#065F46",
+        accentLine: "#10B981",
+        isBordered: true,
+        borderColor: "#A7F3D0"
+      },
+      {
+        bgColor: "#ECFDF5",      // 밀키 민트
+        titleColor: "#134E4A",   // 딥 틸 텍스트
+        subColor: "#0F766E",     // 틸
+        badgeBg: "#CCFBF1",      // 연민트 뱃지
+        badgeColor: "#115E59",
+        accentLine: "#14B8A6",
+        isBordered: true,
+        borderColor: "#99F6E4"
+      },
+      {
+        bgColor: "#FFFBEB",      // 웜 아이보리
+        titleColor: "#78350F",   // 웜 브라운 텍스트
+        subColor: "#92400E",     // 브라운
+        badgeBg: "#FEF3C7",      // 베이지 뱃지
+        badgeColor: "#854D0E",
+        accentLine: "#F59E0B",
+        isBordered: true,
+        borderColor: "#FDE68A"
+      }
+    ];
+
     data.sections.forEach((sec, idx) => {
+      const theme = cardThemes[idx % cardThemes.length];
       const cardCanvas = createCardCanvas({
         badge: sec.step,
         title: sec.cardHighlight,
         sub: sec.cardSubtext || sec.title,
-        bgColor: cardBgColors[idx % cardBgColors.length],
-        accentColor: "#10B981"
+        bgColor: theme.bgColor,
+        titleColor: theme.titleColor,
+        subColor: theme.subColor,
+        badgeBg: theme.badgeBg,
+        badgeColor: theme.badgeColor,
+        accentLine: theme.accentLine,
+        isBordered: theme.isBordered,
+        borderColor: theme.borderColor
       });
       appendCanvasToGallery(cardCanvas, `카드뉴스 ${idx + 1}`);
     });
   }
 
-  function createCardCanvas({ badge, title, sub, bgColor, accentColor }) {
+  // 완벽하게 글자색/배경색을 제어하는 유연한 캔버스 엔진
+  function createCardCanvas({ badge, title, sub, bgColor, titleColor, subColor, badgeBg, badgeColor, accentLine, isBordered = false, borderColor = "#E2E8F0" }) {
     const canvas = document.createElement('canvas');
     canvas.width = 1080;
     canvas.height = 1080;
     const ctx = canvas.getContext('2d');
 
+    // 1. 배경
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, 1080, 1080);
 
-    ctx.fillStyle = accentColor;
+    // 2. 테두리 (밝은 카드일 때 적용)
+    if (isBordered) {
+      ctx.strokeStyle = borderColor;
+      ctx.lineWidth = 16;
+      ctx.strokeRect(8, 8, 1064, 1064);
+    }
+
+    // 3. 상단 뱃지
+    ctx.fillStyle = badgeBg;
     ctx.beginPath();
     ctx.roundRect(80, 100, 280, 60, 30);
     ctx.fill();
 
-    ctx.fillStyle = "#FFFFFF";
+    ctx.fillStyle = badgeColor;
     ctx.font = "bold 28px -apple-system, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText(badge, 220, 142);
 
-    ctx.fillStyle = "#FFFFFF";
+    // 4. 메인 타이틀
+    ctx.fillStyle = titleColor;
     ctx.font = "800 68px -apple-system, sans-serif";
     ctx.textAlign = "left";
     wrapText(ctx, title, 80, 380, 920, 95);
 
-    ctx.fillStyle = "#94A3B8";
-    ctx.font = "500 36px -apple-system, sans-serif";
+    // 5. 하단 보조 설명
+    ctx.fillStyle = subColor;
+    ctx.font = "600 36px -apple-system, sans-serif";
     wrapText(ctx, sub, 80, 860, 920, 52);
 
-    ctx.fillStyle = accentColor;
-    ctx.fillRect(80, 980, 920, 8);
+    // 6. 하단 포인트 라인
+    ctx.fillStyle = accentLine;
+    ctx.fillRect(80, 980, 920, 10);
 
     return canvas;
   }
@@ -663,21 +723,16 @@
     canvasGallery.appendChild(box);
   }
 
-  // ** 마크다운 및 mark 태그를 100% 네이버 블로그 안전 서식으로 변환
   function safeHighlightHtml(str) {
     if (!str) return '';
     let safe = escapeHtml(str);
-    
-    // ** 마크다운 볼드를 <strong> 태그로 완벽 치환
-    safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong style="color: #0f172a; font-weight: 800;">$1</strong>');
-    
-    // <mark> 및 <strong> 태그 인라인 서식 적용
-    safe = safe.replace(/&lt;mark&gt;(.*?)&lt;\/mark&gt;/gi, '<span style="background-color: #fef08a; padding: 2px 4px; border-radius: 3px; font-weight: 700; color: #854d0e;">$1</span>');
-    safe = safe.replace(/&lt;strong&gt;(.*?)&lt;\/strong&gt;/gi, '<strong style="color: #0f172a; font-weight: 800;">$1</strong>');
+    safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong style="color: #064e3b; font-weight: 800;">$1</strong>');
+    safe = safe.replace(/&lt;mark&gt;(.*?)&lt;\/mark&gt;/gi, '<span style="background-color: #d1fae5; padding: 2px 5px; border-radius: 4px; font-weight: 700; color: #065f46;">$1</span>');
+    safe = safe.replace(/&lt;strong&gt;(.*?)&lt;\/strong&gt;/gi, '<strong style="color: #064e3b; font-weight: 800;">$1</strong>');
     return safe;
   }
 
-  // 네이버 블로그 완벽 최적화 서식 (중복 요약 제거, 깔끔한 카드뉴스 중심 레이아웃)
+  // 네이버 블로그 복사 시에도 초록색 포인트 바와 산뜻한 인용구 스타일 적용
   btnCopyClipboard.addEventListener('click', () => {
     if (!rawArticleJson) return;
     const d = rawArticleJson;
@@ -685,7 +740,7 @@
     let html = `
       <div style="font-family: 'Apple SD Gothic Neo', sans-serif; line-height: 1.85; color: #1e293b; max-width: 680px; margin: 0 auto;">
         
-        <div style="background: #f1f5f9; border: 2px dashed #94a3b8; border-radius: 8px; padding: 14px; text-align: center; color: #475569; font-weight: 700; margin-bottom: 24px; font-size: 14px;">
+        <div style="background: #f0fdf4; border: 2px dashed #86efac; border-radius: 8px; padding: 14px; text-align: center; color: #166534; font-weight: 700; margin-bottom: 24px; font-size: 14px;">
           📷 [여기에 '대표 썸네일' 이미지를 첨부하세요]
         </div>
 
@@ -694,22 +749,21 @@
 
     d.sections.forEach((sec, idx) => {
       html += `
-        <h2 style="font-size: 19px; font-weight: 800; color: #0f172a; margin-top: 38px; margin-bottom: 14px; border-bottom: 2px solid #2563eb; padding-bottom: 8px;">
+        <h2 style="font-size: 19px; font-weight: 800; color: #064e3b; margin-top: 38px; margin-bottom: 14px; border-bottom: 2px solid #10b981; padding-bottom: 8px;">
           ${escapeHtml(sec.step)}. ${escapeHtml(sec.title)}
         </h2>
 
-        <div style="background: #f1f5f9; border: 2px dashed #94a3b8; border-radius: 8px; padding: 12px; text-align: center; color: #475569; font-weight: 700; margin-bottom: 16px; font-size: 13.5px;">
+        <div style="background: #f0fdf4; border: 2px dashed #86efac; border-radius: 8px; padding: 12px; text-align: center; color: #166534; font-weight: 700; margin-bottom: 16px; font-size: 13.5px;">
           📷 [여기에 '카드뉴스 ${idx + 1}' 이미지를 첨부하세요]
         </div>
         
         <p style="font-size: 16px; color: #334155; margin-bottom: 20px; line-height: 1.8;">${safeHighlightHtml(sec.body)}</p>
       `;
 
-      // 비교 요약 박스 (모바일 인용구 박스 스타일 적용)
       if (sec.table && sec.table.rows && sec.table.rows.length > 0) {
         html += `
-          <div style="background: #f8fafc; border-left: 4px solid #3b82f6; border-radius: 0 8px 8px 0; padding: 16px; margin: 24px 0;">
-            <div style="font-weight: 800; color: #1e293b; font-size: 14.5px; margin-bottom: 10px;">
+          <div style="background: #f0fdf4; border-left: 4px solid #10b981; border-radius: 0 8px 8px 0; padding: 16px; margin: 24px 0;">
+            <div style="font-weight: 800; color: #064e3b; font-size: 14.5px; margin-bottom: 10px;">
               📌 한눈에 보는 핵심 요약
             </div>
         `;
@@ -718,8 +772,8 @@
           const itemContent = r.slice(1).map(c => safeHighlightHtml(c)).join(' · ');
           html += `
             <div style="margin-bottom: 8px; font-size: 14px; line-height: 1.6;">
-              <span style="background: #e2e8f0; color: #0f172a; font-weight: 700; padding: 2px 6px; border-radius: 4px; font-size: 12.5px; margin-right: 6px;">${itemTitle}</span>
-              <span style="color: #334155; font-weight: 600;">${itemContent}</span>
+              <span style="background: #d1fae5; color: #065f46; font-weight: 700; padding: 2px 6px; border-radius: 4px; font-size: 12.5px; margin-right: 6px;">${itemTitle}</span>
+              <span style="color: #1e3a8a; font-weight: 600;">${itemContent}</span>
             </div>
           `;
         });
@@ -733,7 +787,7 @@
           <p style="font-size: 13px; color: #64748b; margin: 0;">📌 공식 출처: <strong>${escapeHtml(d.source)}</strong></p>
         </div>
         
-        <p style="font-size: 14.5px; color: #2563eb; margin-top: 28px; font-weight: 700; line-height: 1.6;">
+        <p style="font-size: 14.5px; color: #059669; margin-top: 28px; font-weight: 700; line-height: 1.6;">
           ${d.tags.map(t => `#${escapeHtml(t)}`).join(' ')}
         </p>
       </div>
@@ -745,7 +799,7 @@
         'text/plain': new Blob([articleText.innerText], { type: 'text/plain' })
       })
     ]).then(() => {
-      alert("네이버 블로그 맞춤 서식이 복사되었습니다! 에디터에 붙여넣기(Ctrl+V) 하세요.");
+      alert("포레스트 테마가 적용된 네이버 블로그 서식이 복사되었습니다! 에디터에 붙여넣기(Ctrl+V) 하세요.");
     }).catch(() => {
       navigator.clipboard.writeText(articleText.innerText);
       alert("텍스트가 복사되었습니다.");
