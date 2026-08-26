@@ -295,7 +295,7 @@
     <p>실시간 구글 검색 기반 트렌드 발굴 & 카드뉴스 원고 생성</p>
   </header>
 
-  <!-- STEP 0: 실시간 트렌드 -->
+  <!-- STEP 0 -->
   <section class="section-card">
     <div class="card-title">
       <span class="step-tag">0단계</span>
@@ -314,7 +314,7 @@
     <div class="trend-stream" id="trend-list"></div>
   </section>
 
-  <!-- STEP 1: 키워드 & 제목 -->
+  <!-- STEP 1 -->
   <section class="section-card" id="step1-section">
     <div class="card-title">
       <span class="step-tag">1단계</span>
@@ -330,7 +330,7 @@
     <div class="title-selector" id="title-list"></div>
   </section>
 
-  <!-- STEP 2: 본문 & 시각자료 생성 -->
+  <!-- STEP 2 -->
   <section class="section-card" id="step2-section" style="display: none;">
     <div class="card-title">
       <span class="step-tag">2단계</span>
@@ -542,7 +542,7 @@
     }
   });
 
-  // 순수 텍스트 뷰어 (mark/strong 태그 제거하여 화면 프리뷰 깔끔 유지)
+  // 프리뷰 뷰어 (깨짐 방지 및 텍스트 정돈)
   function renderArticle(data) {
     const stripTags = (s) => (s || '').replace(/<[^>]*>/g, '');
 
@@ -555,11 +555,11 @@
       preview += `💡 핵심 체크: ${sec.cardHighlight}\n\n`;
       preview += `${stripTags(sec.body)}\n\n`;
 
-      if (sec.table && sec.table.headers && sec.table.rows) {
-        preview += `[📊 핵심 비교 표]\n`;
-        preview += `| ${sec.table.headers.join(' | ')} |\n`;
+      // 가변 테이블 데이터를 카드 형태로 정돈하여 텍스트 표시
+      if (sec.table && sec.table.rows && sec.table.rows.length > 0) {
+        preview += `[📌 핵심 비교 요약]\n`;
         sec.table.rows.forEach(r => {
-          preview += `| ${r.join(' | ')} |\n`;
+          preview += `• ${stripTags(r[0])}: ${r.slice(1).map(c => stripTags(c)).join(' / ')}\n`;
         });
         preview += `\n`;
       }
@@ -666,18 +666,16 @@
     canvasGallery.appendChild(box);
   }
 
-  // <mark>, <strong> 태그를 실제 네이버 블로그 인라인 서식으로 안전 치환하는 화이트리스트 함수
+  // <mark>, <strong> 태그를 네이버 블로그 인라인 서식으로 안전 치환
   function safeHighlightHtml(str) {
     if (!str) return '';
-    // 1단계: 전체 텍스트 이스케이프
     let safe = escapeHtml(str);
-    // 2단계: 이스케이프된 &lt;mark&gt;, &lt;strong&gt;만 실제 HTML 서식 태그로 복원
     safe = safe.replace(/&lt;mark&gt;(.*?)&lt;\/mark&gt;/gi, '<span style="background-color: #fef08a; padding: 2px 4px; border-radius: 3px; font-weight: 700; color: #854d0e;">$1</span>');
     safe = safe.replace(/&lt;strong&gt;(.*?)&lt;\/strong&gt;/gi, '<strong style="color: #0f172a; font-weight: 800;">$1</strong>');
     return safe;
   }
 
-  // HTML 클립보드 복사 (화이트리스트 하이라이트 + 반응형 표 렌더링)
+  // 네이버 블로그 모바일 에디터 완벽 호환 서식 복사 (Table 대신 반응형 비교 카드 박스 적용)
   btnCopyClipboard.addEventListener('click', () => {
     if (!rawArticleJson) return;
     const d = rawArticleJson;
@@ -712,26 +710,25 @@
         <p style="font-size: 16px; color: #334155; margin-bottom: 20px; line-height: 1.8;">${safeHighlightHtml(sec.body)}</p>
       `;
 
-      // 가변 테이블 렌더링
-      if (sec.table && sec.table.headers && sec.table.rows && sec.table.rows.length > 0) {
+      // 네이버 모바일에서 깨지는 <table> 대신, 깨지지 않는 모바일 최적화 '비교 카드 박스'로 렌더링
+      if (sec.table && sec.table.rows && sec.table.rows.length > 0) {
         html += `
-          <div style="overflow-x: auto; margin: 24px 0;">
-            <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 14.5px; border: 1px solid #e2e8f0; border-radius: 8px;">
-              <thead>
-                <tr style="background-color: #f8fafc; border-bottom: 2px solid #cbd5e1;">
-                  ${sec.table.headers.map(h => `<th style="padding: 10px; color: #1e293b; font-weight: 700;">${escapeHtml(h)}</th>`).join('')}
-                </tr>
-              </thead>
-              <tbody>
-                ${sec.table.rows.map((r, rIdx) => `
-                  <tr style="border-bottom: 1px solid #f1f5f9; ${rIdx % 2 === 1 ? 'background-color: #f8fafc;' : ''}">
-                    ${r.map(c => `<td style="padding: 10px 8px; color: #334155;">${escapeHtml(c)}</td>`).join('')}
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
+          <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 16px; margin: 24px 0;">
+            <div style="font-weight: 800; color: #1e293b; font-size: 15px; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">
+              📊 한눈에 보는 핵심 요약
+            </div>
         `;
+        sec.table.rows.forEach((r) => {
+          const itemTitle = safeHighlightHtml(r[0]);
+          const itemContent = r.slice(1).map(c => safeHighlightHtml(c)).join(' · ');
+          html += `
+            <div style="margin-bottom: 10px; font-size: 14.5px; line-height: 1.6;">
+              <span style="background: #e2e8f0; color: #0f172a; font-weight: 700; padding: 2px 8px; border-radius: 4px; font-size: 13px; margin-right: 6px;">${itemTitle}</span>
+              <span style="color: #334155; font-weight: 600;">${itemContent}</span>
+            </div>
+          `;
+        });
+        html += `</div>`;
       }
     });
 
@@ -753,7 +750,7 @@
         'text/plain': new Blob([articleText.innerText], { type: 'text/plain' })
       })
     ]).then(() => {
-      alert("형광펜 하이라이트 & 맞춤 표가 적용된 네이버 블로그 서식이 복사되었습니다!");
+      alert("네이버 블로그 모바일 맞춤 서식이 복사되었습니다! 에디터에 붙여넣기(Ctrl+V) 하세요.");
     }).catch(() => {
       navigator.clipboard.writeText(articleText.innerText);
       alert("텍스트가 복사되었습니다.");
