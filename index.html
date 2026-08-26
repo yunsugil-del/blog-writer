@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>콘텐츠 팩토리 스튜디오</title>
+  <style>
+    :root {
+      --primary: #3B82F6;
+      --primary-dark: #1D4ED8;
+      --primary-subtle: #EFF6FF;
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text-main: #0F172A;
+      --text-sub: #475569;
+      --text-muted: #94A3B8;
+      --border: #E2E8F0;
+      --border-focus: #3B82F6;
+      --accent: #10B981;
+      --accent-dark: #059669;
+      --warning-bg: #FFFBEB;
+      --warning-border: #FDE68A;
+      --warning-text: #92400E;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", sans-serif;
+      padding: 20px 14px 100px;
+      line-height: 1.5;
+    }
+    .wrapper { max-width: 640px; margin: 0 auto; width: 100%; }
+
+    /* 헤더 */
+    .app-header { text-align: center; margin-bottom: 24px; padding: 0 8px; }
+    .badge-live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ECFDF5;
+      color: var(--accent-dark);
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid #A7F3D0;
+      margin-bottom: 8px;
+    }
+    .badge-live::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .app-header h1 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      margin: 0 0 6px;
+      color: var(--text-main);
+    }
+    .app-header p { font-size: 13.5px; color: var(--text-sub); margin: 0; }
+
+    /* 카드 공통 */
+    .section-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 16px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+      margin-bottom: 16px;
+    }
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14.5px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--text-main);
+    }
+    .step-tag {
+      background: #F1F5F9;
+      color: var(--text-sub);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 7px;
+      border-radius: 6px;
+    }
+
+    /* 카테고리 칩 */
+    .chip-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .chip-btn {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+      padding: 10px 8px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s ease;
+    }
+    .chip-btn.active {
+      background: var(--primary-subtle);
+      border-color: var(--primary);
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+
+    /* 버튼 스타일 */
+    .btn-action {
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
+      transition: background 0.15s ease;
+    }
+    .btn-action:disabled {
+      background: #CBD5E1;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* 입력 필드 레이아웃 (모바일 대응 수직 정렬) */
+    .input-vertical-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .custom-input {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 14.5px;
+      color: var(--text-main);
+      background: #FFFFFF;
+      outline: none;
+    }
+    .custom-input:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    }
+    .btn-sub-action {
+      background: #1E293B;
+      color: #FFFFFF;
+      border: none;
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+    }
+    .btn-sub-action:disabled { background: #94A3B8; cursor: not-allowed; }
+
+    /* 트렌드 피드 카드 */
+    .trend-stream { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+    .feed-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      background: #FFFFFF;
+      cursor: pointer;
+      position: relative;
+    }
+    .feed-item:active { background: #F8FAFC; }
+    .feed-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .feed-kw { font-size: 15px; font-weight: 800; color: var(--text-main); }
+    .feed-tag {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      background: var(--primary-subtle);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .feed-desc { font-size: 13px; color: var(--text-sub); margin-bottom: 10px; line-height: 1.45; }
+    .feed-qbox {
+      background: var(--warning-bg);
+      border: 1px solid var(--warning-border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 12px;
+      color: var(--warning-text);
+    }
+    .feed-qbox ul { margin: 4px 0 0; padding-left: 14px; }
+    .feed-qbox li { margin-bottom: 2px; }
+    .feed-pick-text {
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      text-align: right;
+    }
+
+    /* 제목 선택 리스트 */
+    .title-selector { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .title-radio-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text-main);
+      background: #FFF;
+    }
+    .title-radio-card input { margin-top: 3px; accent-color: var(--primary); }
+    .title-radio-card.active {
+      border-color: var(--primary);
+      background: var(--primary-subtle);
+      font-weight: 700;
+    }
+
+    /* 원고 출력 영역 */
+    .preview-box {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 13.5px;
+      line-height: 1.6;
+      max-height: 380px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      margin-bottom: 12px;
+      color: var(--text-main);
+    }
+    .btn-copy-done {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-copy-done:hover { background: var(--accent-dark); }
+
+    .status-alert {
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+  <!-- Header -->
+  <header class="app-header">
+    <div class="badge-live">LIVE SEARCH ENGINE</div>
+    <h1>블로그 콘텐츠 스튜디오</h1>
+    <p>실시간 팩트 기반 트렌드 발굴 & 원고 생성</p>
+  </header>
+
+  <!-- STEP 0: 실시간 트렌드 -->
+  <section class="section-card">
+    <div class="card-title">
+      <span class="step-tag">0단계</span>
+      <span>실시간 팩트 트렌드 탐색</span>
+    </div>
+
+    <div class="chip-grid">
+      <button class="chip-btn active" data-cat="경제·복지·지원금">📊 경제·복지·지원금</button>
+      <button class="chip-btn" data-cat="생활·상식·절약">📋 생활·상식·절약</button>
+      <button class="chip-btn" data-cat="재테크·부동산">💰 재테크·부동산</button>
+      <button class="chip-btn" data-cat="전체 트렌드">🌐 종합 핫이슈</button>
+    </div>
+
+    <button class="btn-action" id="btn-fetch-trend">⚡ 실시간 핫이슈 5개 발굴</button>
+    <div id="trend-msg" class="status-alert"></div>
+    <div class="trend-stream" id="trend-list"></div>
+  </section>
+
+  <!-- STEP 1: 키워드 입력 & 제목 추천 -->
+  <section class="section-card" id="step1-section">
+    <div class="card-title">
+      <span class="step-tag">1단계</span>
+      <span>키워드 확정 및 제목 생성</span>
+    </div>
+
+    <div class="input-vertical-group">
+      <input type="text" id="main-keyword" class="custom-input" placeholder="키워드 직접 입력 또는 위 카드 선택" />
+      <button class="btn-sub-action" id="btn-make-titles">제목 5개 추천받기</button>
+    </div>
+
+    <div id="title-msg" class="status-alert"></div>
+    <div class="title-selector" id="title-list"></div>
+  </section>
+
+  <!-- STEP 2: 본문 집필 -->
+  <section class="section-card" id="step2-section" style="display: none;">
+    <div class="card-title">
+      <span class="step-tag">2단계</span>
+      <span>검증 원고 & 팩트 카드 생성</span>
+    </div>
+
+    <button class="btn-action" id="btn-make-article">✍️ 선택한 제목으로 검증 원고 생성</button>
+    <div id="article-msg" class="status-alert"></div>
+
+    <div id="output-area" style="display: none; margin-top: 16px;">
+      <div class="preview-box" id="article-text"></div>
+      <button class="btn-copy-done" id="btn-copy-clipboard">📋 네이버 블로그 서식 복사</button>
+    </div>
+  </section>
+</div>
+
+<script>
+  const WORKER_URL = "https://blog-writer.yunsugil.workers.dev";
+
+  let activeCategory = "경제·복지·지원금";
+  let currentTitle = "";
+  let rawArticleJson = null;
+
+  const chipBtns = document.querySelectorAll('.chip-btn');
+  const btnFetchTrend = document.getElementById('btn-fetch-trend');
+  const trendMsg = document.getElementById('trend-msg');
+  const trendList = document.getElementById('trend-list');
+
+  const mainKeyword = document.getElementById('main-keyword');
+  const btnMakeTitles = document.getElementById('btn-make-titles');
+  const titleMsg = document.getElementById('title-msg');
+  const titleList = document.getElementById('title-list');
+
+  const step2Section = document.getElementById('step2-section');
+  const btnMakeArticle = document.getElementById('btn-make-article');
+  const articleMsg = document.getElementById('article-msg');
+  const outputArea = document.getElementById('output-area');
+  const articleText = document.getElementById('article-text');
+  const btnCopyClipboard = document.getElementById('btn-copy-clipboard');
+
+  // 카테고리 칩 선택
+  chipBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      chipBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeCategory = btn.getAttribute('data-cat');
+    });
+  });
+
+  // STEP 0: 실시간 트렌드 조회
+  btnFetchTrend.addEventListener('click', async () => {
+    btnFetchTrend.disabled = true;
+    trendMsg.style.color = "var(--primary)";
+    trendMsg.innerText = "🔍 구글 실시간 검색 기반 핫이슈 분석 중... (약 4~5초)";
+    trendList.innerHTML = "";
+
+    try {
+      const res = await fetch(`${WORKER_URL}/api/recommend-trending-topics`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category: activeCategory })
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "조회 실패");
+
+      renderTrends(data.topics);
+      trendMsg.innerText = "";
+    } catch (err) {
+      trendMsg.style.color = "#EF4444";
+      trendMsg.innerText = err.message;
+    } finally {
+      btnFetchTrend.disabled = false;
+    }
+  });
+
+  function renderTrends(topics) {
+    trendList.innerHTML = "";
+    if (!topics || topics.length === 0) {
+      trendList.innerHTML = "<p style='text-align:center;font-size:13px;'>조회된 결과가 없습니다.</p>";
+      return;
+    }
+
+    topics.forEach((t, i) => {
+      const card = document.createElement('div');
+      card.className = "feed-item";
+      const qList = (t.questions || []).map(q => `<li>${escapeHtml(q)}</li>`).join('');
+
+      card.innerHTML = `
+        <div class="feed-top">
+          <span class="feed-kw">${i + 1}. ${escapeHtml(t.keyword)}</span>
+          <span class="feed-tag">실시간 팩트</span>
+        </div>
+        <div class="feed-desc">${escapeHtml(t.whySelected)}</div>
+        <div class="feed-qbox">
+          <strong>🤔 독자 핵심 궁금증:</strong>
+          <ul>${qList}</ul>
+        </div>
+        <div class="feed-pick-text">👉 클릭하여 1단계 키워드로 반영</div>
+      `;
+
+      card.addEventListener('click', () => {
+        mainKeyword.value = t.keyword;
+        document.getElementById('step1-section').scrollIntoView({ behavior: 'smooth' });
+        mainKeyword.focus();
+      });
+
+      trendList.appendChild(card);
+    });
+  }
+
+  // STEP 1: 제목 생성
+  btnMakeTitles.addEventListener('click', async () => {
+    const kw = mainKeyword.value.trim();
+    if (!kw) return alert("키워드를 입력하거나 위 트렌드 카드를 선택하세요.");
+
+    btnMakeTitles.disabled = true;
+    titleMsg.style.color = "var(--primary)";
+    titleMsg.innerText = "🔍 검색 의도에 맞춘 제목 5개 추출 중...";
+    titleList.innerHTML = "";
+    step2Section.style.display = "none";
+
+    try {
+      const res = await fetch(`${WORKER_URL}/api/generate-titles`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category: activeCategory, keyword: kw })
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "제목 생성 실패");
+
+      renderTitles(data.titles);
+      titleMsg.innerText = "";
+      step2Section.style.display = "block";
+    } catch (err) {
+      titleMsg.style.color = "#EF4444";
+      titleMsg.innerText = err.message;
+    } finally {
+      btnMakeTitles.disabled = false;
+    }
+  });
+
+  function renderTitles(titles) {
+    titleList.innerHTML = "";
+    titles.forEach((item, idx) => {
+      const label = document.createElement('label');
+      label.className = `title-radio-card ${idx === 0 ? 'active' : ''}`;
+      
+      const radio = document.createElement('input');
+      radio.type = "radio";
+      radio.name = "title_pick";
+      radio.value = item.title;
+      if (idx === 0) {
+        radio.checked = true;
+        currentTitle = item.title;
+      }
+
+      radio.addEventListener('change', () => {
+        document.querySelectorAll('.title-radio-card').forEach(el => el.classList.remove('active'));
+        label.classList.add('active');
+        currentTitle = item.title;
+      });
+
+      const span = document.createElement('span');
+      span.innerText = item.title;
+
+      label.appendChild(radio);
+      label.appendChild(span);
+      titleList.appendChild(label);
+    });
+  }
+
+  // STEP 2: 본문 집필
+  btnMakeArticle.addEventListener('click', async () => {
+    if (!currentTitle) return alert("제목을 먼저 선택해 주세요.");
+
+    btnMakeArticle.disabled = true;
+    articleMsg.style.color = "var(--primary)";
+    articleMsg.innerText = "🔍 실시간 구글 팩트체크 후 원고 집필 중... (약 5~8초)";
+    outputArea.style.display = "none";
+
+    try {
+      const res = await fetch(`${WORKER_URL}/api/generate-article`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: activeCategory,
+          keyword: mainKeyword.value.trim(),
+          title: currentTitle
+        })
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "원고 생성 실패");
+
+      rawArticleJson = data;
+      renderArticle(data);
+      outputArea.style.display = "block";
+      articleMsg.innerText = "";
+    } catch (err) {
+      articleMsg.style.color = "#EF4444";
+      articleMsg.innerText = err.message;
+    } finally {
+      btnMakeArticle.disabled = false;
+    }
+  });
+
+  function renderArticle(data) {
+    let preview = `[SEO 요약]\n${data.metaDescription}\n\n`;
+    preview += `[태그]\n${data.tags.map(t => `#${t}`).join(' ')}\n\n`;
+    preview += `[도입부]\n${data.intro}\n\n`;
+    data.sections.forEach(sec => {
+      preview += `■ ${sec.step}: ${sec.title}\n`;
+      preview += `💡 팩트 요약: ${sec.cardHighlight}\n`;
+      preview += `${sec.body}\n\n`;
+    });
+    preview += `[마무리]\n${data.outro}\n\n[출처: ${data.source}]`;
+    articleText.innerText = preview;
+  }
+
+  // 클립보드 복사
+  btnCopyClipboard.addEventListener('click', () => {
+    if (!rawArticleJson) return;
+    const d = rawArticleJson;
+
+    let html = `
+      <div style="font-family: 'Apple SD Gothic Neo', sans-serif; line-height: 1.8; color: #1e293b; max-width: 680px; margin: 0 auto;">
+        <p style="font-size: 16px; color: #334155; margin-bottom: 24px;">${escapeHtml(d.intro)}</p>
+    `;
+
+    d.sections.forEach(sec => {
+      html += `
+        <h2 style="font-size: 19px; font-weight: 800; color: #0f172a; margin-top: 36px; margin-bottom: 12px; border-bottom: 2px solid #2563eb; padding-bottom: 6px;">
+          ${escapeHtml(sec.step)}. ${escapeHtml(sec.title)}
+        </h2>
+        <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 14px 16px; border-radius: 0 8px 8px 0; margin-bottom: 14px;">
+          <strong style="color: #1e40af; font-size: 14.5px;">💡 핵심 체크:</strong>
+          <span style="color: #1e3a8a; font-size: 14.5px; font-weight: 600;"> ${escapeHtml(sec.cardHighlight)}</span>
+        </div>
+        <p style="font-size: 15.5px; color: #334155; margin-bottom: 24px;">${escapeHtml(sec.body)}</p>
+      `;
+    });
+
+    html += `
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-top: 36px;">
+          <p style="font-size: 15px; color: #334155; margin: 0 0 10px;">${escapeHtml(d.outro)}</p>
+          <p style="font-size: 13px; color: #64748b; margin: 0;">📌 공식 출처: <strong>${escapeHtml(d.source)}</strong></p>
+        </div>
+        <p style="font-size: 13.5px; color: #2563eb; margin-top: 20px;">${d.tags.map(t => `#${escapeHtml(t)}`).join(' ')}</p>
+      </div>
+    `;
+
+    navigator.clipboard.write([
+      new ClipboardItem({
+        'text/html': new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([articleText.innerText], { type: 'text/plain' })
+      })
+    ]).then(() => {
+      alert("네이버 블로그 서식(HTML)이 복사되었습니다! 에디터에 붙여넣기(Ctrl+V) 하세요.");
+    }).catch(() => {
+      navigator.clipboard.writeText(articleText.innerText);
+      alert("텍스트가 복사되었습니다.");
+    });
+  });
+
+  function escapeHtml(str) {
+    return String(str ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+</script>
+</body>
+</html>
