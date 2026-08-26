@@ -252,7 +252,6 @@
       text-align: center;
     }
 
-    /* 본문 미리보기 */
     .preview-box {
       background: #F8FAFC;
       border: 1px solid var(--border);
@@ -513,7 +512,7 @@
 
     btnMakeArticle.disabled = true;
     articleMsg.style.color = "var(--primary)";
-    articleMsg.innerText = "🔍 독자 핵심 질문 반영, 형광펜 강조 및 팩트 본문 집필 중... (약 6~10초)";
+    articleMsg.innerText = "🔍 독자 질문 해결, 형광펜 강조 및 팩트 본문 집필 중... (약 6~10초)";
     outputArea.style.display = "none";
 
     try {
@@ -543,18 +542,18 @@
     }
   });
 
-  // 본문 텍스트 뷰어 (태그 제거하고 순수 텍스트로 가독성 있게 표시)
+  // 순수 텍스트 뷰어 (mark/strong 태그 제거하여 화면 프리뷰 깔끔 유지)
   function renderArticle(data) {
-    const stripHtml = (s) => (s || '').replace(/<[^>]*>/g, '');
+    const stripTags = (s) => (s || '').replace(/<[^>]*>/g, '');
 
     let preview = `[📷 대표 썸네일 이미지 들어갈 자리]\n\n`;
-    preview += `${stripHtml(data.intro)}\n\n`;
+    preview += `${stripTags(data.intro)}\n\n`;
     
     data.sections.forEach((sec, idx) => {
       preview += `■ ${sec.step}: ${sec.title}\n\n`;
       preview += `[📷 챕터 ${idx + 1} 요약 카드뉴스 이미지 들어갈 자리]\n\n`;
       preview += `💡 핵심 체크: ${sec.cardHighlight}\n\n`;
-      preview += `${stripHtml(sec.body)}\n\n`;
+      preview += `${stripTags(sec.body)}\n\n`;
 
       if (sec.table && sec.table.headers && sec.table.rows) {
         preview += `[📊 핵심 비교 표]\n`;
@@ -566,7 +565,7 @@
       }
     });
 
-    preview += `${stripHtml(data.outro)}\n\n`;
+    preview += `${stripTags(data.outro)}\n\n`;
     preview += `📌 공식 출처: ${data.source}\n\n`;
     preview += `${data.tags.map(t => `#${t}`).join(' ')}`;
     articleText.innerText = preview;
@@ -576,7 +575,7 @@
     canvasGallery.innerHTML = "";
 
     const thumbCanvas = createCardCanvas({
-      badge: data.thumbnail?.badge || "2026 팩트체크",
+      badge: data.thumbnail?.badge || `${new Date().getFullYear()} 팩트체크`,
       title: data.thumbnail?.mainTitle || mainKeyword.value.trim(),
       sub: data.thumbnail?.subTitle || "핵심 총정리 가이드",
       bgColor: "#1E293B",
@@ -608,13 +607,13 @@
 
     ctx.fillStyle = accentColor;
     ctx.beginPath();
-    ctx.roundRect(80, 100, 260, 60, 30);
+    ctx.roundRect(80, 100, 280, 60, 30);
     ctx.fill();
 
     ctx.fillStyle = "#FFFFFF";
     ctx.font = "bold 28px -apple-system, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText(badge, 210, 142);
+    ctx.fillText(badge, 220, 142);
 
     ctx.fillStyle = "#FFFFFF";
     ctx.font = "800 68px -apple-system, sans-serif";
@@ -667,19 +666,21 @@
     canvasGallery.appendChild(box);
   }
 
-  // HTML 클립보드 복사 (형광펜 스타일 + 네이버 맞춤형 테이블 서식)
+  // <mark>, <strong> 태그를 실제 네이버 블로그 인라인 서식으로 안전 치환하는 화이트리스트 함수
+  function safeHighlightHtml(str) {
+    if (!str) return '';
+    // 1단계: 전체 텍스트 이스케이프
+    let safe = escapeHtml(str);
+    // 2단계: 이스케이프된 &lt;mark&gt;, &lt;strong&gt;만 실제 HTML 서식 태그로 복원
+    safe = safe.replace(/&lt;mark&gt;(.*?)&lt;\/mark&gt;/gi, '<span style="background-color: #fef08a; padding: 2px 4px; border-radius: 3px; font-weight: 700; color: #854d0e;">$1</span>');
+    safe = safe.replace(/&lt;strong&gt;(.*?)&lt;\/strong&gt;/gi, '<strong style="color: #0f172a; font-weight: 800;">$1</strong>');
+    return safe;
+  }
+
+  // HTML 클립보드 복사 (화이트리스트 하이라이트 + 반응형 표 렌더링)
   btnCopyClipboard.addEventListener('click', () => {
     if (!rawArticleJson) return;
     const d = rawArticleJson;
-
-    // 형광펜 스타일 치환 함수
-    const styleHtml = (str) => {
-      return (str || '')
-        .replace(/<mark>/gi, '<span style="background-color: #fef08a; padding: 2px 4px; border-radius: 3px; font-weight: 700; color: #854d0e;">')
-        .replace(/<\/mark>/gi, '</span>')
-        .replace(/<strong>/gi, '<strong style="color: #0f172a; font-weight: 800;">')
-        .replace(/<\/strong>/gi, '</strong>');
-    };
 
     let html = `
       <div style="font-family: 'Apple SD Gothic Neo', sans-serif; line-height: 1.85; color: #1e293b; max-width: 680px; margin: 0 auto;">
@@ -689,7 +690,7 @@
           📷 [여기에 저장한 '대표 썸네일' 이미지를 첨부하세요]
         </div>
 
-        <p style="font-size: 16px; color: #334155; margin-bottom: 28px; line-height: 1.8;">${styleHtml(d.intro)}</p>
+        <p style="font-size: 16px; color: #334155; margin-bottom: 28px; line-height: 1.8;">${safeHighlightHtml(d.intro)}</p>
     `;
 
     d.sections.forEach((sec, idx) => {
@@ -708,10 +709,10 @@
           <span style="color: #1e3a8a; font-size: 15px; font-weight: 600;"> ${escapeHtml(sec.cardHighlight)}</span>
         </div>
         
-        <p style="font-size: 16px; color: #334155; margin-bottom: 20px; line-height: 1.8;">${styleHtml(sec.body)}</p>
+        <p style="font-size: 16px; color: #334155; margin-bottom: 20px; line-height: 1.8;">${safeHighlightHtml(sec.body)}</p>
       `;
 
-      // 가변 테이블 삽입
+      // 가변 테이블 렌더링
       if (sec.table && sec.table.headers && sec.table.rows && sec.table.rows.length > 0) {
         html += `
           <div style="overflow-x: auto; margin: 24px 0;">
@@ -736,11 +737,10 @@
 
     html += `
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin-top: 40px;">
-          <p style="font-size: 15.5px; color: #334155; margin: 0 0 12px; line-height: 1.7;">${styleHtml(d.outro)}</p>
+          <p style="font-size: 15.5px; color: #334155; margin: 0 0 12px; line-height: 1.7;">${safeHighlightHtml(d.outro)}</p>
           <p style="font-size: 13.5px; color: #64748b; margin: 0;">📌 공식 출처: <strong>${escapeHtml(d.source)}</strong></p>
         </div>
         
-        <!-- 맨 하단 태그 배치 -->
         <p style="font-size: 14.5px; color: #2563eb; margin-top: 28px; font-weight: 700; line-height: 1.6;">
           ${d.tags.map(t => `#${escapeHtml(t)}`).join(' ')}
         </p>
