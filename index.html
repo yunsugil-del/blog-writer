@@ -14,7 +14,6 @@
       --bg: #F8FAFC;
       --white: #FFFFFF;
       --border: #E2E8F0;
-      --card-border: #E2E8F0;
       --danger: #EF4444;
       --success: #10B981;
     }
@@ -23,26 +22,26 @@
       margin: 0;
       background: var(--bg);
       color: var(--ink);
-      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", sans-serif;
-      padding: 40px 20px 80px;
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
+      padding: 30px 16px 80px;
     }
-    .container { max-width: 860px; margin: 0 auto; }
+    .container { max-width: 820px; margin: 0 auto; }
     
-    .header { text-align: center; margin-bottom: 36px; }
-    .header h1 { font-size: 28px; color: var(--primary); margin: 0 0 6px; font-weight: 800; }
-    .header p { color: var(--ink-soft); font-size: 15px; margin: 0; }
+    .header { text-align: center; margin-bottom: 28px; }
+    .header h1 { font-size: 26px; color: var(--primary); margin: 0 0 6px; font-weight: 800; }
+    .header p { color: var(--ink-soft); font-size: 14.5px; margin: 0; }
 
     .card {
       background: var(--white);
-      border: 1px solid var(--card-border);
+      border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 24px 28px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-      margin-bottom: 24px;
+      padding: 22px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      margin-bottom: 20px;
     }
     
     .label {
-      font-size: 14.5px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--ink);
       margin-bottom: 10px;
@@ -52,75 +51,61 @@
     .category-group {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 22px;
+      gap: 8px;
+      margin-bottom: 18px;
     }
     .cat-btn {
       background: var(--white);
       border: 1.5px solid var(--border);
       color: var(--ink-soft);
-      padding: 10px 18px;
-      border-radius: 10px;
-      font-size: 14px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13.5px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
     }
     .cat-btn.active {
       background: var(--primary);
       color: #fff;
       border-color: var(--primary);
-      box-shadow: 0 4px 10px rgba(79,70,229,0.25);
     }
 
-    .input-row {
-      display: flex;
-      gap: 12px;
-    }
+    .input-row { display: flex; gap: 10px; }
     input[type="text"] {
       flex: 1;
-      padding: 14px 16px;
+      padding: 12px 14px;
       border: 1.5px solid var(--border);
-      border-radius: 10px;
-      font-size: 15px;
+      border-radius: 8px;
+      font-size: 14.5px;
       outline: none;
-      transition: border-color 0.2s;
     }
-    input[type="text"]:focus {
-      border-color: var(--primary);
-    }
+    input[type="text"]:focus { border-color: var(--primary); }
+    
     .btn-main {
       background: var(--primary);
       color: #fff;
       border: none;
-      padding: 14px 24px;
-      border-radius: 10px;
-      font-size: 15px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14.5px;
       font-weight: 700;
       cursor: pointer;
       white-space: nowrap;
-      transition: background 0.2s;
     }
     .btn-main:hover { background: var(--primary-hover); }
     .btn-main:disabled { background: var(--border); cursor: not-allowed; }
 
-    .titles-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 14px;
-    }
+    .titles-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
     .title-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
       background: #F8FAFC;
       border: 1px solid var(--border);
-      padding: 14px 18px;
-      border-radius: 10px;
-      font-size: 14.5px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
       font-weight: 600;
-      color: var(--ink);
     }
     .title-item button {
       background: var(--primary-light);
@@ -132,101 +117,103 @@
       font-size: 13px;
       cursor: pointer;
     }
-    .title-item button:hover {
-      background: var(--primary);
-      color: #fff;
-    }
 
-    /* 썸네일 & 요약 카드 영역 */
-    .thumbnails-wrapper {
-      background: #F8FAFC;
-      border: 1px dashed var(--border);
+    .article-wrap {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      line-height: 1.85;
+      font-size: 15.5px;
+      color: #1E293B;
+    }
+    .main-thumb-box {
+      text-align: center;
+      margin-bottom: 28px;
+      padding-bottom: 24px;
+      border-bottom: 1px dashed var(--border);
+    }
+    .main-thumb-box canvas {
+      max-width: 380px;
+      width: 100%;
+      height: auto;
       border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      margin-bottom: 10px;
     }
-    .thumb-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-top: 14px;
+    .section-block {
+      margin: 28px 0;
+      padding: 18px 0;
     }
-    .thumb-card-item {
+    .section-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #0F172A;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .inline-card-box {
+      margin: 16px 0 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8px;
-      background: var(--white);
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
     }
-    .thumb-card-item canvas {
+    .inline-card-box canvas {
+      max-width: 480px;
       width: 100%;
       height: auto;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
     }
     .btn-dl {
       background: #10B981;
       color: #fff;
       border: none;
-      padding: 6px 12px;
+      padding: 6px 14px;
       border-radius: 6px;
       font-size: 12px;
       font-weight: 700;
       cursor: pointer;
-      width: 100%;
     }
     .btn-dl:hover { background: #059669; }
 
-    .meta-box {
+    .source-box {
       background: #F1F5F9;
+      border-left: 4px solid var(--primary);
+      padding: 14px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 13.5px;
+      margin-top: 30px;
+    }
+    .meta-box {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
       border-radius: 8px;
       padding: 12px 16px;
       font-size: 13px;
-      color: #475569;
-      margin-bottom: 20px;
-      line-height: 1.5;
+      color: var(--ink-soft);
+      margin-bottom: 24px;
     }
-    .meta-box strong { color: var(--ink); }
-
-    .article-body {
-      background: #FAFBFD;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      line-height: 1.8;
-      font-size: 15px;
-      color: var(--ink);
-      white-space: pre-wrap;
-      word-break: break-all;
-    }
-
-    .status-msg {
-      margin-top: 12px;
-      font-size: 14px;
-      font-weight: 600;
-    }
-    .status-error { color: var(--danger); }
-    .status-loading { color: var(--primary); }
-
     .copy-toolbar {
       display: flex;
       justify-content: flex-end;
-      gap: 10px;
-      margin-bottom: 12px;
+      gap: 8px;
+      margin-bottom: 14px;
     }
     .btn-copy {
       background: #0F172A;
       color: #fff;
       border: none;
-      padding: 9px 16px;
-      border-radius: 8px;
-      font-size: 13.5px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
     }
+    .status-msg { margin-top: 10px; font-size: 13.5px; font-weight: 600; }
   </style>
 </head>
 <body>
@@ -234,7 +221,7 @@
 <div class="container">
   <div class="header">
     <h1>블로그 라이터 Pro</h1>
-    <p>실시간 검색 검증 & 팩트 가드레일 자동화</p>
+    <p>스마트 정보 큐레이션 & 인라인 요약 카드</p>
   </div>
 
   <div class="card">
@@ -247,36 +234,30 @@
 
     <span class="label">2. 키워드 입력</span>
     <div class="input-row">
-      <input type="text" id="keyword-input" placeholder="예: 2026년 에어컨 26도 전기세 절약 실전 가이드" />
-      <button class="btn-main" id="btn-titles">제목 5개 추천</button>
+      <input type="text" id="keyword-input" placeholder="예: 2026년 에어컨 26도 전기세 절약" />
+      <button class="btn-main" id="btn-titles">제목 추천</button>
     </div>
     <div id="status-title" class="status-msg"></div>
 
-    <div id="titles-wrapper" style="display:none; margin-top: 24px;">
-      <span class="label">3. 마음에 드는 제목 선택 (클릭 시 자동 글 & 모든 카드 썸네일 생성)</span>
+    <div id="titles-wrapper" style="display:none; margin-top: 20px;">
+      <span class="label">3. 마음에 드는 제목 선택 (클릭 시 자동 글 생성)</span>
       <div class="titles-list" id="titles-container"></div>
     </div>
   </div>
 
-  <div class="card" id="article-card" style="display:none;">
-    <!-- 대표 썸네일 + 중간 요약 카드 세트 -->
-    <div class="thumbnails-wrapper">
-      <span class="label">🎨 자동 생성된 블로그 썸네일 & 본문 중간 요약 카드 세트</span>
-      <div class="thumb-grid" id="thumb-grid"></div>
-    </div>
-
+  <div id="article-wrapper" style="display:none;">
     <div class="copy-toolbar">
-      <button class="btn-copy" id="btn-copy-article">📋 본문 전체 복사</button>
+      <button class="btn-copy" id="btn-copy-text">📋 본문 전체 텍스트 복사</button>
     </div>
 
-    <div id="meta-container" class="meta-box"></div>
-    <div id="article-content" class="article-body"></div>
+    <div id="meta-box" class="meta-box"></div>
+
+    <div class="article-wrap" id="article-render-zone"></div>
   </div>
 </div>
 
 <script>
   const WORKER_URL = "https://blog-writer.yunsugil.workers.dev";
-
   let selectedCategory = "경제·복지·지원금";
 
   const catButtons = document.querySelectorAll('.cat-btn');
@@ -285,11 +266,12 @@
   const statusTitle = document.getElementById('status-title');
   const titlesWrapper = document.getElementById('titles-wrapper');
   const titlesContainer = document.getElementById('titles-container');
-  const articleCard = document.getElementById('article-card');
-  const thumbGrid = document.getElementById('thumb-grid');
-  const metaContainer = document.getElementById('meta-container');
-  const articleContent = document.getElementById('article-content');
-  const btnCopyArticle = document.getElementById('btn-copy-article');
+  const articleWrapper = document.getElementById('article-wrapper');
+  const metaBox = document.getElementById('meta-box');
+  const renderZone = document.getElementById('article-render-zone');
+  const btnCopyText = document.getElementById('btn-copy-text');
+
+  let fullRawText = "";
 
   window.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
@@ -305,27 +287,14 @@
     });
   });
 
-  function parseErrorMessage(errObj) {
-    if (typeof errObj === 'string') return errObj;
-    if (errObj && typeof errObj === 'object') {
-      return errObj.message || errObj.error || JSON.stringify(errObj);
-    }
-    return "알 수 없는 오류가 발생했습니다.";
-  }
-
-  // 1. 제목 추천
   btnTitles.addEventListener('click', async () => {
     const kw = keywordInput.value.trim();
-    if (!kw) {
-      alert("키워드를 입력해 주세요.");
-      return;
-    }
+    if (!kw) return alert("키워드를 입력해 주세요.");
 
     btnTitles.disabled = true;
-    statusTitle.className = "status-msg status-loading";
-    statusTitle.innerText = "🔍 구글 최신 정보 검색 및 클릭률 높은 제목 생성 중...";
+    statusTitle.style.color = "var(--primary)";
+    statusTitle.innerText = "🔍 검색 의도에 맞춘 제목 5개 생성 중...";
     titlesWrapper.style.display = "none";
-    titlesContainer.innerHTML = "";
 
     try {
       const res = await fetch(`${WORKER_URL}/api/generate-titles`, {
@@ -333,185 +302,198 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ category: selectedCategory, keyword: kw })
       });
-
       const data = await res.json();
-      if (!res.ok || data.error) throw new Error(parseErrorMessage(data.error || data));
+      if (!res.ok || data.error) throw new Error(data.error?.message || data.error || "제목 생성 실패");
 
-      renderTitles(data.titles);
+      titlesContainer.innerHTML = "";
+      data.titles.forEach((item, idx) => {
+        const row = document.createElement('div');
+        row.className = "title-item";
+        row.innerHTML = `
+          <span>${idx + 1}. ${escapeHtml(item.title)}</span>
+          <button onclick="generateFullArticle('${escapeHtml(item.title).replace(/'/g, "\\'")}')">작성하기 ➔</button>
+        `;
+        titlesContainer.appendChild(row);
+      });
+
       statusTitle.innerText = "";
       titlesWrapper.style.display = "block";
-
     } catch (err) {
-      statusTitle.className = "status-msg status-error";
+      statusTitle.style.color = "var(--danger)";
       statusTitle.innerText = `오류: ${err.message}`;
     } finally {
       btnTitles.disabled = false;
     }
   });
 
-  function renderTitles(titles) {
-    titlesContainer.innerHTML = "";
-    titles.forEach((item, idx) => {
-      const row = document.createElement('div');
-      row.className = "title-item";
-      row.innerHTML = `
-        <span>${idx + 1}. ${escapeHtml(item.title)}</span>
-        <button onclick="selectTitle('${escapeHtml(item.title).replace(/'/g, "\\'")}')">이 제목으로 작성 ➔</button>
-      `;
-      titlesContainer.appendChild(row);
-    });
-  }
-
-  // 2. 본문 작성 및 카드 썸네일 세트 일괄 렌더링
-  window.selectTitle = async function(chosenTitle) {
+  window.generateFullArticle = async function(chosenTitle) {
     const kw = keywordInput.value.trim();
-    articleCard.style.display = "block";
-    thumbGrid.innerHTML = "";
-    metaContainer.innerHTML = "⏳ <strong>글 및 요약 카드 생성 중...</strong> 최신 팩트와 검색 데이터를 대조하고 있습니다.";
-    articleContent.innerHTML = "작성 중...";
-    articleCard.scrollIntoView({ behavior: 'smooth' });
+    articleWrapper.style.display = "block";
+    metaBox.innerHTML = "⏳ <strong>스마트 정보 큐레이션 작성 중...</strong> (약 10~15초 소요)";
+    renderZone.innerHTML = "<p style='text-align:center; color:var(--ink-soft);'>본문과 인라인 요약 카드를 배치하고 있습니다...</p>";
+    articleWrapper.scrollIntoView({ behavior: 'smooth' });
 
     try {
       const res = await fetch(`${WORKER_URL}/api/generate-article`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          category: selectedCategory,
-          keyword: kw,
-          title: chosenTitle
-        })
+        body: JSON.stringify({ category: selectedCategory, keyword: kw, title: chosenTitle })
       });
-
       const data = await res.json();
-      if (!res.ok || data.error) throw new Error(parseErrorMessage(data.error || data));
+      if (!res.ok || data.error) throw new Error(data.error?.message || data.error || "글 생성 실패");
 
-      metaContainer.innerHTML = `
-        <strong>선택 제목:</strong> ${escapeHtml(chosenTitle)}<br/>
-        <strong>SEO 메타 설명:</strong> ${escapeHtml(data.metaDescription || '')}<br/>
-        <strong>추천 태그:</strong> ${(data.tags || []).map(t => `#${escapeHtml(t)}`).join(' ')}
+      metaBox.innerHTML = `
+        <strong>제목:</strong> ${escapeHtml(chosenTitle)}<br/>
+        <strong>SEO 요약:</strong> ${escapeHtml(data.metaDescription || '')}<br/>
+        <strong>태그:</strong> ${(data.tags || []).map(t => `#${escapeHtml(t)}`).join(' ')}
       `;
 
-      articleContent.innerText = data.article || "";
+      renderZone.innerHTML = "";
+      fullRawText = `${chosenTitle}\n\n${data.intro}\n\n`;
 
-      // 1) 메인 대표 썸네일 렌더링
-      renderMainThumbnail(selectedCategory, chosenTitle);
+      // 1. 대표 썸네일 박스
+      const mainThumbDiv = document.createElement('div');
+      mainThumbDiv.className = 'main-thumb-box';
+      const mainCanvas = document.createElement('canvas');
+      mainCanvas.width = 600;
+      mainCanvas.height = 600;
+      drawMainThumbnail(mainCanvas, selectedCategory, chosenTitle);
+      
+      const dlMainBtn = document.createElement('button');
+      dlMainBtn.className = 'btn-dl';
+      dlMainBtn.innerText = '💾 대표 썸네일 다운로드';
+      dlMainBtn.onclick = () => downloadCanvas(mainCanvas, '대표_썸네일.png');
+      
+      mainThumbDiv.appendChild(mainCanvas);
+      mainThumbDiv.appendChild(document.createElement('br'));
+      mainThumbDiv.appendChild(dlMainBtn);
+      renderZone.appendChild(mainThumbDiv);
 
-      // 2) 중간 요약 서브 카드들 렌더링
-      if (Array.isArray(data.sectionCards)) {
-        data.sectionCards.forEach((card, i) => {
-          renderSubCard(card.step || `POINT 0${i+1}`, card.subTitle || '', card.highlight || '');
+      // 2. 도입부
+      const introP = document.createElement('p');
+      introP.style.whiteSpace = "pre-line";
+      introP.innerText = data.intro;
+      renderZone.appendChild(introP);
+
+      // 3. 본문 챕터 + 챕터 바로 아래 요약 카드 배치
+      if (Array.isArray(data.sections)) {
+        data.sections.forEach((sec, i) => {
+          const secBlock = document.createElement('div');
+          secBlock.className = 'section-block';
+
+          const h2 = document.createElement('div');
+          h2.className = 'section-title';
+          h2.innerText = `📌 ${sec.title}`;
+          secBlock.appendChild(h2);
+
+          const cardBox = document.createElement('div');
+          cardBox.className = 'inline-card-box';
+          const subCanvas = document.createElement('canvas');
+          subCanvas.width = 600;
+          subCanvas.height = 360;
+          drawSubCard(subCanvas, sec.step || `POINT 0${i+1}`, sec.title, sec.cardHighlight || '');
+          
+          const dlSubBtn = document.createElement('button');
+          dlSubBtn.className = 'btn-dl';
+          dlSubBtn.innerText = `💾 ${sec.step || `POINT 0${i+1}`} 요약 카드 다운로드`;
+          dlSubBtn.onclick = () => downloadCanvas(subCanvas, `${sec.step}_요약카드.png`);
+
+          cardBox.appendChild(subCanvas);
+          cardBox.appendChild(dlSubBtn);
+          secBlock.appendChild(cardBox);
+
+          const bodyP = document.createElement('p');
+          bodyP.style.whiteSpace = "pre-line";
+          bodyP.innerText = sec.body;
+          secBlock.appendChild(bodyP);
+
+          renderZone.appendChild(secBlock);
+          fullRawText += `\n## ${sec.title}\n\n${sec.body}\n\n`;
         });
       }
 
+      // 4. 아웃트로 및 공식 출처
+      if (data.outro) {
+        const outroP = document.createElement('p');
+        outroP.style.whiteSpace = "pre-line";
+        outroP.style.marginTop = "24px";
+        outroP.innerText = data.outro;
+        renderZone.appendChild(outroP);
+        fullRawText += `\n${data.outro}\n\n`;
+      }
+
+      if (data.source) {
+        const sourceDiv = document.createElement('div');
+        sourceDiv.className = 'source-box';
+        sourceDiv.innerHTML = `<strong>🏛️ 정보 및 공식 출처:</strong> ${escapeHtml(data.source)}`;
+        renderZone.appendChild(sourceDiv);
+        fullRawText += `\n[공식 출처]: ${data.source}\n`;
+      }
+
     } catch (err) {
-      metaContainer.innerHTML = `<span style="color:var(--danger)">❌ 오류 발생: ${escapeHtml(err.message)}</span>`;
-      articleContent.innerText = "";
+      metaBox.innerHTML = `<span style="color:var(--danger)">❌ 오류 발생: ${escapeHtml(err.message)}</span>`;
+      renderZone.innerHTML = "";
     }
   };
 
-  // 대표 썸네일 렌더링 함수
-  function renderMainThumbnail(category, title) {
-    const item = document.createElement('div');
-    item.className = 'thumb-card-item';
-    
-    const canvas = document.createElement('canvas');
-    canvas.width = 600;
-    canvas.height = 600;
+  function drawMainThumbnail(canvas, category, title) {
     const ctx = canvas.getContext('2d');
-
-    // 배경
     const grad = ctx.createLinearGradient(0, 0, 600, 600);
-    grad.addColorStop(0, '#1E1B4B');
-    grad.addColorStop(1, '#312E81');
+    grad.addColorStop(0, '#0F172A');
+    grad.addColorStop(1, '#1E293B');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 600, 600);
 
-    // 테두리
-    ctx.strokeStyle = '#6366F1';
-    ctx.lineWidth = 14;
-    ctx.strokeRect(18, 18, 564, 564);
+    ctx.strokeStyle = '#38BDF8';
+    ctx.lineWidth = 12;
+    ctx.strokeRect(16, 16, 568, 568);
 
-    // 카테고리
-    ctx.fillStyle = '#4F46E5';
+    ctx.fillStyle = '#2563EB';
     ctx.beginPath();
-    ctx.roundRect(40, 48, 210, 48, 10);
+    ctx.roundRect(40, 48, 200, 44, 8);
     ctx.fill();
 
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 20px Pretendard, sans-serif';
+    ctx.font = 'bold 19px Pretendard, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(`📌 ${category}`, 145, 80);
+    ctx.fillText(`📌 ${category}`, 140, 78);
 
-    // 메인 제목 줄바꿈
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 36px Pretendard, sans-serif';
-    ctx.textAlign = 'center';
-    drawMultiLine(ctx, title, 300, 260, 480, 52);
+    ctx.fillStyle = '#F8FAFC';
+    ctx.font = 'bold 34px Pretendard, sans-serif';
+    drawMultiLine(ctx, title, 300, 260, 480, 50);
 
-    // 하단 뱃지
     ctx.fillStyle = '#F59E0B';
     ctx.font = 'bold 22px Pretendard, sans-serif';
-    ctx.fillText('⚡ 2026 최신 핵심 총정리', 300, 540);
-
-    const btn = document.createElement('button');
-    btn.className = 'btn-dl';
-    btn.innerText = '💾 대표 썸네일 저장';
-    btn.onclick = () => downloadCanvas(canvas, '대표_썸네일.png');
-
-    item.appendChild(canvas);
-    item.appendChild(btn);
-    thumbGrid.appendChild(item);
+    ctx.fillText('⚡ 2026 핵심 실전 정리', 300, 535);
   }
 
-  // 중간 요약 서브 썸네일 렌더링 함수
-  function renderSubCard(step, subTitle, highlight) {
-    const item = document.createElement('div');
-    item.className = 'thumb-card-item';
-
-    const canvas = document.createElement('canvas');
-    canvas.width = 600;
-    canvas.height = 400;
+  function drawSubCard(canvas, step, title, highlight) {
     const ctx = canvas.getContext('2d');
-
-    // 배경
     ctx.fillStyle = '#0F172A';
-    ctx.fillRect(0, 0, 600, 400);
+    ctx.fillRect(0, 0, 600, 360);
 
-    // 내부 카드
     ctx.fillStyle = '#1E293B';
     ctx.beginPath();
-    ctx.roundRect(20, 20, 560, 360, 16);
+    ctx.roundRect(16, 16, 568, 328, 14);
     ctx.fill();
 
-    // 상단 스텝 뱃지
     ctx.fillStyle = '#38BDF8';
-    ctx.font = 'bold 22px Pretendard, sans-serif';
+    ctx.font = 'bold 20px Pretendard, sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText(`💡 ${step}`, 50, 75);
+    ctx.fillText(`💡 ${step}`, 45, 65);
 
-    // 소제목
     ctx.fillStyle = '#F8FAFC';
-    ctx.font = 'bold 28px Pretendard, sans-serif';
-    drawMultiLine(ctx, subTitle, 50, 130, 500, 38, 'left');
+    ctx.font = 'bold 26px Pretendard, sans-serif';
+    drawMultiLine(ctx, title, 45, 115, 510, 34, 'left');
 
-    // 하단 핵심 요약 박스
     ctx.fillStyle = '#334155';
     ctx.beginPath();
-    ctx.roundRect(40, 230, 520, 110, 12);
+    ctx.roundRect(35, 200, 530, 115, 10);
     ctx.fill();
 
     ctx.fillStyle = '#FDE047';
     ctx.font = 'bold 20px Pretendard, sans-serif';
-    drawMultiLine(ctx, `👉 ${highlight}`, 65, 275, 470, 32, 'left');
-
-    const btn = document.createElement('button');
-    btn.className = 'btn-dl';
-    btn.innerText = `💾 ${step} 요약 카드 저장`;
-    btn.onclick = () => downloadCanvas(canvas, `${step}_요약카드.png`);
-
-    item.appendChild(canvas);
-    item.appendChild(btn);
-    thumbGrid.appendChild(item);
+    drawMultiLine(ctx, `👉 ${highlight}`, 55, 248, 490, 30, 'left');
   }
 
   function drawMultiLine(ctx, text, x, startY, maxWidth, lineHeight, align = 'center') {
@@ -541,11 +523,10 @@
     link.click();
   }
 
-  btnCopyArticle.addEventListener('click', () => {
-    const text = articleContent.innerText;
-    if (!text) return;
-    navigator.clipboard.writeText(text).then(() => {
-      alert("블로그 본문이 클립보드에 복사되었습니다!");
+  btnCopyText.addEventListener('click', () => {
+    if (!fullRawText) return;
+    navigator.clipboard.writeText(fullRawText).then(() => {
+      alert("전체 본문 텍스트가 복사되었습니다!");
     });
   });
 
