@@ -234,6 +234,9 @@
       border-radius: 10px;
       border: 1px solid var(--border);
     }
+    .visual-item.full-width {
+      grid-column: span 2;
+    }
     .visual-item canvas {
       width: 100%;
       height: auto;
@@ -244,9 +247,9 @@
       background: #334155;
       color: #fff;
       border: none;
-      padding: 6px;
+      padding: 7px;
       border-radius: 6px;
-      font-size: 11px;
+      font-size: 11.5px;
       font-weight: 700;
       cursor: pointer;
       text-align: center;
@@ -341,7 +344,7 @@
     <div id="article-msg" class="status-alert"></div>
 
     <div id="output-area" style="display: none; margin-top: 18px;">
-      <div style="font-size:13.5px; font-weight:700; margin-bottom:8px;">🎨 생성된 썸네일 & 카드뉴스 (4장)</div>
+      <div style="font-size:13.5px; font-weight:700; margin-bottom:8px;">🎨 생성된 커버 & 카드뉴스 (5장)</div>
       <div class="visual-gallery" id="canvas-gallery"></div>
 
       <div style="font-size:13.5px; font-weight:700; margin-bottom:8px;">📝 작성된 전문 원고 (복사 전용)</div>
@@ -569,9 +572,18 @@
     articleText.innerText = preview;
   }
 
+  // 총 5장 캔버스 렌더링 (와이드 커버 1장 + 정사각형 썸네일 1장 + 카드뉴스 3장)
   function renderVisualGallery(data) {
     canvasGallery.innerHTML = "";
 
+    // 1. 네이버 블로그 제목 배경 전용 '와이드 커버' (1920x800)
+    const wideCanvas = createWideHeaderCanvas({
+      bgColor: "#0F172A",
+      accentColor: "#3B82F6"
+    });
+    appendCanvasToGallery(wideCanvas, "블로그 제목 배경(커버)", true);
+
+    // 2. 대표 정사각형 썸네일 (1080x1080)
     const thumbCanvas = createCardCanvas({
       badge: data.thumbnail?.badge || `${new Date().getFullYear()} 실생활 꿀팁`,
       title: data.thumbnail?.mainTitle || mainKeyword.value.trim(),
@@ -579,8 +591,9 @@
       bgColor: "#1E293B",
       accentColor: "#3B82F6"
     });
-    appendCanvasToGallery(thumbCanvas, "대표 썸네일");
+    appendCanvasToGallery(thumbCanvas, "대표 썸네일 (본문 상단)");
 
+    // 3. 챕터별 카드뉴스 3장 (1080x1080)
     const cardBgColors = ["#0F172A", "#1E3A8A", "#064E3B"];
     data.sections.forEach((sec, idx) => {
       const cardCanvas = createCardCanvas({
@@ -594,6 +607,33 @@
     });
   }
 
+  // 와이드 커버 캔버스 생성기 (글씨 없이 은은한 딥톤 그라데이션)
+  function createWideHeaderCanvas({ bgColor, accentColor }) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1920;
+    canvas.height = 800;
+    const ctx = canvas.getContext('2d');
+
+    const grad = ctx.createLinearGradient(0, 0, 1920, 800);
+    grad.addColorStop(0, bgColor);
+    grad.addColorStop(1, "#1E293B");
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 1920, 800);
+
+    // 은은한 포인트 라이트 효과
+    ctx.fillStyle = accentColor;
+    ctx.globalAlpha = 0.15;
+    ctx.beginPath();
+    ctx.arc(1700, 200, 400, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.globalAlpha = 1.0;
+    ctx.fillRect(100, 750, 1720, 6);
+
+    return canvas;
+  }
+
+  // 정사각형 카드 캔버스 생성기
   function createCardCanvas({ badge, title, sub, bgColor, accentColor }) {
     const canvas = document.createElement('canvas');
     canvas.width = 1080;
@@ -645,9 +685,9 @@
     ctx.fillText(line, x, y);
   }
 
-  function appendCanvasToGallery(canvas, labelText) {
+  function appendCanvasToGallery(canvas, labelText, isFullWidth = false) {
     const box = document.createElement('div');
-    box.className = "visual-item";
+    box.className = `visual-item ${isFullWidth ? 'full-width' : ''}`;
     
     const dlBtn = document.createElement('button');
     dlBtn.className = "btn-dl-single";
@@ -672,7 +712,6 @@
     return safe;
   }
 
-  // 자연스러운 블로그 서식 복사 (기계적 라벨 제거, 자연스러운 포인트 박스 적용)
   btnCopyClipboard.addEventListener('click', () => {
     if (!rawArticleJson) return;
     const d = rawArticleJson;
@@ -681,7 +720,7 @@
       <div style="font-family: 'Apple SD Gothic Neo', sans-serif; line-height: 1.85; color: #1e293b; max-width: 680px; margin: 0 auto;">
         
         <div style="background: #f1f5f9; border: 2px dashed #94a3b8; border-radius: 8px; padding: 14px; text-align: center; color: #475569; font-weight: 700; margin-bottom: 24px; font-size: 14px;">
-          📷 [여기에 저장한 '대표 썸네일' 이미지를 첨부하세요]
+          📷 [여기에 '대표 썸네일' 이미지를 첨부하세요]
         </div>
 
         <p style="font-size: 16px; color: #334155; margin-bottom: 28px; line-height: 1.8;">${safeHighlightHtml(d.intro)}</p>
@@ -694,10 +733,9 @@
         </h2>
 
         <div style="background: #f1f5f9; border: 2px dashed #94a3b8; border-radius: 8px; padding: 12px; text-align: center; color: #475569; font-weight: 700; margin-bottom: 16px; font-size: 13.5px;">
-          📷 [여기에 저장한 '카드뉴스 ${idx + 1}' 이미지를 첨부하세요]
+          📷 [여기에 '카드뉴스 ${idx + 1}' 이미지를 첨부하세요]
         </div>
 
-        <!-- 딱딱한 라벨 대신 자연스러운 요약 바 -->
         <div style="background: #f0fdf4; border-left: 4px solid #10b981; padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 16px;">
           <span style="color: #065f46; font-size: 14.5px; font-weight: 600;">👉 ${escapeHtml(sec.cardHighlight)}</span>
         </div>
