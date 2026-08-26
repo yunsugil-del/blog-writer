@@ -71,7 +71,6 @@
       border-color: var(--primary);
     }
 
-    /* 모바일 맞춤 세로 풀너비 레이아웃 */
     .input-box {
       display: flex;
       flex-direction: column;
@@ -125,6 +124,10 @@
       font-weight: 700;
       font-size: 13px;
       cursor: pointer;
+    }
+    .title-item button:hover {
+      background: var(--primary);
+      color: #fff;
     }
 
     .article-wrap {
@@ -315,10 +318,20 @@
       data.titles.forEach((item, idx) => {
         const row = document.createElement('div');
         row.className = "title-item";
-        row.innerHTML = `
-          <span>${idx + 1}. ${escapeHtml(item.title)}</span>
-          <button onclick="generateFullArticle('${escapeHtml(item.title).replace(/'/g, "\\'")}')">작성하기 ➔</button>
-        `;
+        
+        const titleSpan = document.createElement('span');
+        titleSpan.innerText = `${idx + 1}. ${item.title}`;
+        
+        const actionBtn = document.createElement('button');
+        actionBtn.innerText = "작성하기 ➔";
+        
+        // 안전하게 이벤트 리스너로 연결
+        actionBtn.addEventListener('click', () => {
+          generateFullArticle(item.title);
+        });
+
+        row.appendChild(titleSpan);
+        row.appendChild(actionBtn);
         titlesContainer.appendChild(row);
       });
 
@@ -332,7 +345,7 @@
     }
   });
 
-  window.generateFullArticle = async function(chosenTitle) {
+  async function generateFullArticle(chosenTitle) {
     const kw = keywordInput.value.trim();
     articleWrapper.style.display = "block";
     metaBox.innerHTML = "⏳ <strong>실전형 블로그 글 작성 중...</strong> (약 10~15초 소요)";
@@ -440,7 +453,7 @@
       metaBox.innerHTML = `<span style="color:var(--danger)">❌ 오류 발생: ${escapeHtml(err.message)}</span>`;
       renderZone.innerHTML = "";
     }
-  };
+  }
 
   function drawMainThumbnail(canvas, category, title) {
     const ctx = canvas.getContext('2d');
