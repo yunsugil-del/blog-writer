@@ -3,307 +3,415 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>블로그 라이터 Pro</title>
+  <title>전문 블로그 원스톱 콘텐츠 팩토리</title>
   <style>
     :root {
-      --primary: #4F46E5;
-      --primary-hover: #4338CA;
-      --primary-light: #EEF2FF;
+      --primary: #2563EB;
+      --primary-hover: #1D4ED8;
+      --primary-light: #EFF6FF;
       --ink: #0F172A;
       --ink-soft: #64748B;
+      --ink-muted: #94A3B8;
       --bg: #F8FAFC;
       --white: #FFFFFF;
       --border: #E2E8F0;
-      --danger: #EF4444;
       --success: #10B981;
+      --danger: #EF4444;
+      --warning-bg: #FFFBEB;
+      --warning-border: #FEF3C7;
+      --warning-text: #92400E;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       background: var(--bg);
       color: var(--ink);
-      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
-      padding: 24px 16px 80px;
+      font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+      padding: 32px 16px 100px;
+      -webkit-font-smoothing: antialiased;
     }
-    .container { max-width: 720px; margin: 0 auto; width: 100%; }
-    
-    .header { text-align: center; margin-bottom: 24px; }
-    .header h1 { font-size: 24px; color: var(--primary); margin: 0 0 6px; font-weight: 800; }
-    .header p { color: var(--ink-soft); font-size: 14px; margin: 0; }
+    .container { max-width: 760px; margin: 0 auto; width: 100%; }
 
+    /* Header */
+    .header { text-align: center; margin-bottom: 32px; }
+    .header-badge {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 8px;
+    }
+    .header h1 { font-size: 26px; color: var(--ink); margin: 0 0 8px; font-weight: 800; letter-spacing: -0.5px; }
+    .header p { color: var(--ink-soft); font-size: 14.5px; margin: 0; }
+
+    /* Cards */
     .card {
       background: var(--white);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-      margin-bottom: 20px;
-      width: 100%;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+      margin-bottom: 24px;
     }
-    
-    .label {
-      font-size: 14px;
+    .section-title {
+      font-size: 15px;
       font-weight: 700;
       color: var(--ink);
-      margin-bottom: 10px;
-      display: block;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .step-pill {
+      background: var(--primary);
+      color: #fff;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 700;
     }
 
-    .category-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 20px;
-    }
+    /* Category Buttons */
+    .category-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
     .cat-btn {
       background: var(--white);
       border: 1.5px solid var(--border);
       color: var(--ink-soft);
-      padding: 9px 14px;
+      padding: 8px 14px;
       border-radius: 8px;
       font-size: 13.5px;
       font-weight: 600;
       cursor: pointer;
+      transition: all 0.2s;
     }
+    .cat-btn:hover { border-color: var(--primary); }
     .cat-btn.active {
       background: var(--primary);
       color: #fff;
       border-color: var(--primary);
     }
 
-    .input-box {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 100%;
-    }
+    /* Inputs & Buttons */
+    .input-row { display: flex; gap: 10px; margin-bottom: 14px; }
     input[type="text"] {
-      width: 100%;
+      flex: 1;
       padding: 13px 14px;
       border: 1.5px solid var(--border);
       border-radius: 8px;
-      font-size: 15px;
+      font-size: 14.5px;
       outline: none;
+      transition: border-color 0.2s;
     }
     input[type="text"]:focus { border-color: var(--primary); }
-    
+
     .btn-main {
       width: 100%;
       background: var(--primary);
       color: #fff;
       border: none;
-      padding: 13px;
+      padding: 14px;
       border-radius: 8px;
       font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-      text-align: center;
+      transition: background 0.2s;
     }
     .btn-main:hover { background: var(--primary-hover); }
-    .btn-main:disabled { background: var(--border); cursor: not-allowed; }
+    .btn-main:disabled { background: var(--border); color: var(--ink-muted); cursor: not-allowed; }
 
-    .titles-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
-    .title-item {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      background: #F8FAFC;
-      border: 1px solid var(--border);
-      padding: 12px 14px;
+    .btn-secondary {
+      background: var(--white);
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+      padding: 13px 20px;
       border-radius: 8px;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
     }
-    .title-item button {
-      align-self: flex-end;
+    .btn-secondary:hover { background: var(--primary-light); }
+
+    /* Trending Topics Stream */
+    .trending-list { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }
+    .topic-card {
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      background: #FAFAFA;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .topic-card:hover {
+      border-color: var(--primary);
+      background: #FFFFFF;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(37,99,235,0.08);
+    }
+    .topic-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .topic-kw { font-size: 16px; font-weight: 800; color: var(--ink); }
+    .topic-badge {
+      font-size: 11.5px;
+      font-weight: 700;
       background: var(--primary-light);
       color: var(--primary);
-      border: 1px solid #C7D2FE;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 13px;
-      cursor: pointer;
+      padding: 3px 8px;
+      border-radius: 4px;
     }
-    .title-item button:hover {
-      background: var(--primary);
-      color: #fff;
+    .topic-reason { font-size: 13px; color: #475569; margin-bottom: 10px; line-height: 1.4; }
+    .topic-questions {
+      background: var(--warning-bg);
+      border: 1px solid var(--warning-border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12.5px;
+      color: var(--warning-text);
     }
-
-    .article-wrap {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px 18px;
-      line-height: 1.85;
-      font-size: 15px;
-      color: #1E293B;
-      width: 100%;
-    }
-    .main-thumb-box {
-      text-align: center;
-      margin-bottom: 24px;
-      padding-bottom: 20px;
-      border-bottom: 1px dashed var(--border);
-    }
-    .main-thumb-box canvas {
-      max-width: 100%;
-      height: auto;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-      margin-bottom: 10px;
-    }
-    .section-block {
-      margin: 24px 0;
-      padding: 14px 0;
-    }
-    .section-title {
-      font-size: 17px;
-      font-weight: 800;
-      color: #0F172A;
-      margin-bottom: 12px;
-    }
-    .inline-card-box {
-      margin: 14px 0 18px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
-    .inline-card-box canvas {
-      max-width: 100%;
-      height: auto;
-      border-radius: 10px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-    }
-    .btn-dl {
-      background: #10B981;
-      color: #fff;
-      border: none;
-      padding: 7px 14px;
-      border-radius: 6px;
+    .topic-questions ul { margin: 4px 0 0; padding-left: 16px; }
+    .topic-select-cta {
+      margin-top: 10px;
+      text-align: right;
       font-size: 12.5px;
       font-weight: 700;
-      cursor: pointer;
-      width: 100%;
-      max-width: 280px;
+      color: var(--primary);
     }
-    .btn-dl:hover { background: #059669; }
 
-    .source-box {
-      background: #F1F5F9;
-      border-left: 4px solid var(--primary);
-      padding: 12px 14px;
-      border-radius: 0 8px 8px 0;
-      font-size: 13px;
-      margin-top: 24px;
+    /* Titles Radio */
+    .title-option {
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.2s;
     }
-    .meta-box {
+    .title-option:hover { border-color: var(--primary); }
+    .title-option.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      font-weight: 700;
+    }
+    .title-option input { margin: 0; }
+
+    /* Output Section */
+    .output-box {
       background: #F8FAFC;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px 14px;
-      font-size: 13px;
-      color: var(--ink-soft);
-      margin-bottom: 20px;
-    }
-    .copy-toolbar {
-      display: flex;
-      justify-content: flex-end;
-      margin-bottom: 12px;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      margin-bottom: 14px;
     }
     .btn-copy {
-      background: #0F172A;
+      background: var(--success);
       color: #fff;
       border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14.5px;
+      font-weight: 700;
       cursor: pointer;
+      width: 100%;
     }
-    .status-msg { margin-top: 10px; font-size: 13px; font-weight: 600; }
+    .btn-copy:hover { background: #059669; }
+
+    .status-text {
+      text-align: center;
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
   <div class="header">
-    <h1>블로그 라이터 Pro</h1>
-    <p>실전 검색 블로그 콘텐츠 & 요약 카드</p>
+    <span class="header-badge">AI FACT-BASED ENGINE</span>
+    <h1>전문 블로그 콘텐츠 팩토리</h1>
+    <p>실시간 구글 검색 트렌드 발굴부터 팩트 기반 본문 생성까지</p>
   </div>
 
+  <!-- STEP 0: 실시간 핫이슈 탐색 -->
   <div class="card">
-    <span class="label">1. 카테고리 선택</span>
+    <div class="section-title">
+      <span class="step-pill">0단계</span>
+      <span>실시간 핫이슈 & 검색의도 탐색 (선택사항)</span>
+    </div>
+    
     <div class="category-group">
       <button class="cat-btn active" data-cat="경제·복지·지원금">📊 경제·복지·지원금</button>
-      <button class="cat-btn" data-cat="생활·상식">📋 생활·상식</button>
+      <button class="cat-btn" data-cat="생활·상식·절약">📋 생활·상식·절약</button>
       <button class="cat-btn" data-cat="재테크·부동산">💰 재테크·부동산</button>
+      <button class="cat-btn" data-cat="전체 트렌드">🌐 종합 핫이슈</button>
     </div>
 
-    <span class="label">2. 키워드 입력</span>
-    <div class="input-box">
-      <input type="text" id="keyword-input" placeholder="키워드를 입력하세요" />
-      <button class="btn-main" id="btn-titles">제목 추천받기</button>
-    </div>
-    <div id="status-title" class="status-msg"></div>
-
-    <div id="titles-wrapper" style="display:none; margin-top: 20px;">
-      <span class="label">3. 제목 선택 (클릭 시 자동 글 생성)</span>
-      <div class="titles-list" id="titles-container"></div>
-    </div>
+    <button class="btn-main" id="btn-fetch-trending">🔍 최신 실시간 이슈 5개 발굴</button>
+    <div id="trending-status" class="status-text"></div>
+    <div class="trending-list" id="trending-container"></div>
   </div>
 
-  <div id="article-wrapper" style="display:none;">
-    <div class="copy-toolbar">
-      <button class="btn-copy" id="btn-copy-text">📋 본문 전체 텍스트 복사</button>
+  <!-- STEP 1: 키워드 입력 & 제목 추천 -->
+  <div class="card" id="step1-card">
+    <div class="section-title">
+      <span class="step-pill">1단계</span>
+      <span>블로그 키워드 확정 및 제목 생성</span>
     </div>
 
-    <div id="meta-box" class="meta-box"></div>
+    <div class="input-row">
+      <input type="text" id="target-keyword" placeholder="주제를 입력하거나 위 0단계 카드를 클릭하세요." />
+      <button class="btn-secondary" id="btn-gen-titles">제목 5개 추출</button>
+    </div>
 
-    <div class="article-wrap" id="article-render-zone"></div>
+    <div id="titles-status" class="status-text"></div>
+    <div id="titles-container" style="margin-top: 14px;"></div>
+  </div>
+
+  <!-- STEP 2: 본문 & 팩트 카드 생성 -->
+  <div class="card" id="step2-card" style="display: none;">
+    <div class="section-title">
+      <span class="step-pill">2단계</span>
+      <span>팩트 기반 본문 & 카드뉴스 생성</span>
+    </div>
+
+    <button class="btn-main" id="btn-gen-article">🚀 선택한 제목으로 검증 원고 생성</button>
+    <div id="article-status" class="status-text"></div>
+
+    <div id="output-zone" style="display: none; margin-top: 20px;">
+      <div class="output-box" id="article-preview"></div>
+      <button class="btn-copy" id="btn-copy-html">📋 네이버 블로그용 HTML 서식 복사</button>
+    </div>
   </div>
 </div>
 
 <script>
   const WORKER_URL = "https://blog-writer.yunsugil.workers.dev";
+
   let selectedCategory = "경제·복지·지원금";
+  let selectedTitle = "";
+  let generatedArticleData = null;
 
-  const catButtons = document.querySelectorAll('.cat-btn');
-  const keywordInput = document.getElementById('keyword-input');
-  const btnTitles = document.getElementById('btn-titles');
-  const statusTitle = document.getElementById('status-title');
-  const titlesWrapper = document.getElementById('titles-wrapper');
+  // Elements
+  const catBtns = document.querySelectorAll('.cat-btn');
+  const btnFetchTrending = document.getElementById('btn-fetch-trending');
+  const trendingStatus = document.getElementById('trending-status');
+  const trendingContainer = document.getElementById('trending-container');
+
+  const targetKeyword = document.getElementById('target-keyword');
+  const btnGenTitles = document.getElementById('btn-gen-titles');
+  const titlesStatus = document.getElementById('titles-status');
   const titlesContainer = document.getElementById('titles-container');
-  const articleWrapper = document.getElementById('article-wrapper');
-  const metaBox = document.getElementById('meta-box');
-  const renderZone = document.getElementById('article-render-zone');
-  const btnCopyText = document.getElementById('btn-copy-text');
 
-  let fullRawText = "";
+  const step2Card = document.getElementById('step2-card');
+  const btnGenArticle = document.getElementById('btn-gen-article');
+  const articleStatus = document.getElementById('article-status');
+  const outputZone = document.getElementById('output-zone');
+  const articlePreview = document.getElementById('article-preview');
+  const btnCopyHtml = document.getElementById('btn-copy-html');
 
-  window.addEventListener('DOMContentLoaded', () => {
-    const params = new URLSearchParams(window.location.search);
-    const kw = params.get('kw');
-    if (kw) keywordInput.value = kw;
-  });
+  // URL 파라미터 자동 입력 지원
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('kw')) {
+    targetKeyword.value = urlParams.get('kw');
+  }
 
-  catButtons.forEach(btn => {
+  // 카테고리 선택
+  catBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      catButtons.forEach(b => b.classList.remove('active'));
+      catBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       selectedCategory = btn.getAttribute('data-cat');
     });
   });
 
-  btnTitles.addEventListener('click', async () => {
-    const kw = keywordInput.value.trim();
-    if (!kw) return alert("키워드를 입력해 주세요.");
+  // STEP 0: 실시간 트렌드 발굴
+  btnFetchTrending.addEventListener('click', async () => {
+    btnFetchTrending.disabled = true;
+    trendingStatus.style.color = "var(--primary)";
+    trendingStatus.innerText = "🔍 구글 실시간 검색으로 최신 팩트 이슈 분석 중... (약 4~5초)";
+    trendingContainer.innerHTML = "";
 
-    btnTitles.disabled = true;
-    statusTitle.style.color = "var(--primary)";
-    statusTitle.innerText = "🔍 검색 의도에 맞춘 제목 5개 생성 중...";
-    titlesWrapper.style.display = "none";
+    try {
+      const res = await fetch(`${WORKER_URL}/api/recommend-trending-topics`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category: selectedCategory })
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error || "트렌드 조회 실패");
+
+      renderTrendingCards(data.topics);
+      trendingStatus.innerText = "";
+    } catch (err) {
+      trendingStatus.style.color = "var(--danger)";
+      trendingStatus.innerText = err.message;
+    } finally {
+      btnFetchTrending.disabled = false;
+    }
+  });
+
+  function renderTrendingCards(topics) {
+    trendingContainer.innerHTML = "";
+    if (!topics || topics.length === 0) {
+      trendingContainer.innerHTML = "<p style='text-align:center;'>추천 결과가 없습니다.</p>";
+      return;
+    }
+
+    topics.forEach((t, idx) => {
+      const card = document.createElement('div');
+      card.className = "topic-card";
+      
+      const qListHtml = (t.questions || []).map(q => `<li>${escapeHtml(q)}</li>`).join('');
+
+      card.innerHTML = `
+        <div class="topic-head">
+          <span class="topic-kw">${idx + 1}. ${escapeHtml(t.keyword)}</span>
+          <span class="topic-badge">실시간 팩트</span>
+        </div>
+        <div class="topic-reason">${escapeHtml(t.whySelected)}</div>
+        <div class="topic-questions">
+          <strong>🤔 독자 핵심 질문 TOP 3:</strong>
+          <ul>${qListHtml}</ul>
+        </div>
+        <div class="topic-select-cta">👉 클릭 시 1단계 키워드로 즉시 반영</div>
+      `;
+
+      // 카드 클릭 시 키워드 자동 주입 & 스크롤 이동
+      card.addEventListener('click', () => {
+        targetKeyword.value = t.keyword;
+        document.getElementById('step1-card').scrollIntoView({ behavior: 'smooth' });
+        targetKeyword.focus();
+      });
+
+      trendingContainer.appendChild(card);
+    });
+  }
+
+  // STEP 1: 제목 5개 추출
+  btnGenTitles.addEventListener('click', async () => {
+    const kw = targetKeyword.value.trim();
+    if (!kw) return alert("키워드를 입력하거나 위 트렌드 카드를 선택하세요.");
+
+    btnGenTitles.disabled = true;
+    titlesStatus.style.color = "var(--primary)";
+    titlesStatus.innerText = "🔍 검색 의도에 맞춘 제목 5개 추출 중...";
+    titlesContainer.innerHTML = "";
+    step2Card.style.display = "none";
 
     try {
       const res = await fetch(`${WORKER_URL}/api/generate-titles`, {
@@ -312,240 +420,135 @@
         body: JSON.stringify({ category: selectedCategory, keyword: kw })
       });
       const data = await res.json();
-      if (!res.ok || data.error) throw new Error(data.error?.message || data.error || "제목 생성 실패");
+      if (!res.ok || data.error) throw new Error(data.error || "제목 생성 실패");
 
-      titlesContainer.innerHTML = "";
-      data.titles.forEach((item, idx) => {
-        const row = document.createElement('div');
-        row.className = "title-item";
-        
-        const titleSpan = document.createElement('span');
-        titleSpan.innerText = `${idx + 1}. ${item.title}`;
-        
-        const actionBtn = document.createElement('button');
-        actionBtn.innerText = "작성하기 ➔";
-        
-        // 안전하게 이벤트 리스너로 연결
-        actionBtn.addEventListener('click', () => {
-          generateFullArticle(item.title);
-        });
-
-        row.appendChild(titleSpan);
-        row.appendChild(actionBtn);
-        titlesContainer.appendChild(row);
-      });
-
-      statusTitle.innerText = "";
-      titlesWrapper.style.display = "block";
+      renderTitles(data.titles);
+      titlesStatus.innerText = "";
+      step2Card.style.display = "block";
     } catch (err) {
-      statusTitle.style.color = "var(--danger)";
-      statusTitle.innerText = `오류: ${err.message}`;
+      titlesStatus.style.color = "var(--danger)";
+      titlesStatus.innerText = err.message;
     } finally {
-      btnTitles.disabled = false;
+      btnGenTitles.disabled = false;
     }
   });
 
-  async function generateFullArticle(chosenTitle) {
-    const kw = keywordInput.value.trim();
-    articleWrapper.style.display = "block";
-    metaBox.innerHTML = "⏳ <strong>실전형 블로그 글 작성 중...</strong> (약 10~15초 소요)";
-    renderZone.innerHTML = "<p style='text-align:center; color:var(--ink-soft);'>본문과 인라인 요약 카드를 배치하고 있습니다...</p>";
-    articleWrapper.scrollIntoView({ behavior: 'smooth' });
+  function renderTitles(titles) {
+    titlesContainer.innerHTML = "";
+    titles.forEach((item, idx) => {
+      const row = document.createElement('label');
+      row.className = `title-option ${idx === 0 ? 'selected' : ''}`;
+      
+      const radio = document.createElement('input');
+      radio.type = "radio";
+      radio.name = "title-radio";
+      radio.value = item.title;
+      if (idx === 0) {
+        radio.checked = true;
+        selectedTitle = item.title;
+      }
+
+      radio.addEventListener('change', () => {
+        document.querySelectorAll('.title-option').forEach(el => el.classList.remove('selected'));
+        row.classList.add('selected');
+        selectedTitle = item.title;
+      });
+
+      row.appendChild(radio);
+      row.appendChild(document.createTextNode(item.title));
+      titlesContainer.appendChild(row);
+    });
+  }
+
+  // STEP 2: 본문 및 카드뉴스 생성
+  btnGenArticle.addEventListener('click', async () => {
+    if (!selectedTitle) return alert("제목을 먼저 선택해 주세요.");
+
+    btnGenArticle.disabled = true;
+    articleStatus.style.color = "var(--primary)";
+    articleStatus.innerText = "🔍 실시간 구글 팩트체크 후 본문 집필 중... (약 5~8초)";
+    outputZone.style.display = "none";
 
     try {
       const res = await fetch(`${WORKER_URL}/api/generate-article`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ category: selectedCategory, keyword: kw, title: chosenTitle })
+        body: JSON.stringify({
+          category: selectedCategory,
+          keyword: targetKeyword.value.trim(),
+          title: selectedTitle
+        })
       });
       const data = await res.json();
-      if (!res.ok || data.error) throw new Error(data.error?.message || data.error || "글 생성 실패");
+      if (!res.ok || data.error) throw new Error(data.error || "본문 생성 실패");
 
-      metaBox.innerHTML = `
-        <strong>제목:</strong> ${escapeHtml(chosenTitle)}<br/>
-        <strong>SEO 요약:</strong> ${escapeHtml(data.metaDescription || '')}<br/>
-        <strong>태그:</strong> ${(data.tags || []).map(t => `#${escapeHtml(t)}`).join(' ')}
-      `;
-
-      renderZone.innerHTML = "";
-      fullRawText = `${chosenTitle}\n\n${data.intro}\n\n`;
-
-      // 1. 대표 썸네일
-      const mainThumbDiv = document.createElement('div');
-      mainThumbDiv.className = 'main-thumb-box';
-      const mainCanvas = document.createElement('canvas');
-      mainCanvas.width = 600;
-      mainCanvas.height = 600;
-      drawMainThumbnail(mainCanvas, selectedCategory, chosenTitle);
-      
-      const dlMainBtn = document.createElement('button');
-      dlMainBtn.className = 'btn-dl';
-      dlMainBtn.innerText = '💾 대표 썸네일 다운로드';
-      dlMainBtn.onclick = () => downloadCanvas(mainCanvas, '대표_썸네일.png');
-      
-      mainThumbDiv.appendChild(mainCanvas);
-      mainThumbDiv.appendChild(document.createElement('br'));
-      mainThumbDiv.appendChild(dlMainBtn);
-      renderZone.appendChild(mainThumbDiv);
-
-      // 2. 도입부
-      const introP = document.createElement('p');
-      introP.style.whiteSpace = "pre-line";
-      introP.innerText = data.intro;
-      renderZone.appendChild(introP);
-
-      // 3. 본문 챕터 + 챕터 바로 아래 요약 카드
-      if (Array.isArray(data.sections)) {
-        data.sections.forEach((sec, i) => {
-          const secBlock = document.createElement('div');
-          secBlock.className = 'section-block';
-
-          const h2 = document.createElement('div');
-          h2.className = 'section-title';
-          h2.innerText = `📌 ${sec.title}`;
-          secBlock.appendChild(h2);
-
-          const cardBox = document.createElement('div');
-          cardBox.className = 'inline-card-box';
-          const subCanvas = document.createElement('canvas');
-          subCanvas.width = 600;
-          subCanvas.height = 360;
-          drawSubCard(subCanvas, sec.step || `POINT 0${i+1}`, sec.title, sec.cardHighlight || '');
-          
-          const dlSubBtn = document.createElement('button');
-          dlSubBtn.className = 'btn-dl';
-          dlSubBtn.innerText = `💾 ${sec.step || `POINT 0${i+1}`} 카드 다운로드`;
-          dlSubBtn.onclick = () => downloadCanvas(subCanvas, `${sec.step}_요약카드.png`);
-
-          cardBox.appendChild(subCanvas);
-          cardBox.appendChild(dlSubBtn);
-          secBlock.appendChild(cardBox);
-
-          const bodyP = document.createElement('p');
-          bodyP.style.whiteSpace = "pre-line";
-          bodyP.innerText = sec.body;
-          secBlock.appendChild(bodyP);
-
-          renderZone.appendChild(secBlock);
-          fullRawText += `\n## ${sec.title}\n\n${sec.body}\n\n`;
-        });
-      }
-
-      // 4. 마무리 & 공식 출처
-      if (data.outro) {
-        const outroP = document.createElement('p');
-        outroP.style.whiteSpace = "pre-line";
-        outroP.style.marginTop = "20px";
-        outroP.innerText = data.outro;
-        renderZone.appendChild(outroP);
-        fullRawText += `\n${data.outro}\n\n`;
-      }
-
-      if (data.source) {
-        const sourceDiv = document.createElement('div');
-        sourceDiv.className = 'source-box';
-        sourceDiv.innerHTML = `<strong>🏛️ 정보 및 공식 출처:</strong> ${escapeHtml(data.source)}`;
-        renderZone.appendChild(sourceDiv);
-        fullRawText += `\n[공식 출처]: ${data.source}\n`;
-      }
-
+      generatedArticleData = data;
+      renderArticlePreview(data);
+      outputZone.style.display = "block";
+      articleStatus.innerText = "";
     } catch (err) {
-      metaBox.innerHTML = `<span style="color:var(--danger)">❌ 오류 발생: ${escapeHtml(err.message)}</span>`;
-      renderZone.innerHTML = "";
+      articleStatus.style.color = "var(--danger)";
+      articleStatus.innerText = err.message;
+    } finally {
+      btnGenArticle.disabled = false;
     }
+  });
+
+  function renderArticlePreview(data) {
+    let text = `[SEO 요약]\n${data.metaDescription}\n\n`;
+    text += `[태그]\n${data.tags.map(t => `#${t}`).join(' ')}\n\n`;
+    text += `[도입부]\n${data.intro}\n\n`;
+    data.sections.forEach(sec => {
+      text += `■ ${sec.step}: ${sec.title}\n`;
+      text += `💡 팩트 요약: ${sec.cardHighlight}\n`;
+      text += `${sec.body}\n\n`;
+    });
+    text += `[마무리]\n${data.outro}\n\n[출처: ${data.source}]`;
+    articlePreview.innerText = text;
   }
 
-  function drawMainThumbnail(canvas, category, title) {
-    const ctx = canvas.getContext('2d');
-    const grad = ctx.createLinearGradient(0, 0, 600, 600);
-    grad.addColorStop(0, '#0F172A');
-    grad.addColorStop(1, '#1E293B');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, 600, 600);
+  // 네이버 블로그용 HTML 서식 클립보드 복사
+  btnCopyHtml.addEventListener('click', () => {
+    if (!generatedArticleData) return;
+    const d = generatedArticleData;
 
-    ctx.strokeStyle = '#38BDF8';
-    ctx.lineWidth = 12;
-    ctx.strokeRect(16, 16, 568, 568);
+    let html = `
+      <div style="font-family: 'Apple SD Gothic Neo', sans-serif; line-height: 1.8; color: #1e293b; max-width: 680px; margin: 0 auto;">
+        <p style="font-size: 16px; color: #334155; margin-bottom: 24px;">${escapeHtml(d.intro)}</p>
+    `;
 
-    ctx.fillStyle = '#2563EB';
-    ctx.beginPath();
-    ctx.roundRect(40, 48, 200, 44, 8);
-    ctx.fill();
+    d.sections.forEach(sec => {
+      html += `
+        <h2 style="font-size: 19px; font-weight: 800; color: #0f172a; margin-top: 36px; margin-bottom: 12px; border-bottom: 2px solid #2563eb; padding-bottom: 6px;">
+          ${escapeHtml(sec.step)}. ${escapeHtml(sec.title)}
+        </h2>
+        <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 14px 16px; border-radius: 0 8px 8px 0; margin-bottom: 14px;">
+          <strong style="color: #1e40af; font-size: 14.5px;">💡 핵심 체크:</strong>
+          <span style="color: #1e3a8a; font-size: 14.5px; font-weight: 600;"> ${escapeHtml(sec.cardHighlight)}</span>
+        </div>
+        <p style="font-size: 15.5px; color: #334155; margin-bottom: 24px;">${escapeHtml(sec.body)}</p>
+      `;
+    });
 
-    ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 19px Pretendard, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(`📌 ${category}`, 140, 78);
+    html += `
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-top: 36px;">
+          <p style="font-size: 15px; color: #334155; margin: 0 0 10px;">${escapeHtml(d.outro)}</p>
+          <p style="font-size: 13px; color: #64748b; margin: 0;">📌 공식 출처: <strong>${escapeHtml(d.source)}</strong></p>
+        </div>
+        <p style="font-size: 13.5px; color: #2563eb; margin-top: 20px;">${d.tags.map(t => `#${escapeHtml(t)}`).join(' ')}</p>
+      </div>
+    `;
 
-    ctx.fillStyle = '#F8FAFC';
-    ctx.font = 'bold 34px Pretendard, sans-serif';
-    drawMultiLine(ctx, title, 300, 260, 480, 50);
-
-    ctx.fillStyle = '#F59E0B';
-    ctx.font = 'bold 22px Pretendard, sans-serif';
-    ctx.fillText('⚡ 실전 핵심 총정리', 300, 535);
-  }
-
-  function drawSubCard(canvas, step, title, highlight) {
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#0F172A';
-    ctx.fillRect(0, 0, 600, 360);
-
-    ctx.fillStyle = '#1E293B';
-    ctx.beginPath();
-    ctx.roundRect(16, 16, 568, 328, 14);
-    ctx.fill();
-
-    ctx.fillStyle = '#38BDF8';
-    ctx.font = 'bold 20px Pretendard, sans-serif';
-    ctx.textAlign = 'left';
-    ctx.fillText(`💡 ${step}`, 45, 65);
-
-    ctx.fillStyle = '#F8FAFC';
-    ctx.font = 'bold 26px Pretendard, sans-serif';
-    drawMultiLine(ctx, title, 45, 115, 510, 34, 'left');
-
-    ctx.fillStyle = '#334155';
-    ctx.beginPath();
-    ctx.roundRect(35, 200, 530, 115, 10);
-    ctx.fill();
-
-    ctx.fillStyle = '#FDE047';
-    ctx.font = 'bold 20px Pretendard, sans-serif';
-    drawMultiLine(ctx, `👉 ${highlight}`, 55, 248, 490, 30, 'left');
-  }
-
-  function drawMultiLine(ctx, text, x, startY, maxWidth, lineHeight, align = 'center') {
-    ctx.textAlign = align;
-    const words = text.split(' ');
-    let line = '';
-    let y = startY;
-
-    for (let n = 0; n < words.length; n++) {
-      const testLine = line + words[n] + ' ';
-      const metrics = ctx.measureText(testLine);
-      if (metrics.width > maxWidth && n > 0) {
-        ctx.fillText(line.trim(), x, y);
-        line = words[n] + ' ';
-        y += lineHeight;
-      } else {
-        line = testLine;
-      }
-    }
-    ctx.fillText(line.trim(), x, y);
-  }
-
-  function downloadCanvas(canvas, filename) {
-    const link = document.createElement('a');
-    link.download = filename;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-  }
-
-  btnCopyText.addEventListener('click', () => {
-    if (!fullRawText) return;
-    navigator.clipboard.writeText(fullRawText).then(() => {
-      alert("전체 본문 텍스트가 복사되었습니다!");
+    navigator.clipboard.write([
+      new ClipboardItem({
+        'text/html': new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([articlePreview.innerText], { type: 'text/plain' })
+      })
+    ]).then(() => {
+      alert("네이버 블로그 서식(HTML)이 복사되었습니다! 블로그 에디터에 바로 붙여넣기(Ctrl+V) 하세요.");
+    }).catch(() => {
+      navigator.clipboard.writeText(articlePreview.innerText);
+      alert("텍스트가 복사되었습니다.");
     });
   });
 
