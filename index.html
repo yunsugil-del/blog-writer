@@ -234,9 +234,6 @@
       border-radius: 10px;
       border: 1px solid var(--border);
     }
-    .visual-item.full-width {
-      grid-column: span 2;
-    }
     .visual-item canvas {
       width: 100%;
       height: auto;
@@ -344,7 +341,7 @@
     <div id="article-msg" class="status-alert"></div>
 
     <div id="output-area" style="display: none; margin-top: 18px;">
-      <div style="font-size:13.5px; font-weight:700; margin-bottom:8px;">🎨 생성된 커버 & 카드뉴스 (5장)</div>
+      <div style="font-size:13.5px; font-weight:700; margin-bottom:8px;">🎨 생성된 썸네일 & 카드뉴스 (4장)</div>
       <div class="visual-gallery" id="canvas-gallery"></div>
 
       <div style="font-size:13.5px; font-weight:700; margin-bottom:8px;">📝 작성된 전문 원고 (복사 전용)</div>
@@ -546,7 +543,7 @@
   });
 
   function renderArticle(data) {
-    const stripTags = (s) => (s || '').replace(/<[^>]*>/g, '');
+    const stripTags = (s) => (s || '').replace(/<[^>]*>/g, '').replace(/\*\*/g, '');
 
     let preview = `[📷 대표 썸네일 이미지 들어갈 자리]\n\n`;
     preview += `${stripTags(data.intro)}\n\n`;
@@ -554,7 +551,6 @@
     data.sections.forEach((sec, idx) => {
       preview += `■ ${sec.step}: ${sec.title}\n\n`;
       preview += `[📷 챕터 ${idx + 1} 요약 카드뉴스 이미지 들어갈 자리]\n\n`;
-      preview += `👉 ${sec.cardHighlight}\n\n`;
       preview += `${stripTags(sec.body)}\n\n`;
 
       if (sec.table && sec.table.rows && sec.table.rows.length > 0) {
@@ -572,18 +568,9 @@
     articleText.innerText = preview;
   }
 
-  // 총 5장 캔버스 렌더링 (와이드 커버 1장 + 정사각형 썸네일 1장 + 카드뉴스 3장)
   function renderVisualGallery(data) {
     canvasGallery.innerHTML = "";
 
-    // 1. 네이버 블로그 제목 배경 전용 '와이드 커버' (1920x800)
-    const wideCanvas = createWideHeaderCanvas({
-      bgColor: "#0F172A",
-      accentColor: "#3B82F6"
-    });
-    appendCanvasToGallery(wideCanvas, "블로그 제목 배경(커버)", true);
-
-    // 2. 대표 정사각형 썸네일 (1080x1080)
     const thumbCanvas = createCardCanvas({
       badge: data.thumbnail?.badge || `${new Date().getFullYear()} 실생활 꿀팁`,
       title: data.thumbnail?.mainTitle || mainKeyword.value.trim(),
@@ -591,9 +578,8 @@
       bgColor: "#1E293B",
       accentColor: "#3B82F6"
     });
-    appendCanvasToGallery(thumbCanvas, "대표 썸네일 (본문 상단)");
+    appendCanvasToGallery(thumbCanvas, "대표 썸네일");
 
-    // 3. 챕터별 카드뉴스 3장 (1080x1080)
     const cardBgColors = ["#0F172A", "#1E3A8A", "#064E3B"];
     data.sections.forEach((sec, idx) => {
       const cardCanvas = createCardCanvas({
@@ -607,33 +593,6 @@
     });
   }
 
-  // 와이드 커버 캔버스 생성기 (글씨 없이 은은한 딥톤 그라데이션)
-  function createWideHeaderCanvas({ bgColor, accentColor }) {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1920;
-    canvas.height = 800;
-    const ctx = canvas.getContext('2d');
-
-    const grad = ctx.createLinearGradient(0, 0, 1920, 800);
-    grad.addColorStop(0, bgColor);
-    grad.addColorStop(1, "#1E293B");
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, 1920, 800);
-
-    // 은은한 포인트 라이트 효과
-    ctx.fillStyle = accentColor;
-    ctx.globalAlpha = 0.15;
-    ctx.beginPath();
-    ctx.arc(1700, 200, 400, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.globalAlpha = 1.0;
-    ctx.fillRect(100, 750, 1720, 6);
-
-    return canvas;
-  }
-
-  // 정사각형 카드 캔버스 생성기
   function createCardCanvas({ badge, title, sub, bgColor, accentColor }) {
     const canvas = document.createElement('canvas');
     canvas.width = 1080;
@@ -685,9 +644,9 @@
     ctx.fillText(line, x, y);
   }
 
-  function appendCanvasToGallery(canvas, labelText, isFullWidth = false) {
+  function appendCanvasToGallery(canvas, labelText) {
     const box = document.createElement('div');
-    box.className = `visual-item ${isFullWidth ? 'full-width' : ''}`;
+    box.className = "visual-item";
     
     const dlBtn = document.createElement('button');
     dlBtn.className = "btn-dl-single";
@@ -704,14 +663,21 @@
     canvasGallery.appendChild(box);
   }
 
+  // ** 마크다운 및 mark 태그를 100% 네이버 블로그 안전 서식으로 변환
   function safeHighlightHtml(str) {
     if (!str) return '';
     let safe = escapeHtml(str);
+    
+    // ** 마크다운 볼드를 <strong> 태그로 완벽 치환
+    safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong style="color: #0f172a; font-weight: 800;">$1</strong>');
+    
+    // <mark> 및 <strong> 태그 인라인 서식 적용
     safe = safe.replace(/&lt;mark&gt;(.*?)&lt;\/mark&gt;/gi, '<span style="background-color: #fef08a; padding: 2px 4px; border-radius: 3px; font-weight: 700; color: #854d0e;">$1</span>');
     safe = safe.replace(/&lt;strong&gt;(.*?)&lt;\/strong&gt;/gi, '<strong style="color: #0f172a; font-weight: 800;">$1</strong>');
     return safe;
   }
 
+  // 네이버 블로그 완벽 최적화 서식 (중복 요약 제거, 깔끔한 카드뉴스 중심 레이아웃)
   btnCopyClipboard.addEventListener('click', () => {
     if (!rawArticleJson) return;
     const d = rawArticleJson;
@@ -728,25 +694,22 @@
 
     d.sections.forEach((sec, idx) => {
       html += `
-        <h2 style="font-size: 19px; font-weight: 800; color: #0f172a; margin-top: 36px; margin-bottom: 14px; border-bottom: 2px solid #2563eb; padding-bottom: 8px;">
+        <h2 style="font-size: 19px; font-weight: 800; color: #0f172a; margin-top: 38px; margin-bottom: 14px; border-bottom: 2px solid #2563eb; padding-bottom: 8px;">
           ${escapeHtml(sec.step)}. ${escapeHtml(sec.title)}
         </h2>
 
         <div style="background: #f1f5f9; border: 2px dashed #94a3b8; border-radius: 8px; padding: 12px; text-align: center; color: #475569; font-weight: 700; margin-bottom: 16px; font-size: 13.5px;">
           📷 [여기에 '카드뉴스 ${idx + 1}' 이미지를 첨부하세요]
         </div>
-
-        <div style="background: #f0fdf4; border-left: 4px solid #10b981; padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 16px;">
-          <span style="color: #065f46; font-size: 14.5px; font-weight: 600;">👉 ${escapeHtml(sec.cardHighlight)}</span>
-        </div>
         
         <p style="font-size: 16px; color: #334155; margin-bottom: 20px; line-height: 1.8;">${safeHighlightHtml(sec.body)}</p>
       `;
 
+      // 비교 요약 박스 (모바일 인용구 박스 스타일 적용)
       if (sec.table && sec.table.rows && sec.table.rows.length > 0) {
         html += `
-          <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 16px; margin: 24px 0;">
-            <div style="font-weight: 800; color: #1e293b; font-size: 15px; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">
+          <div style="background: #f8fafc; border-left: 4px solid #3b82f6; border-radius: 0 8px 8px 0; padding: 16px; margin: 24px 0;">
+            <div style="font-weight: 800; color: #1e293b; font-size: 14.5px; margin-bottom: 10px;">
               📌 한눈에 보는 핵심 요약
             </div>
         `;
@@ -754,8 +717,8 @@
           const itemTitle = safeHighlightHtml(r[0]);
           const itemContent = r.slice(1).map(c => safeHighlightHtml(c)).join(' · ');
           html += `
-            <div style="margin-bottom: 10px; font-size: 14.5px; line-height: 1.6;">
-              <span style="background: #e2e8f0; color: #0f172a; font-weight: 700; padding: 2px 8px; border-radius: 4px; font-size: 13px; margin-right: 6px;">${itemTitle}</span>
+            <div style="margin-bottom: 8px; font-size: 14px; line-height: 1.6;">
+              <span style="background: #e2e8f0; color: #0f172a; font-weight: 700; padding: 2px 6px; border-radius: 4px; font-size: 12.5px; margin-right: 6px;">${itemTitle}</span>
               <span style="color: #334155; font-weight: 600;">${itemContent}</span>
             </div>
           `;
