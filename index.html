@@ -3,19 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>콘텐츠 팩토리 스튜디오</title>
+  <title>블로그 콘텐츠 스튜디오 Pro</title>
   <style>
     :root {
-      --primary: #3B82F6;
+      --primary: #2563EB;
       --primary-dark: #1D4ED8;
       --primary-subtle: #EFF6FF;
       --bg: #F8FAFC;
       --card-bg: #FFFFFF;
       --text-main: #0F172A;
       --text-sub: #475569;
-      --text-muted: #94A3B8;
       --border: #E2E8F0;
-      --border-focus: #3B82F6;
       --accent: #10B981;
       --accent-dark: #059669;
       --warning-bg: #FFFBEB;
@@ -31,9 +29,8 @@
       padding: 20px 14px 100px;
       line-height: 1.5;
     }
-    .wrapper { max-width: 640px; margin: 0 auto; width: 100%; }
+    .wrapper { max-width: 680px; margin: 0 auto; width: 100%; }
 
-    /* 헤더 */
     .app-header { text-align: center; margin-bottom: 24px; padding: 0 8px; }
     .badge-live {
       display: inline-flex;
@@ -65,14 +62,13 @@
     }
     .app-header p { font-size: 13.5px; color: var(--text-sub); margin: 0; }
 
-    /* 카드 공통 */
     .section-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 18px 16px;
       box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
     .card-title {
       display: flex;
@@ -92,7 +88,6 @@
       border-radius: 6px;
     }
 
-    /* 카테고리 칩 */
     .chip-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -118,7 +113,6 @@
       font-weight: 700;
     }
 
-    /* 버튼 스타일 */
     .btn-action {
       width: 100%;
       background: var(--primary);
@@ -133,8 +127,7 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
-      transition: background 0.15s ease;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
     }
     .btn-action:disabled {
       background: #CBD5E1;
@@ -142,25 +135,18 @@
       cursor: not-allowed;
     }
 
-    /* 입력 필드 레이아웃 (모바일 대응 수직 정렬) */
-    .input-vertical-group {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    .input-vertical-group { display: flex; flex-direction: column; gap: 10px; }
     .custom-input {
       width: 100%;
       padding: 13px 14px;
       border: 1.5px solid var(--border);
       border-radius: 10px;
       font-size: 14.5px;
-      color: var(--text-main);
-      background: #FFFFFF;
       outline: none;
     }
     .custom-input:focus {
-      border-color: var(--border-focus);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
     }
     .btn-sub-action {
       background: #1E293B;
@@ -171,11 +157,8 @@
       font-size: 14px;
       font-weight: 700;
       cursor: pointer;
-      text-align: center;
     }
-    .btn-sub-action:disabled { background: #94A3B8; cursor: not-allowed; }
 
-    /* 트렌드 피드 카드 */
     .trend-stream { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
     .feed-item {
       border: 1px solid var(--border);
@@ -183,7 +166,6 @@
       padding: 14px;
       background: #FFFFFF;
       cursor: pointer;
-      position: relative;
     }
     .feed-item:active { background: #F8FAFC; }
     .feed-top {
@@ -201,7 +183,7 @@
       padding: 2px 6px;
       border-radius: 4px;
     }
-    .feed-desc { font-size: 13px; color: var(--text-sub); margin-bottom: 10px; line-height: 1.45; }
+    .feed-desc { font-size: 13px; color: var(--text-sub); margin-bottom: 8px; line-height: 1.45; }
     .feed-qbox {
       background: var(--warning-bg);
       border: 1px solid var(--warning-border);
@@ -211,7 +193,6 @@
       color: var(--warning-text);
     }
     .feed-qbox ul { margin: 4px 0 0; padding-left: 14px; }
-    .feed-qbox li { margin-bottom: 2px; }
     .feed-pick-text {
       margin-top: 8px;
       font-size: 12px;
@@ -220,7 +201,6 @@
       text-align: right;
     }
 
-    /* 제목 선택 리스트 */
     .title-selector { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
     .title-radio-card {
       display: flex;
@@ -231,28 +211,58 @@
       border-radius: 10px;
       cursor: pointer;
       font-size: 14px;
-      color: var(--text-main);
       background: #FFF;
     }
-    .title-radio-card input { margin-top: 3px; accent-color: var(--primary); }
     .title-radio-card.active {
       border-color: var(--primary);
       background: var(--primary-subtle);
       font-weight: 700;
     }
 
-    /* 원고 출력 영역 */
+    .visual-gallery {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .visual-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: #F8FAFC;
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .visual-item canvas {
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .btn-dl-single {
+      background: #334155;
+      color: #fff;
+      border: none;
+      padding: 6px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+    }
+
     .preview-box {
       background: #F8FAFC;
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 14px;
-      font-size: 13.5px;
-      line-height: 1.6;
-      max-height: 380px;
+      padding: 16px;
+      font-size: 14px;
+      line-height: 1.8;
+      max-height: 420px;
       overflow-y: auto;
       white-space: pre-wrap;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       color: var(--text-main);
     }
     .btn-copy-done {
@@ -260,9 +270,9 @@
       background: var(--accent);
       color: #fff;
       border: none;
-      padding: 13px;
+      padding: 14px;
       border-radius: 10px;
-      font-size: 14.5px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
     }
@@ -279,11 +289,10 @@
 <body>
 
 <div class="wrapper">
-  <!-- Header -->
   <header class="app-header">
     <div class="badge-live">LIVE SEARCH ENGINE</div>
-    <h1>블로그 콘텐츠 스튜디오</h1>
-    <p>실시간 팩트 기반 트렌드 발굴 & 원고 생성</p>
+    <h1>블로그 콘텐츠 스튜디오 Pro</h1>
+    <p>실시간 구글 검색 기반 트렌드 발굴 & 카드뉴스 원고 생성</p>
   </header>
 
   <!-- STEP 0: 실시간 트렌드 -->
@@ -305,7 +314,7 @@
     <div class="trend-stream" id="trend-list"></div>
   </section>
 
-  <!-- STEP 1: 키워드 입력 & 제목 추천 -->
+  <!-- STEP 1: 키워드 & 제목 -->
   <section class="section-card" id="step1-section">
     <div class="card-title">
       <span class="step-tag">1단계</span>
@@ -321,19 +330,24 @@
     <div class="title-selector" id="title-list"></div>
   </section>
 
-  <!-- STEP 2: 본문 집필 -->
+  <!-- STEP 2: 본문 & 시각자료 생성 -->
   <section class="section-card" id="step2-section" style="display: none;">
     <div class="card-title">
       <span class="step-tag">2단계</span>
-      <span>검증 원고 & 팩트 카드 생성</span>
+      <span>본문 & 카드뉴스 썸네일 제작</span>
     </div>
 
-    <button class="btn-action" id="btn-make-article">✍️ 선택한 제목으로 검증 원고 생성</button>
+    <button class="btn-action" id="btn-make-article">✍️ 고품질 원고 & 썸네일 일괄 생성</button>
     <div id="article-msg" class="status-alert"></div>
 
-    <div id="output-area" style="display: none; margin-top: 16px;">
+    <div id="output-area" style="display: none; margin-top: 18px;">
+      <div style="font-size:13.5px; font-weight:700; margin-bottom:8px;">🎨 생성된 썸네일 & 카드뉴스 (4장)</div>
+      <div class="visual-gallery" id="canvas-gallery"></div>
+
+      <div style="font-size:13.5px; font-weight:700; margin-bottom:8px;">📝 작성된 전문 원고</div>
       <div class="preview-box" id="article-text"></div>
-      <button class="btn-copy-done" id="btn-copy-clipboard">📋 네이버 블로그 서식 복사</button>
+      
+      <button class="btn-copy-done" id="btn-copy-clipboard">📋 네이버 블로그 서식(HTML) 복사</button>
     </div>
   </section>
 </div>
@@ -343,6 +357,7 @@
 
   let activeCategory = "경제·복지·지원금";
   let currentTitle = "";
+  let currentQuestions = []; // 0단계에서 선택된 독자 질문 3가지 저장
   let rawArticleJson = null;
 
   const chipBtns = document.querySelectorAll('.chip-btn');
@@ -359,10 +374,10 @@
   const btnMakeArticle = document.getElementById('btn-make-article');
   const articleMsg = document.getElementById('article-msg');
   const outputArea = document.getElementById('output-area');
+  const canvasGallery = document.getElementById('canvas-gallery');
   const articleText = document.getElementById('article-text');
   const btnCopyClipboard = document.getElementById('btn-copy-clipboard');
 
-  // 카테고리 칩 선택
   chipBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       chipBtns.forEach(b => b.classList.remove('active'));
@@ -371,11 +386,11 @@
     });
   });
 
-  // STEP 0: 실시간 트렌드 조회
+  // STEP 0: 실시간 트렌드
   btnFetchTrend.addEventListener('click', async () => {
     btnFetchTrend.disabled = true;
     trendMsg.style.color = "var(--primary)";
-    trendMsg.innerText = "🔍 구글 실시간 검색 기반 핫이슈 분석 중... (약 4~5초)";
+    trendMsg.innerText = "🔍 구글 실시간 검색 기반 최신 핫이슈 분석 중... (약 4~5초)";
     trendList.innerHTML = "";
 
     try {
@@ -416,7 +431,7 @@
         </div>
         <div class="feed-desc">${escapeHtml(t.whySelected)}</div>
         <div class="feed-qbox">
-          <strong>🤔 독자 핵심 궁금증:</strong>
+          <strong>🤔 독자 핵심 질문:</strong>
           <ul>${qList}</ul>
         </div>
         <div class="feed-pick-text">👉 클릭하여 1단계 키워드로 반영</div>
@@ -424,6 +439,7 @@
 
       card.addEventListener('click', () => {
         mainKeyword.value = t.keyword;
+        currentQuestions = t.questions || []; // 질문 배열 저장
         document.getElementById('step1-section').scrollIntoView({ behavior: 'smooth' });
         mainKeyword.focus();
       });
@@ -493,13 +509,13 @@
     });
   }
 
-  // STEP 2: 본문 집필
+  // STEP 2: 본문 및 카드뉴스 생성 (독자 질문 함께 전송)
   btnMakeArticle.addEventListener('click', async () => {
     if (!currentTitle) return alert("제목을 먼저 선택해 주세요.");
 
     btnMakeArticle.disabled = true;
     articleMsg.style.color = "var(--primary)";
-    articleMsg.innerText = "🔍 실시간 구글 팩트체크 후 원고 집필 중... (약 5~8초)";
+    articleMsg.innerText = "🔍 독자 핵심 질문 3가지 반영 및 팩트 본문 집필 중... (약 6~10초)";
     outputArea.style.display = "none";
 
     try {
@@ -509,7 +525,8 @@
         body: JSON.stringify({
           category: activeCategory,
           keyword: mainKeyword.value.trim(),
-          title: currentTitle
+          title: currentTitle,
+          questions: currentQuestions // 질문 배열 전달
         })
       });
       const data = await res.json();
@@ -517,6 +534,7 @@
 
       rawArticleJson = data;
       renderArticle(data);
+      renderVisualGallery(data);
       outputArea.style.display = "block";
       articleMsg.innerText = "";
     } catch (err) {
@@ -528,8 +546,8 @@
   });
 
   function renderArticle(data) {
-    let preview = `[SEO 요약]\n${data.metaDescription}\n\n`;
-    preview += `[태그]\n${data.tags.map(t => `#${t}`).join(' ')}\n\n`;
+    let preview = `[SEO 메타 요약]\n${data.metaDescription}\n\n`;
+    preview += `[추천 태그]\n${data.tags.map(t => `#${t}`).join(' ')}\n\n`;
     preview += `[도입부]\n${data.intro}\n\n`;
     data.sections.forEach(sec => {
       preview += `■ ${sec.step}: ${sec.title}\n`;
@@ -540,35 +558,129 @@
     articleText.innerText = preview;
   }
 
-  // 클립보드 복사
+  function renderVisualGallery(data) {
+    canvasGallery.innerHTML = "";
+
+    const thumbCanvas = createCardCanvas({
+      badge: data.thumbnail?.badge || "2026 팩트체크",
+      title: data.thumbnail?.mainTitle || mainKeyword.value.trim(),
+      sub: data.thumbnail?.subTitle || "핵심 총정리 가이드",
+      bgColor: "#1E293B",
+      accentColor: "#3B82F6"
+    });
+    appendCanvasToGallery(thumbCanvas, "대표 썸네일");
+
+    const cardBgColors = ["#0F172A", "#1E3A8A", "#064E3B"];
+    data.sections.forEach((sec, idx) => {
+      const cardCanvas = createCardCanvas({
+        badge: sec.step,
+        title: sec.cardHighlight,
+        sub: sec.cardSubtext || sec.title,
+        bgColor: cardBgColors[idx % cardBgColors.length],
+        accentColor: "#10B981"
+      });
+      appendCanvasToGallery(cardCanvas, `카드뉴스 ${idx + 1}`);
+    });
+  }
+
+  function createCardCanvas({ badge, title, sub, bgColor, accentColor }) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1080;
+    const ctx = canvas.getContext('2d');
+
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, 1080, 1080);
+
+    ctx.fillStyle = accentColor;
+    ctx.beginPath();
+    ctx.roundRect(80, 100, 260, 60, 30);
+    ctx.fill();
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "bold 28px -apple-system, sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(badge, 210, 142);
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "800 68px -apple-system, sans-serif";
+    ctx.textAlign = "left";
+    wrapText(ctx, title, 80, 380, 920, 95);
+
+    ctx.fillStyle = "#94A3B8";
+    ctx.font = "500 36px -apple-system, sans-serif";
+    wrapText(ctx, sub, 80, 860, 920, 52);
+
+    ctx.fillStyle = accentColor;
+    ctx.fillRect(80, 980, 920, 8);
+
+    return canvas;
+  }
+
+  function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+    const words = (text || '').split(' ');
+    let line = '';
+    for (let n = 0; n < words.length; n++) {
+      let testLine = line + words[n] + ' ';
+      let metrics = ctx.measureText(testLine);
+      if (metrics.width > maxWidth && n > 0) {
+        ctx.fillText(line, x, y);
+        line = words[n] + ' ';
+        y += lineHeight;
+      } else {
+        line = testLine;
+      }
+    }
+    ctx.fillText(line, x, y);
+  }
+
+  function appendCanvasToGallery(canvas, labelText) {
+    const box = document.createElement('div');
+    box.className = "visual-item";
+    
+    const dlBtn = document.createElement('button');
+    dlBtn.className = "btn-dl-single";
+    dlBtn.innerText = `⬇️ ${labelText} 저장`;
+    dlBtn.onclick = () => {
+      const link = document.createElement('a');
+      link.download = `${labelText}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+
+    box.appendChild(canvas);
+    box.appendChild(dlBtn);
+    canvasGallery.appendChild(box);
+  }
+
   btnCopyClipboard.addEventListener('click', () => {
     if (!rawArticleJson) return;
     const d = rawArticleJson;
 
     let html = `
-      <div style="font-family: 'Apple SD Gothic Neo', sans-serif; line-height: 1.8; color: #1e293b; max-width: 680px; margin: 0 auto;">
-        <p style="font-size: 16px; color: #334155; margin-bottom: 24px;">${escapeHtml(d.intro)}</p>
+      <div style="font-family: 'Apple SD Gothic Neo', sans-serif; line-height: 1.85; color: #1e293b; max-width: 680px; margin: 0 auto;">
+        <p style="font-size: 16px; color: #334155; margin-bottom: 28px; line-height: 1.8;">${escapeHtml(d.intro)}</p>
     `;
 
     d.sections.forEach(sec => {
       html += `
-        <h2 style="font-size: 19px; font-weight: 800; color: #0f172a; margin-top: 36px; margin-bottom: 12px; border-bottom: 2px solid #2563eb; padding-bottom: 6px;">
+        <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-top: 40px; margin-bottom: 14px; border-bottom: 2px solid #2563eb; padding-bottom: 8px;">
           ${escapeHtml(sec.step)}. ${escapeHtml(sec.title)}
         </h2>
-        <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 14px 16px; border-radius: 0 8px 8px 0; margin-bottom: 14px;">
-          <strong style="color: #1e40af; font-size: 14.5px;">💡 핵심 체크:</strong>
-          <span style="color: #1e3a8a; font-size: 14.5px; font-weight: 600;"> ${escapeHtml(sec.cardHighlight)}</span>
+        <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 16px 18px; border-radius: 0 8px 8px 0; margin-bottom: 16px;">
+          <strong style="color: #1e40af; font-size: 15px;">💡 핵심 체크:</strong>
+          <span style="color: #1e3a8a; font-size: 15px; font-weight: 600;"> ${escapeHtml(sec.cardHighlight)}</span>
         </div>
-        <p style="font-size: 15.5px; color: #334155; margin-bottom: 24px;">${escapeHtml(sec.body)}</p>
+        <p style="font-size: 16px; color: #334155; margin-bottom: 28px; line-height: 1.8;">${escapeHtml(sec.body)}</p>
       `;
     });
 
     html += `
-        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-top: 36px;">
-          <p style="font-size: 15px; color: #334155; margin: 0 0 10px;">${escapeHtml(d.outro)}</p>
-          <p style="font-size: 13px; color: #64748b; margin: 0;">📌 공식 출처: <strong>${escapeHtml(d.source)}</strong></p>
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin-top: 40px;">
+          <p style="font-size: 15.5px; color: #334155; margin: 0 0 12px; line-height: 1.7;">${escapeHtml(d.outro)}</p>
+          <p style="font-size: 13.5px; color: #64748b; margin: 0;">📌 공식 출처: <strong>${escapeHtml(d.source)}</strong></p>
         </div>
-        <p style="font-size: 13.5px; color: #2563eb; margin-top: 20px;">${d.tags.map(t => `#${escapeHtml(t)}`).join(' ')}</p>
+        <p style="font-size: 14px; color: #2563eb; margin-top: 24px; font-weight: 600;">${d.tags.map(t => `#${escapeHtml(t)}`).join(' ')}</p>
       </div>
     `;
 
@@ -578,7 +690,7 @@
         'text/plain': new Blob([articleText.innerText], { type: 'text/plain' })
       })
     ]).then(() => {
-      alert("네이버 블로그 서식(HTML)이 복사되었습니다! 에디터에 붙여넣기(Ctrl+V) 하세요.");
+      alert("네이버 블로그 맞춤 서식(HTML)이 복사되었습니다! 에디터에 붙여넣기(Ctrl+V) 하세요.");
     }).catch(() => {
       navigator.clipboard.writeText(articleText.innerText);
       alert("텍스트가 복사되었습니다.");
