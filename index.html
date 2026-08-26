@@ -137,6 +137,49 @@
       color: #fff;
     }
 
+    /* 썸네일 & 요약 카드 영역 */
+    .thumbnails-wrapper {
+      background: #F8FAFC;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .thumb-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 14px;
+    }
+    .thumb-card-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      background: var(--white);
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    .thumb-card-item canvas {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .btn-dl {
+      background: #10B981;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+    }
+    .btn-dl:hover { background: #059669; }
+
     .meta-box {
       background: #F1F5F9;
       border-radius: 8px;
@@ -204,18 +247,24 @@
 
     <span class="label">2. 키워드 입력</span>
     <div class="input-row">
-      <input type="text" id="keyword-input" placeholder="예: 2026년 근로장려금 신청자격 및 지급일" />
+      <input type="text" id="keyword-input" placeholder="예: 2026년 에어컨 26도 전기세 절약 실전 가이드" />
       <button class="btn-main" id="btn-titles">제목 5개 추천</button>
     </div>
     <div id="status-title" class="status-msg"></div>
 
     <div id="titles-wrapper" style="display:none; margin-top: 24px;">
-      <span class="label">3. 마음에 드는 제목 선택 (클릭 시 자동 글 생성)</span>
+      <span class="label">3. 마음에 드는 제목 선택 (클릭 시 자동 글 & 모든 카드 썸네일 생성)</span>
       <div class="titles-list" id="titles-container"></div>
     </div>
   </div>
 
   <div class="card" id="article-card" style="display:none;">
+    <!-- 대표 썸네일 + 중간 요약 카드 세트 -->
+    <div class="thumbnails-wrapper">
+      <span class="label">🎨 자동 생성된 블로그 썸네일 & 본문 중간 요약 카드 세트</span>
+      <div class="thumb-grid" id="thumb-grid"></div>
+    </div>
+
     <div class="copy-toolbar">
       <button class="btn-copy" id="btn-copy-article">📋 본문 전체 복사</button>
     </div>
@@ -237,6 +286,7 @@
   const titlesWrapper = document.getElementById('titles-wrapper');
   const titlesContainer = document.getElementById('titles-container');
   const articleCard = document.getElementById('article-card');
+  const thumbGrid = document.getElementById('thumb-grid');
   const metaContainer = document.getElementById('meta-container');
   const articleContent = document.getElementById('article-content');
   const btnCopyArticle = document.getElementById('btn-copy-article');
@@ -255,7 +305,6 @@
     });
   });
 
-  // 에러 메시지 추출 헬퍼 함수
   function parseErrorMessage(errObj) {
     if (typeof errObj === 'string') return errObj;
     if (errObj && typeof errObj === 'object') {
@@ -264,7 +313,7 @@
     return "알 수 없는 오류가 발생했습니다.";
   }
 
-  // 1. 제목 5개 추천 요청
+  // 1. 제목 추천
   btnTitles.addEventListener('click', async () => {
     const kw = keywordInput.value.trim();
     if (!kw) {
@@ -286,9 +335,7 @@
       });
 
       const data = await res.json();
-      if (!res.ok || data.error) {
-        throw new Error(parseErrorMessage(data.error || data.message || data));
-      }
+      if (!res.ok || data.error) throw new Error(parseErrorMessage(data.error || data));
 
       renderTitles(data.titles);
       statusTitle.innerText = "";
@@ -315,11 +362,12 @@
     });
   }
 
-  // 2. 본문 작성 요청
+  // 2. 본문 작성 및 카드 썸네일 세트 일괄 렌더링
   window.selectTitle = async function(chosenTitle) {
     const kw = keywordInput.value.trim();
     articleCard.style.display = "block";
-    metaContainer.innerHTML = "⏳ <strong>글 작성 진행 중...</strong> 최신 팩트와 검색 데이터를 대조 검증하고 있습니다. (약 15~20초 소요)";
+    thumbGrid.innerHTML = "";
+    metaContainer.innerHTML = "⏳ <strong>글 및 요약 카드 생성 중...</strong> 최신 팩트와 검색 데이터를 대조하고 있습니다.";
     articleContent.innerHTML = "작성 중...";
     articleCard.scrollIntoView({ behavior: 'smooth' });
 
@@ -335,9 +383,7 @@
       });
 
       const data = await res.json();
-      if (!res.ok || data.error) {
-        throw new Error(parseErrorMessage(data.error || data.message || data));
-      }
+      if (!res.ok || data.error) throw new Error(parseErrorMessage(data.error || data));
 
       metaContainer.innerHTML = `
         <strong>선택 제목:</strong> ${escapeHtml(chosenTitle)}<br/>
@@ -347,11 +393,153 @@
 
       articleContent.innerText = data.article || "";
 
+      // 1) 메인 대표 썸네일 렌더링
+      renderMainThumbnail(selectedCategory, chosenTitle);
+
+      // 2) 중간 요약 서브 카드들 렌더링
+      if (Array.isArray(data.sectionCards)) {
+        data.sectionCards.forEach((card, i) => {
+          renderSubCard(card.step || `POINT 0${i+1}`, card.subTitle || '', card.highlight || '');
+        });
+      }
+
     } catch (err) {
       metaContainer.innerHTML = `<span style="color:var(--danger)">❌ 오류 발생: ${escapeHtml(err.message)}</span>`;
       articleContent.innerText = "";
     }
   };
+
+  // 대표 썸네일 렌더링 함수
+  function renderMainThumbnail(category, title) {
+    const item = document.createElement('div');
+    item.className = 'thumb-card-item';
+    
+    const canvas = document.createElement('canvas');
+    canvas.width = 600;
+    canvas.height = 600;
+    const ctx = canvas.getContext('2d');
+
+    // 배경
+    const grad = ctx.createLinearGradient(0, 0, 600, 600);
+    grad.addColorStop(0, '#1E1B4B');
+    grad.addColorStop(1, '#312E81');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 600, 600);
+
+    // 테두리
+    ctx.strokeStyle = '#6366F1';
+    ctx.lineWidth = 14;
+    ctx.strokeRect(18, 18, 564, 564);
+
+    // 카테고리
+    ctx.fillStyle = '#4F46E5';
+    ctx.beginPath();
+    ctx.roundRect(40, 48, 210, 48, 10);
+    ctx.fill();
+
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 20px Pretendard, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(`📌 ${category}`, 145, 80);
+
+    // 메인 제목 줄바꿈
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 36px Pretendard, sans-serif';
+    ctx.textAlign = 'center';
+    drawMultiLine(ctx, title, 300, 260, 480, 52);
+
+    // 하단 뱃지
+    ctx.fillStyle = '#F59E0B';
+    ctx.font = 'bold 22px Pretendard, sans-serif';
+    ctx.fillText('⚡ 2026 최신 핵심 총정리', 300, 540);
+
+    const btn = document.createElement('button');
+    btn.className = 'btn-dl';
+    btn.innerText = '💾 대표 썸네일 저장';
+    btn.onclick = () => downloadCanvas(canvas, '대표_썸네일.png');
+
+    item.appendChild(canvas);
+    item.appendChild(btn);
+    thumbGrid.appendChild(item);
+  }
+
+  // 중간 요약 서브 썸네일 렌더링 함수
+  function renderSubCard(step, subTitle, highlight) {
+    const item = document.createElement('div');
+    item.className = 'thumb-card-item';
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 600;
+    canvas.height = 400;
+    const ctx = canvas.getContext('2d');
+
+    // 배경
+    ctx.fillStyle = '#0F172A';
+    ctx.fillRect(0, 0, 600, 400);
+
+    // 내부 카드
+    ctx.fillStyle = '#1E293B';
+    ctx.beginPath();
+    ctx.roundRect(20, 20, 560, 360, 16);
+    ctx.fill();
+
+    // 상단 스텝 뱃지
+    ctx.fillStyle = '#38BDF8';
+    ctx.font = 'bold 22px Pretendard, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(`💡 ${step}`, 50, 75);
+
+    // 소제목
+    ctx.fillStyle = '#F8FAFC';
+    ctx.font = 'bold 28px Pretendard, sans-serif';
+    drawMultiLine(ctx, subTitle, 50, 130, 500, 38, 'left');
+
+    // 하단 핵심 요약 박스
+    ctx.fillStyle = '#334155';
+    ctx.beginPath();
+    ctx.roundRect(40, 230, 520, 110, 12);
+    ctx.fill();
+
+    ctx.fillStyle = '#FDE047';
+    ctx.font = 'bold 20px Pretendard, sans-serif';
+    drawMultiLine(ctx, `👉 ${highlight}`, 65, 275, 470, 32, 'left');
+
+    const btn = document.createElement('button');
+    btn.className = 'btn-dl';
+    btn.innerText = `💾 ${step} 요약 카드 저장`;
+    btn.onclick = () => downloadCanvas(canvas, `${step}_요약카드.png`);
+
+    item.appendChild(canvas);
+    item.appendChild(btn);
+    thumbGrid.appendChild(item);
+  }
+
+  function drawMultiLine(ctx, text, x, startY, maxWidth, lineHeight, align = 'center') {
+    ctx.textAlign = align;
+    const words = text.split(' ');
+    let line = '';
+    let y = startY;
+
+    for (let n = 0; n < words.length; n++) {
+      const testLine = line + words[n] + ' ';
+      const metrics = ctx.measureText(testLine);
+      if (metrics.width > maxWidth && n > 0) {
+        ctx.fillText(line.trim(), x, y);
+        line = words[n] + ' ';
+        y += lineHeight;
+      } else {
+        line = testLine;
+      }
+    }
+    ctx.fillText(line.trim(), x, y);
+  }
+
+  function downloadCanvas(canvas, filename) {
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
 
   btnCopyArticle.addEventListener('click', () => {
     const text = articleContent.innerText;
