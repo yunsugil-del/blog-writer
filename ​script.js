@@ -10,14 +10,31 @@ function getKoreaDate() {
 }
 
 let currentQuestions = [];
-let selectedCategory = "경제·복지·지원금"; // 기본값
+let selectedCategory = "경제·복지·지원금";
 
-// 카테고리 칩 즉각 클릭 처리 함수
+// 전역 함수 즉시 선언
 window.setCat = function(btn, catName) {
   document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
   btn.classList.add('active');
   selectedCategory = catName;
-  console.log("선택된 카테고리:", selectedCategory);
+};
+
+window.selectTopicByIndex = function(idx) {
+  const t = window._lastTopics ? window._lastTopics[idx] : null;
+  const keywordInput = document.getElementById('keywordInput');
+  if (t && keywordInput) {
+    keywordInput.value = t.keyword;
+    currentQuestions = t.questions || [];
+    window.scrollTo({ top: keywordInput.offsetTop - 20, behavior: 'smooth' });
+  }
+};
+
+window.selectTitle = function(title) {
+  const selectedTitleInput = document.getElementById('selectedTitleInput');
+  if (selectedTitleInput) {
+    selectedTitleInput.value = title;
+    window.scrollTo({ top: selectedTitleInput.offsetTop - 20, behavior: 'smooth' });
+  }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -32,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const articleOutput = document.getElementById('articleOutput');
   const btnCopyArticle = document.getElementById('btnCopyArticle');
 
-  // 0단계
+  // 0단계: 실시간 주제 발굴
   if (btnRecommend) {
     btnRecommend.addEventListener('click', async () => {
       btnRecommend.disabled = true;
@@ -73,16 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window._lastTopics = topics;
   }
 
-  window.selectTopicByIndex = function(idx) {
-    const t = window._lastTopics[idx];
-    if (t && keywordInput) {
-      keywordInput.value = t.keyword;
-      currentQuestions = t.questions || [];
-      window.scrollTo({ top: keywordInput.offsetTop - 20, behavior: 'smooth' });
-    }
-  };
-
-  // 1단계
+  // 1단계: 롱테일 제목 5개 추출
   if (btnGenerateTitles) {
     btnGenerateTitles.addEventListener('click', async () => {
       const keyword = keywordInput ? keywordInput.value.trim() : '';
@@ -116,14 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  window.selectTitle = function(title) {
-    if (selectedTitleInput) {
-      selectedTitleInput.value = title;
-      window.scrollTo({ top: selectedTitleInput.offsetTop - 20, behavior: 'smooth' });
-    }
-  };
-
-  // 2단계
+  // 2단계: 본문 집필
   if (btnGenerateArticle) {
     btnGenerateArticle.addEventListener('click', async () => {
       const keyword = keywordInput ? keywordInput.value.trim() : '';
@@ -177,6 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // 주제 보관함에서 넘어왔을 때 데이터 주입
   const selectedData = localStorage.getItem('selected_topic_for_write');
   if (selectedData && keywordInput) {
     const topic = JSON.parse(selectedData);
