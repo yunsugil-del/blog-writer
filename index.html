@@ -194,7 +194,6 @@
       selectedCategory = cat;
     }
 
-    // 0단계: 주제 발굴 (상세 에러 얼럿 처리)
     async function recommendTopics() {
       const btn = document.getElementById('btnRecommend');
       const container = document.getElementById('topicsContainer');
@@ -258,7 +257,6 @@
       }
     }
 
-    // 1단계: 제목 생성
     async function generateTitles() {
       const kwInput = document.getElementById('keywordInput');
       const keyword = kwInput.value.trim();
@@ -304,7 +302,7 @@
       window.scrollTo({ top: input.offsetTop - 20, behavior: 'smooth' });
     }
 
-    // 2단계: 본문 집필
+    // 2단계: 썸네일, 요약카드, 사진위치, 태그 복원 집필 로직
     async function generateArticle() {
       const keyword = document.getElementById('keywordInput').value.trim();
       const title = document.getElementById('selectedTitleInput').value.trim();
@@ -339,6 +337,7 @@
           
           let fullText = "";
 
+          // 1. 썸네일 가이드 박스
           if (data.thumbnail) {
             fullText += `[대표 이미지 / 썸네일 가이드]\n`;
             fullText += `• 상단 뱃지: ${data.thumbnail.badge || ''}\n`;
@@ -347,10 +346,14 @@
             fullText += `----------------------------------------\n\n`;
           }
 
+          // 2. 글 제목
           fullText += `[글 제목]\n${title}\n\n`;
+
+          // 3. 도입부
           fullText += `[도입부]\n${cleanHtmlTags(data.intro)}\n\n`;
           fullText += `📸 [추천 이미지 배치: 주제와 관련된 대표 정책 포스터 또는 분위기 사진]\n\n`;
 
+          // 4. 섹션별 본문 및 카드뉴스 요약
           if (data.sections && data.sections.length > 0) {
             data.sections.forEach((s, idx) => {
               fullText += `■ ${s.step || `체크 0${idx+1}`}. ${s.title}\n\n`;
@@ -369,12 +372,15 @@
             });
           }
 
+          // 5. 마무리 요약
           fullText += `[마무리 요약]\n${cleanHtmlTags(data.outro)}\n\n`;
 
+          // 6. 출처
           if (data.source) {
             fullText += `[공식 확인처 / 출처]\n• ${data.source}\n\n`;
           }
 
+          // 7. 추천 태그 (# 자동 부착)
           if (data.tags && data.tags.length > 0) {
             const formattedTags = data.tags.map(t => t.startsWith('#') ? t : `#${t}`).join(' ');
             fullText += `[추천 태그]\n${formattedTags}`;
@@ -460,7 +466,7 @@
                       <div class="topic-actions">
                         <button class="btn-sm btn-write" onclick="startWriteTopic('${group.date}', '${t.id}')">이 주제로 작성</button>
                         <button class="btn-sm" onclick="updateTopicStatus('${group.date}', '${t.id}', 'completed')">완료</button>
-                        <button class="btn-sm" onclick="deleteTopic('${group.date}', '${t.id}')">🗑️ 삭제</button>
+                        <button class="btn-sm btn-delete" onclick="deleteTopic('${group.date}', '${t.id}')">🗑️ 삭제</button>
                       </div>
                     </div>
                   </li>
