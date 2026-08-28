@@ -167,6 +167,7 @@
       }).format(new Date());
     }
 
+    // 외래어 순화 및 네이버 에디터 서식 치환
     function toSafeHtml(str) {
       if (!str) return "";
       let esc = str
@@ -174,6 +175,13 @@
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
+      // 영문 단어 순화 방어
+      esc = esc
+        .replace(/\bdomestic\b/gi, '국내')
+        .replace(/\btarget\b/gi, '대상')
+        .replace(/\bbenefit\b/gi, '혜택');
+
+      // 네이버 에디터 인라인 형광펜 & 볼드 치환
       esc = esc
         .replace(/&lt;mark&gt;/gi, '<span style="background-color:#FFF3B0;padding:2px 4px;border-radius:3px;font-weight:bold;color:#191F28;">')
         .replace(/&lt;\/mark&gt;/gi, '</span>')
@@ -185,6 +193,7 @@
       return esc;
     }
 
+    // 본문 빌더: 소제목 깔끔화 및 태그 10개 이상 '#' 자동 부착
     function buildArticleHtml(data, title) {
       let html = `<div id="naverPasteArea" style="font-family:'Pretendard',AppleSDGothicNeo,sans-serif;line-height:1.85;color:#191F28;">`;
       html += `<h2 style="font-size:20px;font-weight:bold;color:#111827;margin-bottom:16px;">${toSafeHtml(title)}</h2>`;
@@ -231,10 +240,16 @@
 
       html += `<p style="font-size:15px;margin:20px 0 12px;">${toSafeHtml(data.outro)}</p>`;
       if (data.source) {
-        html += `<p style="font-size:13.5px;color:#4B5563;margin-bottom:8px;"><strong>📌 공식 출처:</strong> ${toSafeHtml(data.source)}</p>`;
+        html += `<p style="font-size:13.5px;color:#4B5563;margin-bottom:12px;"><strong>📌 공식 출처:</strong> ${toSafeHtml(data.source)}</p>`;
       }
+      
+      // 해시태그 10개 이상 포맷팅
       if (data.tags && data.tags.length) {
-        html += `<p style="font-size:13.5px;color:#2563EB;">${data.tags.map(t => t.startsWith('#') ? t : `#${t}`).join(' ')}</p>`;
+        const formattedTags = data.tags.map(t => {
+          let clean = t.trim().replace(/^#+/, '');
+          return `#${clean}`;
+        }).join(' ');
+        html += `<p style="font-size:14px;color:#2563EB;line-height:1.8;word-break:break-all;">${formattedTags}</p>`;
       }
       html += `</div>`;
       return html;
@@ -254,7 +269,10 @@
         }
         text += `📸 [요약 카드 0${idx+1} 이미지]\n\n`;
       });
-      text += `[마무리]\n${data.outro}\n\n출처: ${data.source || ''}\n${(data.tags || []).join(' ')}`;
+      text += `[마무리]\n${data.outro}\n\n출처: ${data.source || ''}\n`;
+      if (data.tags && data.tags.length) {
+        text += data.tags.map(t => `#${t.trim().replace(/^#+/, '')}`).join(' ');
+      }
       return text;
     }
 
@@ -295,7 +313,7 @@
     }
 
     // ==========================================
-    // 5종 컬러가 확실히 살아나는 화사한 썸네일 엔진
+    // 1. 화사한 비비드 5종 썸네일 엔진 ('2026 꿀팁' 뱃지 제거)
     // ==========================================
     function renderThumbnailCanvas(canvas, thumbData) {
       canvas.width = 800;
@@ -303,83 +321,35 @@
       const ctx = canvas.getContext('2d');
 
       const THEMES = [
-        {
-          name: 'naver_green',
-          bgTop: '#064E3B',
-          bgBottom: '#022C22',
-          glowColor: '#10B981',
-          stripeColor: 'rgba(52, 211, 153, 0.15)',
-          badgeColor: '#34D399',
-          brandDot: '#10B981'
-        },
-        {
-          name: 'neon_purple',
-          bgTop: '#581C87',
-          bgBottom: '#2E1065',
-          glowColor: '#A855F7',
-          stripeColor: 'rgba(192, 132, 252, 0.15)',
-          badgeColor: '#C084FC',
-          brandDot: '#A855F7'
-        },
-        {
-          name: 'electric_blue',
-          bgTop: '#1E3A8A',
-          bgBottom: '#0F172A',
-          glowColor: '#3B82F6',
-          stripeColor: 'rgba(96, 165, 250, 0.15)',
-          badgeColor: '#60A5FA',
-          brandDot: '#3B82F6'
-        },
-        {
-          name: 'coral_rose',
-          bgTop: '#881337',
-          bgBottom: '#4C0519',
-          glowColor: '#F43F5E',
-          stripeColor: 'rgba(251, 113, 133, 0.15)',
-          badgeColor: '#FB7185',
-          brandDot: '#F43F5E'
-        },
-        {
-          name: 'cyber_gold',
-          bgTop: '#78350F',
-          bgBottom: '#451A03',
-          glowColor: '#F59E0B',
-          stripeColor: 'rgba(251, 191, 36, 0.15)',
-          badgeColor: '#FBBF24',
-          brandDot: '#F59E0B'
-        }
+        { name: 'vivid_green', bgTop: '#03C75A', bgBottom: '#009944', stripeColor: 'rgba(255, 255, 255, 0.12)', brandBg: '#006B2F' },
+        { name: 'vivid_purple', bgTop: '#8B5CF6', bgBottom: '#6D28D9', stripeColor: 'rgba(255, 255, 255, 0.12)', brandBg: '#4C1D95' },
+        { name: 'vivid_blue', bgTop: '#2563EB', bgBottom: '#1D4ED8', stripeColor: 'rgba(255, 255, 255, 0.12)', brandBg: '#1E3A8A' },
+        { name: 'vivid_coral', bgTop: '#F43F5E', bgBottom: '#BE123C', stripeColor: 'rgba(255, 255, 255, 0.12)', brandBg: '#881337' },
+        { name: 'vivid_gold', bgTop: '#F59E0B', bgBottom: '#B45309', stripeColor: 'rgba(255, 255, 255, 0.12)', brandBg: '#78350F' }
       ];
 
-      // 5종 중 무작위 선택
       const theme = THEMES[Math.floor(Math.random() * THEMES.length)];
 
-      // 1. 컬러 그라데이션 배경
+      // 1. 배경 그라데이션
       const bgGrad = ctx.createLinearGradient(0, 0, 0, 800);
       bgGrad.addColorStop(0, theme.bgTop);
       bgGrad.addColorStop(1, theme.bgBottom);
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, 800, 800);
 
-      // 2. 중앙 글로우(Glow) 효과
-      const glow = ctx.createRadialGradient(400, 400, 50, 400, 400, 380);
-      glow.addColorStop(0, theme.glowColor + '40');
-      glow.addColorStop(1, 'transparent');
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, 800, 800);
-
-      // 3. 세로 스트라이프 블라인드 패턴
-      const stripeWidth = 26;
-      const stripeGap = 22;
+      // 2. 세로 스트라이프
+      const stripeWidth = 24;
+      const stripeGap = 20;
       ctx.fillStyle = theme.stripeColor;
       for (let x = 30; x < 770; x += (stripeWidth + stripeGap)) {
         ctx.fillRect(x, 0, stripeWidth, 800);
       }
 
-      // 4. 상단 '길노트' 브랜드 로고 마크
-      const logoY = 120;
-      ctx.fillStyle = theme.brandDot;
+      // 3. 상단 '길노트' 시그니처 뱃지
+      const logoY = 150;
+      ctx.fillStyle = theme.brandBg;
       ctx.beginPath();
-      ctx.arc(345, logoY, 19, 0, Math.PI * 2);
+      ctx.arc(345, logoY, 20, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = '#FFFFFF';
@@ -389,27 +359,21 @@
       ctx.fillText('G', 345, logoY);
 
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '800 28px Pretendard, sans-serif';
+      ctx.font = '800 30px Pretendard, sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText('길노트', 375, logoY);
+      ctx.fillText('길노트', 376, logoY);
 
-      // 5. 상단 서브 뱃지
-      const badgeText = thumbData.badge || '2026 알뜰 정책';
-      ctx.fillStyle = theme.badgeColor;
-      ctx.font = 'bold 30px Pretendard, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(badgeText, 400, 240);
-
-      // 6. 중앙 메인 타이틀 (선명한 화이트 볼드)
+      // 4. 중앙 메인 타이틀 (볼드 화이트 폰트)
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '900 52px Pretendard, sans-serif';
+      ctx.font = '900 54px Pretendard, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'alphabetic';
 
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
-      ctx.shadowBlur = 12;
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.25)';
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetY = 3;
 
-      const mainTitle = thumbData.mainTitle || '핵심 정보 가이드';
+      const mainTitle = thumbData.mainTitle || '주요 정책 안내';
       const words = mainTitle.split(' ');
       let line = '';
       let lines = [];
@@ -427,8 +391,8 @@
       lines.push(line);
 
       const displayLines = lines.slice(0, 3);
-      const lineHeight = 74;
-      const startY = 410 - ((displayLines.length - 1) * lineHeight / 2);
+      const lineHeight = 76;
+      const startY = 430 - ((displayLines.length - 1) * lineHeight / 2);
 
       displayLines.forEach((l, idx) => {
         ctx.fillText(l, 400, startY + (idx * lineHeight));
@@ -436,20 +400,21 @@
 
       ctx.shadowColor = 'transparent';
       ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
 
-      // 7. 하단 부제
+      // 5. 하단 부제
       const subTitle = thumbData.subTitle || '알아두면 유용한 가이드';
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
       ctx.font = '600 24px Pretendard, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(subTitle, 400, 640);
+      ctx.fillText(subTitle, 400, 650);
 
-      // 8. 하단 포인트 네온 바
-      ctx.fillStyle = theme.badgeColor;
-      ctx.fillRect(360, 675, 80, 5);
+      // 6. 하단 포인트 바
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(360, 680, 80, 4);
     }
 
-    // 요약 카드 렌더링
+    // 챕터별 핵심 요약 카드 렌더링
     function renderSectionCanvas(canvas, secData, idx) {
       canvas.width = 800;
       canvas.height = 800;
@@ -484,13 +449,40 @@
       ctx.fillRect(64, 660, 672, 6);
     }
 
-    function downloadCanvas(canvasId, fileName) {
+    // ==========================================
+    // 2. 모바일 브라우저 100% 저장 호환 다운로드 엔진
+    // ==========================================
+    async function downloadCanvas(canvasId, fileName) {
       const canvas = document.getElementById(canvasId);
-      if (!canvas) return;
-      const link = document.createElement('a');
-      link.download = `${fileName}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
+      if (!canvas) return alert("이미지를 찾을 수 없습니다.");
+
+      canvas.toBlob(async (blob) => {
+        if (!blob) return alert("이미지 생성에 실패했습니다.");
+
+        const file = new File([blob], `${fileName}.png`, { type: 'image/png' });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              files: [file],
+              title: fileName
+            });
+            return;
+          } catch (err) {
+            // 취소 또는 실패 시 다운로드 링크 폴백
+          }
+        }
+
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = `${fileName}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+      }, 'image/png');
     }
 
     function toggleArchiveView() {
