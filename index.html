@@ -175,13 +175,11 @@
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
 
-      // 영문 단어 순화 방어
       esc = esc
         .replace(/\bdomestic\b/gi, '국내')
         .replace(/\btarget\b/gi, '대상')
         .replace(/\bbenefit\b/gi, '혜택');
 
-      // 네이버 에디터 인라인 형광펜 & 볼드 치환
       esc = esc
         .replace(/&lt;mark&gt;/gi, '<span style="background-color:#FFF3B0;padding:2px 4px;border-radius:3px;font-weight:bold;color:#191F28;">')
         .replace(/&lt;\/mark&gt;/gi, '</span>')
@@ -193,7 +191,6 @@
       return esc;
     }
 
-    // 본문 빌더: 소제목 깔끔화 및 태그 10개 이상 '#' 자동 부착
     function buildArticleHtml(data, title) {
       let html = `<div id="naverPasteArea" style="font-family:'Pretendard',AppleSDGothicNeo,sans-serif;line-height:1.85;color:#191F28;">`;
       html += `<h2 style="font-size:20px;font-weight:bold;color:#111827;margin-bottom:16px;">${toSafeHtml(title)}</h2>`;
@@ -243,7 +240,6 @@
         html += `<p style="font-size:13.5px;color:#4B5563;margin-bottom:12px;"><strong>📌 공식 출처:</strong> ${toSafeHtml(data.source)}</p>`;
       }
       
-      // 해시태그 10개 이상 포맷팅
       if (data.tags && data.tags.length) {
         const formattedTags = data.tags.map(t => {
           let clean = t.trim().replace(/^#+/, '');
@@ -330,14 +326,12 @@
 
       const theme = THEMES[Math.floor(Math.random() * THEMES.length)];
 
-      // 1. 배경 그라데이션
       const bgGrad = ctx.createLinearGradient(0, 0, 0, 800);
       bgGrad.addColorStop(0, theme.bgTop);
       bgGrad.addColorStop(1, theme.bgBottom);
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, 800, 800);
 
-      // 2. 세로 스트라이프
       const stripeWidth = 24;
       const stripeGap = 20;
       ctx.fillStyle = theme.stripeColor;
@@ -345,7 +339,6 @@
         ctx.fillRect(x, 0, stripeWidth, 800);
       }
 
-      // 3. 상단 '길노트' 시그니처 뱃지
       const logoY = 150;
       ctx.fillStyle = theme.brandBg;
       ctx.beginPath();
@@ -363,7 +356,6 @@
       ctx.textAlign = 'left';
       ctx.fillText('길노트', 376, logoY);
 
-      // 4. 중앙 메인 타이틀 (볼드 화이트 폰트)
       ctx.fillStyle = '#FFFFFF';
       ctx.font = '900 54px Pretendard, sans-serif';
       ctx.textAlign = 'center';
@@ -402,19 +394,16 @@
       ctx.shadowBlur = 0;
       ctx.shadowOffsetY = 0;
 
-      // 5. 하단 부제
       const subTitle = thumbData.subTitle || '알아두면 유용한 가이드';
       ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
       ctx.font = '600 24px Pretendard, sans-serif';
       ctx.textAlign = 'center';
       ctx.fillText(subTitle, 400, 650);
 
-      // 6. 하단 포인트 바
       ctx.fillStyle = '#FFFFFF';
       ctx.fillRect(360, 680, 80, 4);
     }
 
-    // 챕터별 핵심 요약 카드 렌더링
     function renderSectionCanvas(canvas, secData, idx) {
       canvas.width = 800;
       canvas.height = 800;
@@ -469,7 +458,7 @@
             });
             return;
           } catch (err) {
-            // 취소 또는 실패 시 다운로드 링크 폴백
+            // 취소 또는 실패 시 폴백
           }
         }
 
