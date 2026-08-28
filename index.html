@@ -8,46 +8,64 @@
 </head>
 <body>
   <div class="container">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-      <h1 style="font-size: 20px; font-weight: 700; color: #0f172a; margin: 0;">🚀 블로그 글 생성 파이프라인</h1>
-      <a href="topics.html" style="text-decoration: none; font-size: 13px; font-weight: 600; color: #2563eb; background: #eff6ff; padding: 6px 12px; border-radius: 6px; border: 1px solid #dbeafe;">
-        📚 주제 보관함
-      </a>
-    </div>
+    <!-- 상단 헤더 -->
+    <header class="top-header">
+      <h1 class="app-title">✍️ 포스팅 파이프라인</h1>
+      <a href="topics.html" class="btn-archive-nav">📚 주제 보관함</a>
+    </header>
 
-    <div class="card-step">
-      <label class="step-label">0단계. 실시간 트렌드 주제 발굴</label>
-      <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-        <select id="categorySelect" style="flex: 1; height: 44px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0 10px;">
-          <option value="경제·복지·지원금">경제·복지·지원금</option>
-          <option value="생활·교통·할인">생활·교통·할인</option>
-          <option value="청년·취업·육아">청년·취업·육아</option>
+    <!-- 0단계: 실시간 주제 발굴 -->
+    <section class="pipeline-card">
+      <div class="card-header">
+        <span class="step-badge">STEP 0</span>
+        <h2 class="step-title">실시간 트렌드 발굴</h2>
+      </div>
+      <div class="input-group">
+        <select id="categorySelect" class="form-select">
+          <option value="경제·복지·지원금 (정부지원금, 복지, 세금, 환급, 정책)">💰 경제·복지·지원금 (정부지원금, 세금, 환급, 정책)</option>
+          <option value="생활·교통·할인 (교통, 카드 할인, 생활비 절약, 각종 할인·혜택)">🚌 생활·교통·할인 (교통, 카드 할인, 절약, 혜택)</option>
+          <option value="청년·취업·육아 (청년정책, 취업, 출산·육아, 부모 지원)">👶 청년·취업·육아 (청년정책, 취업, 출산·육아)</option>
+          <option value="부동산·금융·재테크 (청약, 주거지원, 대출, 금리, 금융혜택, 재테크)">📈 부동산·금융·재테크 (청약, 대출, 금리, 재테크)</option>
         </select>
-        <button type="button" id="btnRecommend" class="btn btn-primary" style="flex: 1; height: 44px;">실시간 주제 5개 발굴</button>
+        <button type="button" id="btnRecommend" class="btn-action btn-blue">🔍 실시간 주제 5개 발굴</button>
       </div>
-      <div id="topicsContainer" style="display: none; margin-top: 10px;"></div>
-    </div>
+      <div id="topicsContainer" class="topic-result-list" style="display: none;"></div>
+    </section>
 
-    <div class="card-step" style="margin-top: 16px;">
-      <label for="keywordInput" class="step-label">1단계. 선택 키워드</label>
-      <input type="text" id="keywordInput" placeholder="주제를 직접 입력하거나 위에서 선택하세요" style="width: 100%; height: 44px; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 0 12px; margin-bottom: 10px; box-sizing: border-box;">
-      <button type="button" id="btnGenerateTitles" class="btn btn-primary">롱테일 제목 5개 뽑기</button>
-      <div id="titlesContainer" style="display: none; margin-top: 12px;"></div>
-    </div>
-
-    <div class="card-step" style="margin-top: 16px;">
-      <label class="step-label">2단계. 선택된 제목</label>
-      <input type="text" id="selectedTitleInput" placeholder="제목을 선택하면 자동 입력됩니다" readonly style="width: 100%; height: 44px; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0 12px; background: #f8fafc; margin-bottom: 10px; box-sizing: border-box;">
-      <button type="button" id="btnGenerateArticle" class="btn btn-primary" style="background-color: #059669;">팩트체크 본문 & 카드뉴스 집필</button>
-    </div>
-
-    <div id="resultSection" style="display: none; margin-top: 24px;">
-      <div class="card-step">
-        <h3 style="font-size: 16px; margin-bottom: 12px;">📄 완성된 원고</h3>
-        <button type="button" id="btnCopyArticle" class="btn btn-secondary" style="margin-bottom: 10px;">본문 전체 복사</button>
-        <div id="articleOutput" style="white-space: pre-wrap; font-size: 14px; line-height: 1.6; background: #fff; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0;"></div>
+    <!-- 1단계: 키워드 및 제목 생성 -->
+    <section class="pipeline-card">
+      <div class="card-header">
+        <span class="step-badge">STEP 1</span>
+        <h2 class="step-title">롱테일 제목 추출</h2>
       </div>
-    </div>
+      <div class="input-group">
+        <input type="text" id="keywordInput" class="form-input" placeholder="키워드를 직접 입력하거나 위에서 선택하세요">
+        <button type="button" id="btnGenerateTitles" class="btn-action btn-blue">💡 롱테일 제목 5개 뽑기</button>
+      </div>
+      <div id="titlesContainer" class="title-result-list" style="display: none;"></div>
+    </section>
+
+    <!-- 2단계: 본문 집필 -->
+    <section class="pipeline-card">
+      <div class="card-header">
+        <span class="step-badge" style="background: #ECFDF5; color: #059669;">STEP 2</span>
+        <h2 class="step-title">팩트체크 본문 집필</h2>
+      </div>
+      <div class="input-group">
+        <input type="text" id="selectedTitleInput" class="form-input" placeholder="위에서 제목을 선택하면 자동 입력됩니다" readonly>
+        <button type="button" id="btnGenerateArticle" class="btn-action btn-green">⚡ 팩트체크 본문 & 카드뉴스 집필</button>
+      </div>
+    </section>
+
+    <!-- 결과 화면 -->
+    <section id="resultSection" class="pipeline-card" style="display: none;">
+      <div class="card-header">
+        <span class="step-badge" style="background: #FEF3C7; color: #D97706;">COMPLETE</span>
+        <h2 class="step-title">완성된 원고</h2>
+      </div>
+      <button type="button" id="btnCopyArticle" class="btn-copy">📋 본문 전체 복사하기</button>
+      <div id="articleOutput" class="result-box"></div>
+    </section>
   </div>
 
   <script src="script.js"></script>
