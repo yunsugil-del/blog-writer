@@ -52,25 +52,10 @@
     .title-card-item { background: #FAFAFB; border: 1.5px solid #E5E8EB; border-radius: 10px; padding: 12px 14px; font-size: 13.5px; font-weight: 600; color: #333D4B; cursor: pointer; line-height: 1.4; transition: 0.15s; }
     .title-card-item:active { background: #E8F3FF; border-color: #3182F6; color: #1B64DA; }
     
-    /* 렌더링된 본문 결과 박스 스타일 */
-    .result-box { background: #FFFFFF; border: 1.5px solid #E5E8EB; border-radius: 14px; padding: 20px 16px; font-size: 14px; line-height: 1.8; color: #191F28; max-height: 600px; overflow-y: auto; margin-top: 12px; }
-    .rendered-article h2 { font-size: 18px; font-weight: 800; color: #191F28; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid #3182F6; }
-    .rendered-article h3 { font-size: 16px; font-weight: 700; color: #191F28; margin: 20px 0 10px; }
-    .rendered-article p { margin-bottom: 12px; color: #333D4B; font-size: 14px; }
-    .rendered-article blockquote { margin: 14px 0; border-radius: 8px; }
-    
-    /* 테이블 뷰 스타일 */
-    .table-container { width: 100%; overflow-x: auto; margin: 14px 0; -webkit-overflow-scrolling: touch; }
-    .article-table { width: 100%; border-collapse: collapse; min-width: 320px; font-size: 13px; text-align: center; }
-    .article-table th { background: #F2F4F6; color: #333D4B; font-weight: 700; padding: 10px 8px; border: 1px solid #DDE1E5; }
-    .article-table td { padding: 9px 8px; border: 1px solid #DDE1E5; color: #4E5968; background: #FFFFFF; }
-    
-    .img-placeholder { background: #F8FAFC; border: 1.5px dashed #CBD5E1; border-radius: 8px; padding: 10px; text-align: center; font-size: 12px; font-weight: 700; color: #64748B; margin: 14px 0; }
-
+    .result-box { background: #FFFFFF; border: 1.5px solid #E5E8EB; border-radius: 14px; padding: 20px 16px; font-size: 14.5px; line-height: 1.85; color: #191F28; max-height: 600px; overflow-y: auto; margin-top: 12px; }
     .btn-copy { background: #F2F4F6; border: none; color: #4E5968; font-size: 14px; font-weight: 700; height: 46px; border-radius: 12px; width: 100%; cursor: pointer; font-family: inherit; margin-bottom: 10px; }
     .btn-copy:active { background: #E5E8EB; }
 
-    /* 카드뉴스 영역 */
     .img-gallery-title { font-size: 14px; font-weight: 700; color: #191F28; margin-bottom: 12px; }
     .img-gallery { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
     .img-card-wrap { background: #F8FAFC; border: 1px solid #E5E8EB; border-radius: 14px; padding: 12px; text-align: center; }
@@ -150,8 +135,8 @@
         <h3 class="img-gallery-title">🎨 생성된 카드 이미지 (개별 다운로드)</h3>
         <div id="cardGallery" class="img-gallery"></div>
         <hr style="border: none; border-top: 1px dashed #E5E8EB; margin: 20px 0;">
-        <button type="button" id="btnCopyArticle" class="btn-copy" onclick="copyArticle()">📋 본문 전체 복사하기 (서식 및 표 포함)</button>
-        <div id="articleOutput" class="result-box rendered-article"></div>
+        <button type="button" id="btnCopyArticle" class="btn-copy" onclick="copyArticle()">📋 본문 전체 복사하기 (형광펜·서식·표 포함)</button>
+        <div id="articleOutput" class="result-box"></div>
       </section>
     </div>
 
@@ -182,55 +167,77 @@
       }).format(new Date());
     }
 
+    // 네이버 블로그 에디터 ONE 인식 형광펜 & 볼드 인라인 치환
     function toSafeHtml(str) {
       if (!str) return "";
-      return str
+      let esc = str
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
+        .replace(/>/g, '&gt;');
+
+      esc = esc
+        .replace(/&lt;mark&gt;/gi, '<span style="background-color:#FFF3B0;padding:2px 4px;border-radius:3px;font-weight:bold;color:#191F28;">')
+        .replace(/&lt;\/mark&gt;/gi, '</span>')
+        .replace(/&lt;strong&gt;/gi, '<strong style="font-weight:bold;color:#111827;">')
+        .replace(/&lt;\/strong&gt;/gi, '</strong>')
+        .replace(/&lt;br\s*\/?&gt;/gi, '<br>')
         .replace(/\n/g, '<br>');
+
+      return esc;
     }
 
-    // 네이버 블로그 에디터 100% 호환 HTML 빌더 (표 컨테이너 및 인라인 스타일 최적화)
     function buildArticleHtml(data, title) {
-      let html = `<h2>${toSafeHtml(title)}</h2><br>`;
-      html += `<p>${toSafeHtml(data.intro)}</p><br>`;
-      html += `<div class="img-placeholder">📸 [대표 썸네일 이미지 삽입 위치]</div><br>`;
+      let html = `<div id="naverPasteArea" style="font-family:'Pretendard',AppleSDGothicNeo,sans-serif;line-height:1.85;color:#191F28;">`;
+      html += `<h2 style="font-size:20px;font-weight:bold;color:#111827;margin-bottom:16px;">${toSafeHtml(title)}</h2>`;
+      html += `<p style="font-size:15px;margin-bottom:16px;">${toSafeHtml(data.intro)}</p>`;
+      html += `<div style="background:#F8FAFC;border:1px dashed #CBD5E1;border-radius:8px;padding:12px;text-align:center;color:#64748B;font-size:13px;margin:16px 0;">📸 [대표 썸네일 이미지 삽입 위치]</div>`;
 
       (data.sections || []).forEach((s, idx) => {
-        html += `<h3>■ ${s.step || `체크 0${idx + 1}`}. ${toSafeHtml(s.title)}</h3><br>`;
+        html += `<h3 style="font-size:17px;font-weight:bold;color:#111827;margin:24px 0 12px;">■ ${s.step || `체크 0${idx + 1}`}. ${toSafeHtml(s.title)}</h3>`;
+        
         if (s.cardHighlight) {
-          html += `<blockquote style="border-left:4px solid #10B981;padding:12px 14px;margin:12px 0;background:#F0FDF4;color:#064E3B;">`;
-          html += `<strong style="font-size:15px;">📌 ${toSafeHtml(s.cardHighlight)}</strong>`;
-          if (s.cardSubtext) html += `<br><span style="font-size:13px;color:#047857;">💡 Tip: ${toSafeHtml(s.cardSubtext)}</span>`;
-          html += `</blockquote><br>`;
+          html += `<div style="background-color:#F0FDF4;border-left:4px solid #10B981;border-radius:6px;padding:14px 16px;margin:14px 0;">`;
+          html += `<div style="color:#064E3B;font-weight:bold;font-size:15px;">📌 ${toSafeHtml(s.cardHighlight)}</div>`;
+          if (s.cardSubtext) {
+            html += `<div style="color:#047857;font-size:13px;margin-top:6px;">💡 Tip: ${toSafeHtml(s.cardSubtext)}</div>`;
+          }
+          html += `</div>`;
         }
-        html += `<p>${toSafeHtml(s.body)}</p><br>`;
 
-        // 표가 존재할 경우 실제 HTML 테이블 렌더링
+        html += `<p style="font-size:15px;margin-bottom:14px;">${toSafeHtml(s.body)}</p>`;
+
         if (s.table && Array.isArray(s.table.headers) && Array.isArray(s.table.rows)) {
-          html += `<div class="table-container">`;
-          html += `<table class="article-table" border="1" style="border-collapse:collapse;width:100%;margin:12px 0;border:1px solid #DDE1E5;">`;
-          html += `<thead><tr>${s.table.headers.map(h => `<th style="padding:10px 8px;background:#F2F4F6;border:1px solid #DDE1E5;font-weight:bold;text-align:center;">${toSafeHtml(h)}</th>`).join('')}</tr></thead>`;
-          html += `<tbody>`;
-          s.table.rows.forEach(row => {
-            html += `<tr>${row.map(cell => `<td style="padding:9px 8px;border:1px solid #DDE1E5;text-align:center;">${toSafeHtml(String(cell))}</td>`).join('')}</tr>`;
+          html += `<div style="width:100%;overflow-x:auto;margin:16px 0;">`;
+          html += `<table style="width:100%;border-collapse:collapse;border:1px solid #D1D5DB;font-size:13.5px;text-align:center;background:#FFFFFF;">`;
+          html += `<thead><tr>`;
+          s.table.headers.forEach(h => {
+            html += `<th style="background-color:#F3F4F6;color:#1F2937;font-weight:bold;padding:10px 8px;border:1px solid #D1D5DB;white-space:nowrap;">${toSafeHtml(h)}</th>`;
           });
-          html += `</tbody></table></div><br>`;
+          html += `</tr></thead><tbody>`;
+          s.table.rows.forEach(row => {
+            html += `<tr>`;
+            row.forEach(cell => {
+              html += `<td style="padding:10px 8px;border:1px solid #D1D5DB;color:#374151;">${toSafeHtml(String(cell))}</td>`;
+            });
+            html += `</tr>`;
+          });
+          html += `</tbody></table></div>`;
         }
 
-        html += `<div class="img-placeholder">📸 [요약 카드 0${idx + 1} 이미지 삽입 위치]</div><br>`;
+        html += `<div style="background:#F8FAFC;border:1px dashed #CBD5E1;border-radius:8px;padding:12px;text-align:center;color:#64748B;font-size:13px;margin:16px 0;">📸 [요약 카드 0${idx + 1} 이미지 삽입 위치]</div>`;
       });
 
-      html += `<p>${toSafeHtml(data.outro)}</p><br>`;
-      if (data.source) html += `<p><strong>📌 공식 출처:</strong> ${toSafeHtml(data.source)}</p><br>`;
-      if (data.tags && data.tags.length) {
-        html += `<p>${data.tags.map(t => t.startsWith('#') ? t : `#${t}`).join(' ')}</p>`;
+      html += `<p style="font-size:15px;margin:20px 0 12px;">${toSafeHtml(data.outro)}</p>`;
+      if (data.source) {
+        html += `<p style="font-size:13.5px;color:#4B5563;margin-bottom:8px;"><strong>📌 공식 출처:</strong> ${toSafeHtml(data.source)}</p>`;
       }
+      if (data.tags && data.tags.length) {
+        html += `<p style="font-size:13.5px;color:#2563EB;">${data.tags.map(t => t.startsWith('#') ? t : `#${t}`).join(' ')}</p>`;
+      }
+      html += `</div>`;
       return html;
     }
 
-    // 순수 텍스트 줄바꿈/클립보드 폴백용
     function buildPlainText(data, title) {
       let text = `[글 제목]\n${title}\n\n[도입부]\n${data.intro}\n\n📸 [대표 썸네일 이미지]\n\n`;
       (data.sections || []).forEach((s, idx) => {
@@ -284,24 +291,133 @@
       ctx.textBaseline = 'alphabetic';
     }
 
+    // ==========================================
+    // 네이버 공식 스타일 5종 세련된 랜덤 썸네일 엔진 (길노트 에디션)
+    // ==========================================
     function renderThumbnailCanvas(canvas, thumbData) {
       canvas.width = 800;
       canvas.height = 800;
       const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#064E3B';
+
+      const THEMES = [
+        {
+          name: 'emerald_green',
+          bgDark: '#07130E',
+          stripeColor: 'rgba(16, 185, 129, 0.08)',
+          accentColor: '#10B981',
+          badgeText: '#A7F3D0',
+          brandDot: '#10B981'
+        },
+        {
+          name: 'deep_purple',
+          bgDark: '#12071A',
+          stripeColor: 'rgba(168, 85, 247, 0.08)',
+          accentColor: '#C084FC',
+          badgeText: '#E9D5FF',
+          brandDot: '#A855F7'
+        },
+        {
+          name: 'electric_blue',
+          bgDark: '#070E1A',
+          stripeColor: 'rgba(59, 130, 246, 0.08)',
+          accentColor: '#60A5FA',
+          badgeText: '#BFDBFE',
+          brandDot: '#3B82F6'
+        },
+        {
+          name: 'coral_sunset',
+          bgDark: '#160909',
+          stripeColor: 'rgba(244, 63, 94, 0.08)',
+          accentColor: '#FB7185',
+          badgeText: '#FECDD3',
+          brandDot: '#F43F5E'
+        },
+        {
+          name: 'cyber_yellow',
+          bgDark: '#141206',
+          stripeColor: 'rgba(234, 179, 8, 0.08)',
+          accentColor: '#FACC15',
+          badgeText: '#FEF08A',
+          brandDot: '#EAB308'
+        }
+      ];
+
+      const theme = THEMES[Math.floor(Math.random() * THEMES.length)];
+
+      ctx.fillStyle = theme.bgDark;
       ctx.fillRect(0, 0, 800, 800);
-      drawPillBadge(ctx, thumbData.badge || '2026 실생활 꿀팁', 64, 90, '#10B981', '#FFFFFF');
+
+      const stripeWidth = 24;
+      const stripeGap = 20;
+      ctx.fillStyle = theme.stripeColor;
+      for (let x = 40; x < 760; x += (stripeWidth + stripeGap)) {
+        ctx.fillRect(x, 0, stripeWidth, 800);
+      }
+
+      const logoY = 130;
+      ctx.fillStyle = theme.brandDot;
+      ctx.beginPath();
+      ctx.arc(345, logoY, 18, 0, Math.PI * 2);
+      ctx.fill();
+
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = 'bold 44px Pretendard, sans-serif';
+      ctx.font = '900 20px Pretendard, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('G', 345, logoY);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '800 28px Pretendard, sans-serif';
       ctx.textAlign = 'left';
-      drawMultilineText(ctx, thumbData.mainTitle || '주요 정책 안내', 64, 300, 672, 64, 4);
-      ctx.fillStyle = '#A7F3D0';
-      ctx.font = '600 28px Pretendard, sans-serif';
-      ctx.fillText(thumbData.subTitle || '알아두면 유용한 가이드', 64, 620);
-      ctx.fillStyle = '#10B981';
-      ctx.fillRect(64, 660, 672, 8);
+      ctx.fillText('길노트', 375, logoY);
+
+      const badgeText = thumbData.badge || '2026 알뜰 정책';
+      ctx.fillStyle = theme.accentColor;
+      ctx.font = 'bold 30px Pretendard, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(badgeText, 400, 250);
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.font = '900 52px Pretendard, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
+
+      const mainTitle = thumbData.mainTitle || '핵심 정보 가이드';
+      const words = mainTitle.split(' ');
+      let line = '';
+      let lines = [];
+      const maxTextWidth = 660;
+
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + (line ? ' ' : '') + words[n];
+        if (ctx.measureText(testLine).width > maxTextWidth && n > 0) {
+          lines.push(line);
+          line = words[n];
+        } else {
+          line = testLine;
+        }
+      }
+      lines.push(line);
+
+      const displayLines = lines.slice(0, 3);
+      const lineHeight = 74;
+      const startY = 400 - ((displayLines.length - 1) * lineHeight / 2);
+
+      displayLines.forEach((l, idx) => {
+        ctx.fillText(l, 400, startY + (idx * lineHeight));
+      });
+
+      const subTitle = thumbData.subTitle || '알아두면 유용한 실전 가이드';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.font = '600 24px Pretendard, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(subTitle, 400, 650);
+
+      ctx.fillStyle = theme.accentColor;
+      ctx.fillRect(360, 685, 80, 4);
     }
 
+    // 챕터별 핵심 요약 카드 렌더링
     function renderSectionCanvas(canvas, secData, idx) {
       canvas.width = 800;
       canvas.height = 800;
@@ -469,11 +585,11 @@
         if (data) {
           resultSec.style.display = 'block';
 
-          // 1. 카드뉴스 캔버스 렌더링
+          // 카드 캔버스 렌더링
           gallery.innerHTML = '';
           const thumbHtml = `
             <div class="img-card-wrap">
-              <div class="img-card-label">🖼️ 대표 썸네일 카드</div>
+              <div class="img-card-label">🖼️ 대표 썸네일 카드 (네이버 공식 스타일)</div>
               <canvas id="canvasThumb" class="card-canvas"></canvas>
               <button type="button" class="img-down-btn" onclick="downloadCanvas('canvasThumb', '${keyword}_대표썸네일')">💾 썸네일 다운로드</button>
             </div>
@@ -496,7 +612,7 @@
             });
           }
 
-          // 2. 완성된 HTML을 화면 컨테이너에 직접 주입 (표/서식 렌더링)
+          // HTML 직접 주입
           const formattedHtml = buildArticleHtml(data, title);
           window._articleHtml = formattedHtml;
           window._articlePlainText = buildPlainText(data, title);
@@ -512,25 +628,62 @@
       }
     }
 
+    // 모바일/PC 2단계 클립보드 복사 엔진
     async function copyArticle() {
-      const html = window._articleHtml || "";
-      const text = window._articlePlainText || "";
+      const htmlContent = window._articleHtml;
+      const plainText = window._articlePlainText || document.getElementById('articleOutput').textContent;
 
-      try {
-        if (navigator.clipboard && window.ClipboardItem) {
+      if (!htmlContent) {
+        return alert("복사할 본문이 없습니다. 먼저 원고를 생성해 주세요.");
+      }
+
+      let copySuccess = false;
+
+      // 1차: ClipboardItem (브라우저 표준)
+      if (navigator.clipboard && window.ClipboardItem) {
+        try {
           const item = new ClipboardItem({
-            'text/html': new Blob([html], { type: 'text/html' }),
-            'text/plain': new Blob([text], { type: 'text/plain' })
+            'text/html': new Blob([htmlContent], { type: 'text/html' }),
+            'text/plain': new Blob([plainText], { type: 'text/plain' })
           });
           await navigator.clipboard.write([item]);
-          alert("본문 및 표 서식이 복사되었습니다! (네이버 블로그 에디터에 Ctrl+V 하세요 ✅)");
-        } else {
-          await navigator.clipboard.writeText(text);
-          alert("텍스트로 복사되었습니다.");
+          copySuccess = true;
+        } catch (e) {
+          copySuccess = false;
         }
-      } catch (e) {
-        await navigator.clipboard.writeText(text);
-        alert("텍스트로 복사되었습니다.");
+      }
+
+      // 2차: DOM Selection + execCommand (모바일 웹/구형 브라우저)
+      if (!copySuccess) {
+        try {
+          const tempEl = document.createElement('div');
+          tempEl.innerHTML = htmlContent;
+          tempEl.style.position = 'fixed';
+          tempEl.style.left = '-9999px';
+          tempEl.style.top = '0';
+          tempEl.style.opacity = '0';
+          tempEl.style.pointerEvents = 'none';
+          document.body.appendChild(tempEl);
+
+          const range = document.createRange();
+          range.selectNodeContents(tempEl);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+
+          copySuccess = document.execCommand('copy');
+          selection.removeAllRanges();
+          document.body.removeChild(tempEl);
+        } catch (err) {
+          copySuccess = false;
+        }
+      }
+
+      if (copySuccess) {
+        alert("본문(형광펜·표 포함)이 복사되었습니다!\n\n※ 모바일 주의: '네이버 블로그 앱' 대신 '모바일 브라우저(Chrome/Safari)'의 블로그 글쓰기 창에 붙여넣어야 서식과 표가 유지됩니다.");
+      } else {
+        await navigator.clipboard.writeText(plainText);
+        alert("서식 복사가 제한되어 일반 텍스트로 복사되었습니다.");
       }
     }
 
