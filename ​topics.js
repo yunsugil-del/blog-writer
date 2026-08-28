@@ -18,21 +18,22 @@ function saveArchive(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-function updateTopicStatus(date, topicId, newStatus) {
+// 전역 함수 즉시 등록
+window.updateTopicStatus = function(date, topicId, newStatus) {
   const archive = loadTopics();
   const group = archive.find(g => g.date === date);
   if (group) {
     const topic = group.topics.find(t => t.id === topicId);
     if (topic) topic.status = newStatus;
     saveArchive(archive);
-    renderArchive();
+    window.renderArchive();
   }
-}
+};
 
-function startWrite(date, topicId) {
+window.startWrite = function(date, topicId) {
   const archive = loadTopics();
   const group = archive.find(g => g.date === date);
-  const topic = group?.topics.find(t => t.id === topicId);
+  const topic = group ? group.topics.find(t => t.id === topicId) : null;
   if (!topic) return;
 
   topic.status = 'in_progress';
@@ -40,24 +41,24 @@ function startWrite(date, topicId) {
 
   localStorage.setItem('selected_topic_for_write', JSON.stringify(topic));
   window.location.href = 'index.html';
-}
+};
 
-function setFilter(filter, btnEl) {
+window.setFilter = function(filter, btnEl) {
   currentFilter = filter;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btnEl.classList.add('active');
-  renderArchive();
-}
+  window.renderArchive();
+};
 
-function toggleAccordion(id) {
+window.toggleAccordion = function(id) {
   const el = document.getElementById(id);
   if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
+};
 
-function toggleDetail(id) {
+window.toggleDetail = function(id) {
   const el = document.getElementById(id);
   if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
+};
 
 function getStatusBadge(status) {
   const map = {
@@ -69,9 +70,10 @@ function getStatusBadge(status) {
   return map[status] || '🟡 미작성';
 }
 
-function renderArchive() {
+window.renderArchive = function() {
   const archive = loadTopics();
   const container = document.getElementById('archiveList');
+  if (!container) return;
   const todayStr = getKoreaDate();
   
   if (archive.length === 0) {
@@ -122,6 +124,6 @@ function renderArchive() {
       </div>
     `;
   }).join('');
-}
+};
 
-document.addEventListener('DOMContentLoaded', renderArchive);
+document.addEventListener('DOMContentLoaded', window.renderArchive);
