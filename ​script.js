@@ -1,4 +1,5 @@
-const WORKER_URL = "https://blog-writer.yunsugil.workers.dev"; // 실제 워커 URL로 확인
+// ⚠️ 본인의 실제 Worker 주소로 확인해 주세요
+const WORKER_URL = "https://blog-writer.yunsugil.workers.dev";
 
 function getKoreaDate() {
   return new Intl.DateTimeFormat('en-CA', {
@@ -10,8 +11,17 @@ function getKoreaDate() {
 }
 
 let currentQuestions = [];
+let selectedCategory = "경제·복지·지원금"; // 기본 선택값
 
-const categorySelect = document.getElementById('categorySelect');
+// 카테고리 칩 클릭 이벤트 연결
+document.querySelectorAll('.cat-chip').forEach(chip => {
+  chip.addEventListener('click', (e) => {
+    document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+    e.currentTarget.classList.add('active');
+    selectedCategory = e.currentTarget.getAttribute('data-val');
+  });
+});
+
 const btnRecommend = document.getElementById('btnRecommend');
 const topicsContainer = document.getElementById('topicsContainer');
 const keywordInput = document.getElementById('keywordInput');
@@ -23,9 +33,8 @@ const resultSection = document.getElementById('resultSection');
 const articleOutput = document.getElementById('articleOutput');
 const btnCopyArticle = document.getElementById('btnCopyArticle');
 
-// 0단계
+// 0단계: 선택된 칩 카테고리로 발굴
 btnRecommend.addEventListener('click', async () => {
-  const category = categorySelect.value;
   btnRecommend.disabled = true;
   btnRecommend.textContent = "AI 실시간 검색 중...";
 
@@ -33,7 +42,7 @@ btnRecommend.addEventListener('click', async () => {
     const res = await fetch(`${WORKER_URL}/api/recommend-trending-topics`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ category })
+      body: JSON.stringify({ category: selectedCategory })
     });
     const data = await res.json();
 
@@ -72,7 +81,6 @@ window.selectTopicByIndex = function(idx) {
 // 1단계
 btnGenerateTitles.addEventListener('click', async () => {
   const keyword = keywordInput.value.trim();
-  const category = categorySelect.value;
   if (!keyword) return alert("키워드를 입력하거나 선택하세요.");
 
   btnGenerateTitles.disabled = true;
@@ -82,7 +90,7 @@ btnGenerateTitles.addEventListener('click', async () => {
     const res = await fetch(`${WORKER_URL}/api/generate-titles`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ category, keyword })
+      body: JSON.stringify({ category: selectedCategory, keyword })
     });
     const data = await res.json();
 
@@ -110,7 +118,6 @@ window.selectTitle = function(title) {
 // 2단계
 btnGenerateArticle.addEventListener('click', async () => {
   const keyword = keywordInput.value.trim();
-  const category = categorySelect.value;
   const title = selectedTitleInput.value.trim();
 
   if (!keyword || !title) return alert("키워드와 제목을 모두 지정해야 합니다.");
@@ -123,7 +130,7 @@ btnGenerateArticle.addEventListener('click', async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        category,
+        category: selectedCategory,
         keyword,
         title,
         questions: currentQuestions
