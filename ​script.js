@@ -1,4 +1,3 @@
-// Cloudflare Worker 실제 배포 주소
 const WORKER_URL = "https://blog-writer.yunsugil.workers.dev";
 
 function getKoreaDate() {
@@ -11,26 +10,17 @@ function getKoreaDate() {
 }
 
 let currentQuestions = [];
-let selectedCategory = "경제·복지·지원금"; // 기본 선택값
+let selectedCategory = "경제·복지·지원금"; // 기본값
 
-// DOM 로드 완료 후 모든 이벤트 안전하게 바인딩
+// 카테고리 칩 즉각 클릭 처리 함수
+window.setCat = function(btn, catName) {
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  selectedCategory = catName;
+  console.log("선택된 카테고리:", selectedCategory);
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. 카테고리 칩 클릭 이벤트 바인딩
-  const chips = document.querySelectorAll('.cat-chip');
-  chips.forEach(chip => {
-    chip.addEventListener('click', (e) => {
-      e.preventDefault();
-      // 전체 칩에서 active 제거 후 현재 클릭한 칩에 추가
-      chips.forEach(c => c.classList.remove('active'));
-      chip.classList.add('active');
-      
-      // 선택된 카테고리 값 업데이트
-      selectedCategory = chip.getAttribute('data-val') || chip.innerText.trim();
-      console.log("선택된 카테고리:", selectedCategory);
-    });
-  });
-
-  // 2. DOM 요소 연결
   const btnRecommend = document.getElementById('btnRecommend');
   const topicsContainer = document.getElementById('topicsContainer');
   const keywordInput = document.getElementById('keywordInput');
@@ -42,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const articleOutput = document.getElementById('articleOutput');
   const btnCopyArticle = document.getElementById('btnCopyArticle');
 
-  // 0단계: 실시간 주제 발굴
+  // 0단계
   if (btnRecommend) {
     btnRecommend.addEventListener('click', async () => {
       btnRecommend.disabled = true;
@@ -92,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // 1단계: 제목 5개 생성
+  // 1단계
   if (btnGenerateTitles) {
     btnGenerateTitles.addEventListener('click', async () => {
       const keyword = keywordInput ? keywordInput.value.trim() : '';
@@ -133,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // 2단계: 본문 집필
+  // 2단계
   if (btnGenerateArticle) {
     btnGenerateArticle.addEventListener('click', async () => {
       const keyword = keywordInput ? keywordInput.value.trim() : '';
@@ -187,7 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 보관함(topics.html)에서 넘어왔을 때 자동 파싱
   const selectedData = localStorage.getItem('selected_topic_for_write');
   if (selectedData && keywordInput) {
     const topic = JSON.parse(selectedData);
@@ -198,7 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// 로컬 저장 함수
 function saveTopicsToStorage(newTopics) {
   const STORAGE_KEY = 'blog_topic_archive';
   const todayStr = getKoreaDate();
