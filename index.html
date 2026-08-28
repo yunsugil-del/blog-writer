@@ -4,17 +4,51 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>블로그 자동화 파이프라인</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; background: #F4F6F8; color: #191F28; line-height: 1.6; padding: 24px 16px 80px; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 520px; }
+    .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .app-title { font-size: 21px; font-weight: 800; color: #191F28; letter-spacing: -0.5px; }
+    .btn-archive-nav { text-decoration: none; font-size: 13px; font-weight: 700; color: #3182F6; background: #E8F3FF; padding: 8px 14px; border-radius: 20px; transition: 0.2s; }
+    .btn-archive-nav:active { transform: scale(0.96); background: #DCEBFE; }
+    .pipeline-card { background: #FFFFFF; border-radius: 18px; padding: 20px 18px; margin-bottom: 14px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.04); }
+    .card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+    .step-badge { font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 6px; background: #F2F4F6; color: #4E5968; }
+    .step-badge.step-green { background: #E8F7EE; color: #15803D; }
+    .step-badge.step-amber { background: #FEF3C7; color: #B45309; }
+    .step-title { font-size: 15px; font-weight: 700; color: #333D4B; }
+    .input-group { display: flex; flex-direction: column; gap: 8px; }
+    .form-select, .form-input { width: 100%; height: 48px; border: 1.5px solid #E5E8EB; border-radius: 12px; padding: 0 14px; font-size: 14px; font-weight: 500; color: #191F28; background: #FAFAFB; outline: none; font-family: inherit; }
+    .form-select:focus, .form-input:focus { background: #FFFFFF; border-color: #3182F6; box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.12); }
+    .form-input[readonly] { background: #F2F4F6; color: #6B7684; }
+    .btn-action { width: 100%; height: 48px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; font-family: inherit; }
+    .btn-blue { background: #3182F6; color: #FFFFFF; box-shadow: 0 4px 10px rgba(49, 130, 246, 0.2); }
+    .btn-blue:active { background: #1B64DA; transform: scale(0.98); }
+    .btn-green { background: #10B981; color: #FFFFFF; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
+    .btn-green:active { background: #059669; transform: scale(0.98); }
+    .btn-action:disabled { background: #E5E8EB; color: #8B95A1; box-shadow: none; cursor: not-allowed; }
+    .topic-result-list, .title-result-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+    .topic-card-item { background: #FAFAFB; border: 1.5px solid #F2F4F6; border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: 0.2s; }
+    .topic-card-item:active { background: #E8F3FF; border-color: #3182F6; transform: scale(0.99); }
+    .topic-card-kw { font-size: 14px; font-weight: 700; color: #1B64DA; margin-bottom: 2px; }
+    .topic-card-why { font-size: 12px; color: #6B7684; line-height: 1.4; }
+    .title-card-item { background: #FAFAFB; border: 1.5px solid #E5E8EB; border-radius: 10px; padding: 12px 14px; font-size: 13.5px; font-weight: 600; color: #333D4B; cursor: pointer; line-height: 1.4; transition: 0.15s; }
+    .title-card-item:active { background: #E8F3FF; border-color: #3182F6; color: #1B64DA; }
+    .result-box { background: #FAFAFB; border: 1px solid #E5E8EB; border-radius: 12px; padding: 16px; font-size: 14px; line-height: 1.7; color: #191F28; white-space: pre-wrap; word-break: break-all; max-height: 500px; overflow-y: auto; margin-top: 12px; }
+    .btn-copy { background: #F2F4F6; border: none; color: #4E5968; font-size: 13.5px; font-weight: 700; height: 42px; border-radius: 10px; width: 100%; cursor: pointer; font-family: inherit; }
+    .btn-copy:active { background: #E5E8EB; }
+  </style>
 </head>
 <body>
   <div class="container">
-    <!-- 상단 헤더 -->
     <header class="top-header">
       <h1 class="app-title">✍️ 포스팅 파이프라인</h1>
       <a href="topics.html" class="btn-archive-nav">📚 주제 보관함</a>
     </header>
 
-    <!-- 0단계: 실시간 주제 발굴 -->
+    <!-- 0단계 -->
     <section class="pipeline-card">
       <div class="card-header">
         <span class="step-badge">STEP 0</span>
@@ -22,17 +56,17 @@
       </div>
       <div class="input-group">
         <select id="categorySelect" class="form-select">
-          <option value="경제·복지·지원금 (정부지원금, 복지, 세금, 환급, 정책)">💰 경제·복지·지원금 (정부지원금, 세금, 환급, 정책)</option>
-          <option value="생활·교통·할인 (교통, 카드 할인, 생활비 절약, 각종 할인·혜택)">🚌 생활·교통·할인 (교통, 카드 할인, 절약, 혜택)</option>
-          <option value="청년·취업·육아 (청년정책, 취업, 출산·육아, 부모 지원)">👶 청년·취업·육아 (청년정책, 취업, 출산·육아)</option>
-          <option value="부동산·금융·재테크 (청약, 주거지원, 대출, 금리, 금융혜택, 재테크)">📈 부동산·금융·재테크 (청약, 대출, 금리, 재테크)</option>
+          <option value="경제·복지·지원금 (정부지원금, 복지, 세금, 환급, 정책)">💰 경제·복지·지원금 (지원금, 세금, 정책)</option>
+          <option value="생활·교통·할인 (교통, 카드 할인, 생활비 절약, 각종 할인·혜택)">🚌 생활·교통·할인 (교통비, 카드할인, 혜택)</option>
+          <option value="청년·취업·육아 (청년정책, 취업, 출산·육아, 부모 지원)">👶 청년·취업·육아 (청년정책, 취업, 육아)</option>
+          <option value="부동산·금융·재테크 (청약, 주거지원, 대출, 금리, 금융혜택, 재테크)">📈 부동산·금융·재테크 (청약, 대출, 재테크)</option>
         </select>
         <button type="button" id="btnRecommend" class="btn-action btn-blue">🔍 실시간 주제 5개 발굴</button>
       </div>
       <div id="topicsContainer" class="topic-result-list" style="display: none;"></div>
     </section>
 
-    <!-- 1단계: 키워드 및 제목 생성 -->
+    <!-- 1단계 -->
     <section class="pipeline-card">
       <div class="card-header">
         <span class="step-badge">STEP 1</span>
@@ -45,10 +79,10 @@
       <div id="titlesContainer" class="title-result-list" style="display: none;"></div>
     </section>
 
-    <!-- 2단계: 본문 집필 -->
+    <!-- 2단계 -->
     <section class="pipeline-card">
       <div class="card-header">
-        <span class="step-badge" style="background: #ECFDF5; color: #059669;">STEP 2</span>
+        <span class="step-badge step-green">STEP 2</span>
         <h2 class="step-title">팩트체크 본문 집필</h2>
       </div>
       <div class="input-group">
@@ -57,10 +91,10 @@
       </div>
     </section>
 
-    <!-- 결과 화면 -->
+    <!-- 결과 -->
     <section id="resultSection" class="pipeline-card" style="display: none;">
       <div class="card-header">
-        <span class="step-badge" style="background: #FEF3C7; color: #D97706;">COMPLETE</span>
+        <span class="step-badge step-amber">COMPLETE</span>
         <h2 class="step-title">완성된 원고</h2>
       </div>
       <button type="button" id="btnCopyArticle" class="btn-copy">📋 본문 전체 복사하기</button>
