@@ -31,21 +31,21 @@
       background: #FAFAFB;
       border: 1.5px solid #E5E8EB;
       border-radius: 12px;
-      padding: 10px 12px;
+      padding: 12px 10px;
       font-size: 13px;
       font-weight: 600;
       color: #4E5968;
       cursor: pointer;
       text-align: center;
-      transition: all 0.2s ease;
+      transition: all 0.15s ease;
       font-family: inherit;
     }
     .cat-chip:active { transform: scale(0.97); }
     .cat-chip.active {
-      background: #E8F3FF;
-      border-color: #3182F6;
-      color: #1B64DA;
-      font-weight: 700;
+      background: #E8F3FF !important;
+      border-color: #3182F6 !important;
+      color: #1B64DA !important;
+      font-weight: 700 !important;
     }
 
     .form-input { width: 100%; height: 48px; border: 1.5px solid #E5E8EB; border-radius: 12px; padding: 0 14px; font-size: 14px; font-weight: 500; color: #191F28; background: #FAFAFB; outline: none; font-family: inherit; }
@@ -75,10 +75,11 @@
   <div class="container">
     <header class="top-header">
       <h1 class="app-title">✍️ 포스팅 파이프라인</h1>
-      <a href="topics.html" class="btn-archive-nav">📚 주제 보관함</a>
+      <!-- 상대경로 ./topics.html 로 404 방지 -->
+      <a href="./topics.html" class="btn-archive-nav">📚 주제 보관함</a>
     </header>
 
-    <!-- 0단계: 상단 2x2 클릭형 카테고리 칩 -->
+    <!-- 0단계: 인라인 onclick으로 확실한 칩 클릭 처리 -->
     <section class="pipeline-card">
       <div class="card-header">
         <span class="step-badge">STEP 0</span>
@@ -86,10 +87,10 @@
       </div>
 
       <div class="category-grid">
-        <button type="button" class="cat-chip active" data-val="경제·복지·지원금">💰 경제·복지·지원금</button>
-        <button type="button" class="cat-chip" data-val="생활·교통·할인">🚌 생활·교통·할인</button>
-        <button type="button" class="cat-chip" data-val="청년·취업·육아">👶 청년·취업·육아</button>
-        <button type="button" class="cat-chip" data-val="부동산·금융·재테크">📈 부동산·금융·재테크</button>
+        <button type="button" class="cat-chip active" onclick="setCat(this, '경제·복지·지원금')">💰 경제·복지·지원금</button>
+        <button type="button" class="cat-chip" onclick="setCat(this, '생활·교통·할인')">🚌 생활·교통·할인</button>
+        <button type="button" class="cat-chip" onclick="setCat(this, '청년·취업·육아')">👶 청년·취업·육아</button>
+        <button type="button" class="cat-chip" onclick="setCat(this, '부동산·금융·재테크')">📈 부동산·금융·재테크</button>
       </div>
 
       <button type="button" id="btnRecommend" class="btn-action btn-blue">🔍 실시간 주제 5개 발굴</button>
@@ -132,6 +133,6 @@
     </section>
   </div>
 
-  <script src="script.js"></script>
+  <script src="./script.js"></script>
 </body>
 </html>
