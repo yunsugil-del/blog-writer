@@ -37,7 +37,6 @@
     .btn-green:active { background: #059669; transform: scale(0.98); }
     .btn-action:disabled { background: #E5E8EB; color: #8B95A1; box-shadow: none; cursor: not-allowed; }
     
-    /* 0단계 발굴 리스트 */
     .topic-result-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
     .topic-card-item { background: #FAFAFB; border: 1.5px solid #E5E8EB; border-radius: 14px; padding: 14px 16px; cursor: pointer; transition: 0.2s; }
     .topic-card-item:hover, .topic-card-item:active { background: #E8F3FF; border-color: #3182F6; }
@@ -49,16 +48,13 @@
     .topic-q-list li { font-size: 12px; color: #4E5968; line-height: 1.4; position: relative; padding-left: 10px; }
     .topic-q-list li::before { content: "•"; position: absolute; left: 0; color: #3182F6; font-weight: bold; }
     
-    /* 1단계 제목 선택 */
     .title-result-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
     .title-card-item { background: #FAFAFB; border: 1.5px solid #E5E8EB; border-radius: 10px; padding: 12px 14px; font-size: 13.5px; font-weight: 600; color: #333D4B; cursor: pointer; line-height: 1.4; transition: 0.15s; }
     .title-card-item:active { background: #E8F3FF; border-color: #3182F6; color: #1B64DA; }
     
-    /* 2단계 본문 결과 */
-    .result-box { background: #FAFAFB; border: 1px solid #E5E8EB; border-radius: 12px; padding: 16px; font-size: 14px; line-height: 1.7; color: #191F28; white-space: pre-wrap; word-break: break-all; max-height: 500px; overflow-y: auto; margin-top: 12px; }
+    .result-box { background: #FAFAFB; border: 1px solid #E5E8EB; border-radius: 12px; padding: 16px; font-size: 13.5px; line-height: 1.75; color: #191F28; white-space: pre-wrap; word-break: break-all; max-height: 520px; overflow-y: auto; margin-top: 12px; }
     .btn-copy { background: #F2F4F6; border: none; color: #4E5968; font-size: 13.5px; font-weight: 700; height: 42px; border-radius: 10px; width: 100%; cursor: pointer; font-family: inherit; }
 
-    /* 보관함 UI */
     .filter-bar { display: flex; gap: 6px; margin-bottom: 16px; }
     .filter-btn { padding: 6px 14px; border: 1px solid #E5E8EB; background: #FFFFFF; border-radius: 20px; font-size: 13px; font-weight: 600; color: #4E5968; cursor: pointer; font-family: inherit; }
     .filter-btn.active { background: #3182F6; color: #FFFFFF; border-color: #3182F6; }
@@ -85,7 +81,6 @@
 
     <!-- [1] 글 생성 파이프라인 화면 -->
     <div id="pipelineView">
-      <!-- 0단계 -->
       <section class="pipeline-card">
         <div class="card-header">
           <span class="step-badge">STEP 0</span>
@@ -103,7 +98,6 @@
         <div id="topicsContainer" class="topic-result-list" style="display: none;"></div>
       </section>
 
-      <!-- 1단계 -->
       <section class="pipeline-card">
         <div class="card-header">
           <span class="step-badge">STEP 1</span>
@@ -116,7 +110,6 @@
         <div id="titlesContainer" class="title-result-list" style="display: none;"></div>
       </section>
 
-      <!-- 2단계 -->
       <section class="pipeline-card">
         <div class="card-header">
           <span class="step-badge step-green">STEP 2</span>
@@ -128,7 +121,6 @@
         </div>
       </section>
 
-      <!-- 결과 -->
       <section id="resultSection" class="pipeline-card" style="display: none;">
         <div class="card-header">
           <span class="step-badge step-amber">COMPLETE</span>
@@ -165,6 +157,17 @@
         month: '2-digit',
         day: '2-digit'
       }).format(new Date());
+    }
+
+    // HTML 태그 제거 함수
+    function cleanHtmlTags(str) {
+      if (!str) return "";
+      return str
+        .replace(/<br\s*[\/]?>/gi, "\n")
+        .replace(/<\/?mark>/gi, "")
+        .replace(/<\/?strong>/gi, "")
+        .replace(/<\/?b>/gi, "")
+        .replace(/<[^>]+>/g, "");
     }
 
     function toggleArchiveView() {
@@ -295,7 +298,7 @@
       window.scrollTo({ top: input.offsetTop - 20, behavior: 'smooth' });
     }
 
-    // 2단계: 본문 집필
+    // 2단계: 본문 집필 (썸네일, 요약카드, 사진위치, 태그 복원)
     async function generateArticle() {
       const keyword = document.getElementById('keywordInput').value.trim();
       const title = document.getElementById('selectedTitleInput').value.trim();
@@ -323,14 +326,62 @@
 
         if (data) {
           resultSec.style.display = 'block';
-          let fullText = `[제목] ${title}\n\n`;
-          fullText += `[도입부]\n${data.intro}\n\n`;
-          if (data.sections) {
-            data.sections.forEach(s => {
-              fullText += `■ ${s.step}. ${s.title}\n- 요약: ${s.cardHighlight}\n${s.body}\n\n`;
+          
+          let fullText = "";
+
+          // 1. 썸네일 기획 가이드
+          if (data.thumbnail) {
+            fullText += `[대표 이미지 / 썸네일 가이드]\n`;
+            fullText += `• 상단 뱃지: ${data.thumbnail.badge || ''}\n`;
+            fullText += `• 메인 문구: ${data.thumbnail.mainTitle || keyword}\n`;
+            fullText += `• 서브 문구: ${data.thumbnail.subTitle || ''}\n\n`;
+            fullText += `----------------------------------------\n\n`;
+          }
+
+          // 2. 제목
+          fullText += `[글 제목]\n${title}\n\n`;
+
+          // 3. 도입부 (태그 정리)
+          fullText += `[도입부]\n${cleanHtmlTags(data.intro)}\n\n`;
+          fullText += `📸 [추천 이미지 배치: 주제와 관련된 대표 정책 포스터 또는 분위기 사진]\n\n`;
+
+          // 4. 섹션별 본문 & 요약카드
+          if (data.sections && data.sections.length > 0) {
+            data.sections.forEach((s, idx) => {
+              fullText += `■ ${s.step || `체크 0${idx+1}`}. ${s.title}\n\n`;
+              
+              // 요약 카드뉴스 영역
+              if (s.cardHighlight) {
+                fullText += `┌─ 📌 핵심 요약 카드 ──────────────────\n`;
+                fullText += `│ ${s.cardHighlight}\n`;
+                if (s.cardSubtext) {
+                  fullText += `│ 💡 Tip: ${s.cardSubtext}\n`;
+                }
+                fullText += `└───────────────────────────────────────\n\n`;
+              }
+
+              // 본문 (태그 정리)
+              fullText += `${cleanHtmlTags(s.body)}\n\n`;
+
+              // 추천 이미지 위치
+              fullText += `📸 [추천 이미지 배치: ${s.title} 설명에 도움되는 안내 인포그래픽/도표]\n\n`;
             });
           }
-          fullText += `[마무리]\n${data.outro}\n\n출처: ${data.source}\n태그: ${(data.tags || []).join(' ')}`;
+
+          // 5. 마무리
+          fullText += `[마무리 요약]\n${cleanHtmlTags(data.outro)}\n\n`;
+
+          // 6. 공식 출처
+          if (data.source) {
+            fullText += `[공식 확인처 / 출처]\n• ${data.source}\n\n`;
+          }
+
+          // 7. 해시태그 (# 자동 생성)
+          if (data.tags && data.tags.length > 0) {
+            const formattedTags = data.tags.map(t => t.startsWith('#') ? t : `#${t}`).join(' ');
+            fullText += `[추천 태그]\n${formattedTags}`;
+          }
+
           output.textContent = fullText;
           resultSec.scrollIntoView({ behavior: 'smooth' });
         }
@@ -424,7 +475,6 @@
       }).join('');
     }
 
-    // 주제 완전 삭제 함수
     function deleteTopic(date, id) {
       if (!confirm("이 주제를 보관함에서 완전히 삭제하시겠습니까?")) return;
 
@@ -432,7 +482,6 @@
       const group = archive.find(g => g.date === date);
       if (group) {
         group.topics = group.topics.filter(t => t.id !== id);
-        // 날짜 그룹 내 주제가 하나도 없으면 날짜 그룹도 제거
         if (group.topics.length === 0) {
           archive = archive.filter(g => g.date !== date);
         }
