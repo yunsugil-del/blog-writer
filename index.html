@@ -52,9 +52,13 @@
     .title-card-item { background: #FAFAFB; border: 1.5px solid #E5E8EB; border-radius: 10px; padding: 12px 14px; font-size: 13.5px; font-weight: 600; color: #333D4B; cursor: pointer; line-height: 1.4; transition: 0.15s; }
     .title-card-item:active { background: #E8F3FF; border-color: #3182F6; color: #1B64DA; }
     
-    .result-box { background: #FAFAFB; border: 1px solid #E5E8EB; border-radius: 12px; padding: 16px; font-size: 13.5px; line-height: 1.75; color: #191F28; white-space: pre-wrap; word-break: break-all; max-height: 520px; overflow-y: auto; margin-top: 12px; }
+    /* 결과 본문 박스 (형광펜 & 굵게 스타일 활성화) */
+    .result-box { background: #FAFAFB; border: 1px solid #E5E8EB; border-radius: 12px; padding: 18px; font-size: 14px; line-height: 1.8; color: #191F28; max-height: 540px; overflow-y: auto; margin-top: 12px; word-break: break-word; }
+    .result-box mark { background-color: #FFF388; padding: 2px 4px; border-radius: 3px; font-weight: 600; color: #111; }
+    .result-box strong { font-weight: 700; color: #111; }
     .btn-copy { background: #F2F4F6; border: none; color: #4E5968; font-size: 13.5px; font-weight: 700; height: 42px; border-radius: 10px; width: 100%; cursor: pointer; font-family: inherit; }
 
+    /* 보관함 */
     .filter-bar { display: flex; gap: 6px; margin-bottom: 16px; }
     .filter-btn { padding: 6px 14px; border: 1px solid #E5E8EB; background: #FFFFFF; border-radius: 20px; font-size: 13px; font-weight: 600; color: #4E5968; cursor: pointer; font-family: inherit; }
     .filter-btn.active { background: #3182F6; color: #FFFFFF; border-color: #3182F6; }
@@ -125,7 +129,7 @@
           <span class="step-badge step-amber">COMPLETE</span>
           <h2 class="step-title">완성된 원고</h2>
         </div>
-        <button type="button" id="btnCopyArticle" class="btn-copy" onclick="copyArticle()">📋 본문 전체 복사하기</button>
+        <button type="button" id="btnCopyArticle" class="btn-copy" onclick="copyArticle()">📋 본문 전체 복사하기 (서식/형광펜 포함)</button>
         <div id="articleOutput" class="result-box"></div>
       </section>
     </div>
@@ -157,14 +161,10 @@
       }).format(new Date());
     }
 
-    function cleanHtmlTags(str) {
-      if (!str) return "";
-      return str
-        .replace(/<br\s*[\/]?>/gi, "\n")
-        .replace(/<\/?mark>/gi, "")
-        .replace(/<\/?strong>/gi, "")
-        .replace(/<\/?b>/gi, "")
-        .replace(/<[^>]+>/g, "");
+    // 줄바꿈 보존 및 mark/strong 서식 유지 처리
+    function formatToHtml(text) {
+      if (!text) return "";
+      return text.replace(/\n/g, "<br>");
     }
 
     function toggleArchiveView() {
@@ -302,7 +302,7 @@
       window.scrollTo({ top: input.offsetTop - 20, behavior: 'smooth' });
     }
 
-    // 2단계: 썸네일, 요약카드, 사진위치, 태그 복원 집필 로직
+    // 2단계: 형광펜(mark) 및 볼드(strong) 태그 온전히 살리는 렌더링
     async function generateArticle() {
       const keyword = document.getElementById('keywordInput').value.trim();
       const title = document.getElementById('selectedTitleInput').value.trim();
@@ -335,58 +335,58 @@
         if (data) {
           resultSec.style.display = 'block';
           
-          let fullText = "";
+          let htmlContent = "";
 
-          // 1. 썸네일 가이드 박스
+          // 1. 썸네일 가이드
           if (data.thumbnail) {
-            fullText += `[대표 이미지 / 썸네일 가이드]\n`;
-            fullText += `• 상단 뱃지: ${data.thumbnail.badge || ''}\n`;
-            fullText += `• 메인 문구: ${data.thumbnail.mainTitle || keyword}\n`;
-            fullText += `• 서브 문구: ${data.thumbnail.subTitle || ''}\n\n`;
-            fullText += `----------------------------------------\n\n`;
+            htmlContent += `<p><strong>[대표 이미지 / 썸네일 가이드]</strong><br>`;
+            htmlContent += `• 상단 뱃지: ${data.thumbnail.badge || ''}<br>`;
+            htmlContent += `• 메인 문구: <strong>${data.thumbnail.mainTitle || keyword}</strong><br>`;
+            htmlContent += `• 서브 문구: ${data.thumbnail.subTitle || ''}</p>`;
+            htmlContent += `<hr style="border:none; border-top:1px dashed #CBD5E1; margin:16px 0;">`;
           }
 
           // 2. 글 제목
-          fullText += `[글 제목]\n${title}\n\n`;
+          htmlContent += `<h2 style="font-size:17px; font-weight:800; margin:14px 0 10px;">[글 제목]<br>${title}</h2>`;
 
           // 3. 도입부
-          fullText += `[도입부]\n${cleanHtmlTags(data.intro)}\n\n`;
-          fullText += `📸 [추천 이미지 배치: 주제와 관련된 대표 정책 포스터 또는 분위기 사진]\n\n`;
+          htmlContent += `<p><strong>[도입부]</strong><br>${formatToHtml(data.intro)}</p>`;
+          htmlContent += `<p style="color:#64748B; font-size:13px; margin:10px 0;">📸 [추천 이미지 배치: 주제와 관련된 대표 정책 포스터 또는 분위기 사진]</p>`;
 
-          // 4. 섹션별 본문 및 카드뉴스 요약
+          // 4. 섹션별 본문 및 카드뉴스
           if (data.sections && data.sections.length > 0) {
             data.sections.forEach((s, idx) => {
-              fullText += `■ ${s.step || `체크 0${idx+1}`}. ${s.title}\n\n`;
+              htmlContent += `<h3 style="font-size:15px; font-weight:700; margin-top:20px;">■ ${s.step || `체크 0${idx+1}`}. ${s.title}</h3>`;
               
               if (s.cardHighlight) {
-                fullText += `┌─ 📌 핵심 요약 카드 ──────────────────\n`;
-                fullText += `│ ${s.cardHighlight}\n`;
-                if (s.cardSubtext) {
-                  fullText += `│ 💡 Tip: ${s.cardSubtext}\n`;
-                }
-                fullText += `└───────────────────────────────────────\n\n`;
+                htmlContent += `
+                  <div style="background:#F1F5F9; border-left:4px solid #3182F6; padding:10px 14px; margin:10px 0; border-radius:4px;">
+                    <div style="font-weight:700; color:#1E293B;">📌 핵심 요약 카드: <mark>${s.cardHighlight}</mark></div>
+                    ${s.cardSubtext ? `<div style="font-size:12.5px; color:#475569; margin-top:4px;">💡 Tip: ${s.cardSubtext}</div>` : ''}
+                  </div>
+                `;
               }
 
-              fullText += `${cleanHtmlTags(s.body)}\n\n`;
-              fullText += `📸 [추천 이미지 배치: ${s.title} 설명에 도움되는 안내 인포그래픽/도표]\n\n`;
+              htmlContent += `<p>${formatToHtml(s.body)}</p>`;
+              htmlContent += `<p style="color:#64748B; font-size:13px; margin:10px 0;">📸 [추천 이미지 배치: ${s.title} 설명에 도움되는 안내 인포그래픽/도표]</p>`;
             });
           }
 
-          // 5. 마무리 요약
-          fullText += `[마무리 요약]\n${cleanHtmlTags(data.outro)}\n\n`;
+          // 5. 마무리
+          htmlContent += `<p style="margin-top:16px;"><strong>[마무리 요약]</strong><br>${formatToHtml(data.outro)}</p>`;
 
-          // 6. 출처
+          // 6. 공식 출처
           if (data.source) {
-            fullText += `[공식 확인처 / 출처]\n• ${data.source}\n\n`;
+            htmlContent += `<p style="margin-top:10px;"><strong>[공식 확인처 / 출처]</strong><br>• ${data.source}</p>`;
           }
 
-          // 7. 추천 태그 (# 자동 부착)
+          // 7. 추천 태그
           if (data.tags && data.tags.length > 0) {
             const formattedTags = data.tags.map(t => t.startsWith('#') ? t : `#${t}`).join(' ');
-            fullText += `[추천 태그]\n${formattedTags}`;
+            htmlContent += `<p style="margin-top:14px; color:#1B64DA; font-weight:600;"><strong>[추천 태그]</strong><br>${formattedTags}</p>`;
           }
 
-          output.textContent = fullText;
+          output.innerHTML = htmlContent;
           resultSec.scrollIntoView({ behavior: 'smooth' });
         }
       } catch (err) {
@@ -397,9 +397,38 @@
       }
     }
 
+    // 스마트에디터에 서식(형광펜, 굵게, 인용상자)을 그대로 복사하는 함수
     function copyArticle() {
-      const text = document.getElementById('articleOutput').textContent;
-      navigator.clipboard.writeText(text).then(() => alert("본문이 복사되었습니다!"));
+      const output = document.getElementById('articleOutput');
+      if (!output || !output.innerHTML) return alert("복사할 내용이 없습니다.");
+
+      // 클립보드에 HTML(서식)과 일반 텍스트를 동시에 주입
+      const htmlData = output.innerHTML;
+      const textData = output.innerText;
+
+      if (navigator.clipboard && window.ClipboardItem) {
+        const blobHtml = new Blob([htmlData], { type: 'text/html' });
+        const blobText = new Blob([textData], { type: 'text/plain' });
+        const item = new ClipboardItem({
+          'text/html': blobHtml,
+          'text/plain': blobText
+        });
+
+        navigator.clipboard.write([item]).then(() => {
+          alert("형광펜과 굵은 글씨 서식이 포함된 본문이 복사되었습니다!\n블로그 에디터에 바로 붙여넣기(Ctrl+V)하세요.");
+        }).catch(() => {
+          // 브라우저 권한 제한 시 Fallback 처리
+          fallbackCopyText(textData);
+        });
+      } else {
+        fallbackCopyText(textData);
+      }
+    }
+
+    function fallbackCopyText(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert("본문이 복사되었습니다! (텍스트 복사)");
+      });
     }
 
     function saveTopicsToStorage(newTopics) {
@@ -466,7 +495,7 @@
                       <div class="topic-actions">
                         <button class="btn-sm btn-write" onclick="startWriteTopic('${group.date}', '${t.id}')">이 주제로 작성</button>
                         <button class="btn-sm" onclick="updateTopicStatus('${group.date}', '${t.id}', 'completed')">완료</button>
-                        <button class="btn-sm btn-delete" onclick="deleteTopic('${group.date}', '${t.id}')">🗑️ 삭제</button>
+                        <button class="btn-sm" onclick="deleteTopic('${group.date}', '${t.id}')">🗑️ 삭제</button>
                       </div>
                     </div>
                   </li>
