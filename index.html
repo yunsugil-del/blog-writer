@@ -167,7 +167,6 @@
       }).format(new Date());
     }
 
-    // 네이버 블로그 스마트에디터 ONE 전용 형광펜 & 볼드 인라인 치환
     function toSafeHtml(str) {
       if (!str) return "";
       let esc = str
@@ -186,7 +185,6 @@
       return esc;
     }
 
-    // 본문 빌더: 체크 번호 없이 '■ 소제목'으로 깔끔하게 렌더링
     function buildArticleHtml(data, title) {
       let html = `<div id="naverPasteArea" style="font-family:'Pretendard',AppleSDGothicNeo,sans-serif;line-height:1.85;color:#191F28;">`;
       html += `<h2 style="font-size:20px;font-weight:bold;color:#111827;margin-bottom:16px;">${toSafeHtml(title)}</h2>`;
@@ -296,40 +294,96 @@
       ctx.textBaseline = 'alphabetic';
     }
 
-    // 네이버 공식 스타일 5종 세련된 랜덤 썸네일 엔진 (길노트 에디션)
+    // ==========================================
+    // 5종 컬러가 확실히 살아나는 화사한 썸네일 엔진
+    // ==========================================
     function renderThumbnailCanvas(canvas, thumbData) {
       canvas.width = 800;
       canvas.height = 800;
       const ctx = canvas.getContext('2d');
 
       const THEMES = [
-        { name: 'emerald_green', bgDark: '#07130E', stripeColor: 'rgba(16, 185, 129, 0.08)', accentColor: '#10B981', badgeText: '#A7F3D0', brandDot: '#10B981' },
-        { name: 'deep_purple', bgDark: '#12071A', stripeColor: 'rgba(168, 85, 247, 0.08)', accentColor: '#C084FC', badgeText: '#E9D5FF', brandDot: '#A855F7' },
-        { name: 'electric_blue', bgDark: '#070E1A', stripeColor: 'rgba(59, 130, 246, 0.08)', accentColor: '#60A5FA', badgeText: '#BFDBFE', brandDot: '#3B82F6' },
-        { name: 'coral_sunset', bgDark: '#160909', stripeColor: 'rgba(244, 63, 94, 0.08)', accentColor: '#FB7185', badgeText: '#FECDD3', brandDot: '#F43F5E' },
-        { name: 'cyber_yellow', bgDark: '#141206', stripeColor: 'rgba(234, 179, 8, 0.08)', accentColor: '#FACC15', badgeText: '#FEF08A', brandDot: '#EAB308' }
+        {
+          name: 'naver_green',
+          bgTop: '#064E3B',
+          bgBottom: '#022C22',
+          glowColor: '#10B981',
+          stripeColor: 'rgba(52, 211, 153, 0.15)',
+          badgeColor: '#34D399',
+          brandDot: '#10B981'
+        },
+        {
+          name: 'neon_purple',
+          bgTop: '#581C87',
+          bgBottom: '#2E1065',
+          glowColor: '#A855F7',
+          stripeColor: 'rgba(192, 132, 252, 0.15)',
+          badgeColor: '#C084FC',
+          brandDot: '#A855F7'
+        },
+        {
+          name: 'electric_blue',
+          bgTop: '#1E3A8A',
+          bgBottom: '#0F172A',
+          glowColor: '#3B82F6',
+          stripeColor: 'rgba(96, 165, 250, 0.15)',
+          badgeColor: '#60A5FA',
+          brandDot: '#3B82F6'
+        },
+        {
+          name: 'coral_rose',
+          bgTop: '#881337',
+          bgBottom: '#4C0519',
+          glowColor: '#F43F5E',
+          stripeColor: 'rgba(251, 113, 133, 0.15)',
+          badgeColor: '#FB7185',
+          brandDot: '#F43F5E'
+        },
+        {
+          name: 'cyber_gold',
+          bgTop: '#78350F',
+          bgBottom: '#451A03',
+          glowColor: '#F59E0B',
+          stripeColor: 'rgba(251, 191, 36, 0.15)',
+          badgeColor: '#FBBF24',
+          brandDot: '#F59E0B'
+        }
       ];
 
+      // 5종 중 무작위 선택
       const theme = THEMES[Math.floor(Math.random() * THEMES.length)];
 
-      ctx.fillStyle = theme.bgDark;
+      // 1. 컬러 그라데이션 배경
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, 800);
+      bgGrad.addColorStop(0, theme.bgTop);
+      bgGrad.addColorStop(1, theme.bgBottom);
+      ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, 800, 800);
 
-      const stripeWidth = 24;
-      const stripeGap = 20;
+      // 2. 중앙 글로우(Glow) 효과
+      const glow = ctx.createRadialGradient(400, 400, 50, 400, 400, 380);
+      glow.addColorStop(0, theme.glowColor + '40');
+      glow.addColorStop(1, 'transparent');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, 800, 800);
+
+      // 3. 세로 스트라이프 블라인드 패턴
+      const stripeWidth = 26;
+      const stripeGap = 22;
       ctx.fillStyle = theme.stripeColor;
-      for (let x = 40; x < 760; x += (stripeWidth + stripeGap)) {
+      for (let x = 30; x < 770; x += (stripeWidth + stripeGap)) {
         ctx.fillRect(x, 0, stripeWidth, 800);
       }
 
-      const logoY = 130;
+      // 4. 상단 '길노트' 브랜드 로고 마크
+      const logoY = 120;
       ctx.fillStyle = theme.brandDot;
       ctx.beginPath();
-      ctx.arc(345, logoY, 18, 0, Math.PI * 2);
+      ctx.arc(345, logoY, 19, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = '#FFFFFF';
-      ctx.font = '900 20px Pretendard, sans-serif';
+      ctx.font = '900 22px Pretendard, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText('G', 345, logoY);
@@ -339,16 +393,21 @@
       ctx.textAlign = 'left';
       ctx.fillText('길노트', 375, logoY);
 
+      // 5. 상단 서브 뱃지
       const badgeText = thumbData.badge || '2026 알뜰 정책';
-      ctx.fillStyle = theme.accentColor;
+      ctx.fillStyle = theme.badgeColor;
       ctx.font = 'bold 30px Pretendard, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(badgeText, 400, 250);
+      ctx.fillText(badgeText, 400, 240);
 
+      // 6. 중앙 메인 타이틀 (선명한 화이트 볼드)
       ctx.fillStyle = '#FFFFFF';
       ctx.font = '900 52px Pretendard, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'alphabetic';
+
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+      ctx.shadowBlur = 12;
 
       const mainTitle = thumbData.mainTitle || '핵심 정보 가이드';
       const words = mainTitle.split(' ');
@@ -369,23 +428,28 @@
 
       const displayLines = lines.slice(0, 3);
       const lineHeight = 74;
-      const startY = 400 - ((displayLines.length - 1) * lineHeight / 2);
+      const startY = 410 - ((displayLines.length - 1) * lineHeight / 2);
 
       displayLines.forEach((l, idx) => {
         ctx.fillText(l, 400, startY + (idx * lineHeight));
       });
 
-      const subTitle = thumbData.subTitle || '알아두면 유용한 실전 가이드';
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+
+      // 7. 하단 부제
+      const subTitle = thumbData.subTitle || '알아두면 유용한 가이드';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
       ctx.font = '600 24px Pretendard, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(subTitle, 400, 650);
+      ctx.fillText(subTitle, 400, 640);
 
-      ctx.fillStyle = theme.accentColor;
-      ctx.fillRect(360, 685, 80, 4);
+      // 8. 하단 포인트 네온 바
+      ctx.fillStyle = theme.badgeColor;
+      ctx.fillRect(360, 675, 80, 5);
     }
 
-    // 요약 카드: 뱃지를 '요약'으로 고정하고 cardSummary 기반 렌더링
+    // 요약 카드 렌더링
     function renderSectionCanvas(canvas, secData, idx) {
       canvas.width = 800;
       canvas.height = 800;
