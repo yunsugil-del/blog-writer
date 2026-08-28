@@ -52,13 +52,9 @@
     .title-card-item { background: #FAFAFB; border: 1.5px solid #E5E8EB; border-radius: 10px; padding: 12px 14px; font-size: 13.5px; font-weight: 600; color: #333D4B; cursor: pointer; line-height: 1.4; transition: 0.15s; }
     .title-card-item:active { background: #E8F3FF; border-color: #3182F6; color: #1B64DA; }
     
-    /* 결과 본문 박스 (형광펜 & 굵게 스타일 활성화) */
-    .result-box { background: #FAFAFB; border: 1px solid #E5E8EB; border-radius: 12px; padding: 18px; font-size: 14px; line-height: 1.8; color: #191F28; max-height: 540px; overflow-y: auto; margin-top: 12px; word-break: break-word; }
-    .result-box mark { background-color: #FFF388; padding: 2px 4px; border-radius: 3px; font-weight: 600; color: #111; }
-    .result-box strong { font-weight: 700; color: #111; }
+    .result-box { background: #FAFAFB; border: 1px solid #E5E8EB; border-radius: 12px; padding: 16px; font-size: 13.5px; line-height: 1.75; color: #191F28; white-space: pre-wrap; word-break: break-all; max-height: 520px; overflow-y: auto; margin-top: 12px; }
     .btn-copy { background: #F2F4F6; border: none; color: #4E5968; font-size: 13.5px; font-weight: 700; height: 42px; border-radius: 10px; width: 100%; cursor: pointer; font-family: inherit; }
 
-    /* 보관함 */
     .filter-bar { display: flex; gap: 6px; margin-bottom: 16px; }
     .filter-btn { padding: 6px 14px; border: 1px solid #E5E8EB; background: #FFFFFF; border-radius: 20px; font-size: 13px; font-weight: 600; color: #4E5968; cursor: pointer; font-family: inherit; }
     .filter-btn.active { background: #3182F6; color: #FFFFFF; border-color: #3182F6; }
@@ -129,7 +125,7 @@
           <span class="step-badge step-amber">COMPLETE</span>
           <h2 class="step-title">완성된 원고</h2>
         </div>
-        <button type="button" id="btnCopyArticle" class="btn-copy" onclick="copyArticle()">📋 본문 전체 복사하기 (서식/형광펜 포함)</button>
+        <button type="button" id="btnCopyArticle" class="btn-copy" onclick="copyArticle()">📋 본문 전체 복사하기 (하이라이트 서식 포함)</button>
         <div id="articleOutput" class="result-box"></div>
       </section>
     </div>
@@ -161,11 +157,64 @@
       }).format(new Date());
     }
 
-    // 줄바꿈 보존 및 mark/strong 서식 유지 처리
-    function formatToHtml(text) {
-      if (!text) return "";
-      return text.replace(/\n/g, "<br>");
+    function cleanHtmlTags(str) {
+      if (!str) return "";
+      return str
+        .replace(/<br\s*[\/]?>/gi, "\n")
+        .replace(/<\/?mark>/gi, "")
+        .replace(/<\/?strong>/gi, "")
+        .replace(/<\/?b>/gi, "")
+        .replace(/<[^>]+>/g, "");
     }
+
+    // ===== 리치 텍스트 복사용 함수들 =====
+
+    // HTML 이스케이프 후 mark/strong/br만 실제 태그로 복원
+    function toSafeHtml(str) {
+      if (!str) return "";
+      let esc = str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      esc = esc
+        .replace(/&lt;mark&gt;/gi, '<mark style="background:#FFF3B0;">')
+        .replace(/&lt;\/mark&gt;/gi, '</mark>')
+        .replace(/&lt;strong&gt;/gi, '<strong>')
+        .replace(/&lt;\/strong&gt;/gi, '</strong>')
+        .replace(/&lt;br\s*\/?&gt;/gi, '<br>');
+      return esc.replace(/\n/g, '<br>');
+    }
+
+    // 섹션 순서대로 순환 적용될 카드 색상 팔레트 (초록 → 블루 → 앰버)
+    const CARD_COLORS = [
+      { bg: '#E9F7F0', border: '#34B378', text: '#0F5132' }, // 체크 01: 민트/초록
+      { bg: '#EAF2FF', border: '#3182F6', text: '#1B3A6B' }, // 체크 02: 블루
+      { bg: '#FFF9E9', border: '#F0B429', text: '#7C4A03' }  // 체크 03: 앰버/골드
+    ];
+
+    // data(JSON) → 서식+색상 포함 HTML 문자열로 조립
+    function buildArticleHtml(data, title) {
+      let html = `<h1>${toSafeHtml(title)}</h1>`;
+      html += `<p>${toSafeHtml(data.intro)}</p>`;
+
+      (data.sections || []).forEach((s, idx) => {
+        const c = CARD_COLORS[idx % CARD_COLORS.length];
+        html += `<h3>■ ${s.step || `체크 0${idx + 1}`}. ${toSafeHtml(s.title)}</h3>`;
+        if (s.cardHighlight) {
+          html += `<p style="background:${c.bg};border:2px solid ${c.border};border-radius:10px;padding:14px 16px;">`;
+          html += `<strong style="color:${c.text};">📌 ${toSafeHtml(s.cardHighlight)}</strong>`;
+          if (s.cardSubtext) html += `<br><span style="color:${c.text};">💡 Tip: ${toSafeHtml(s.cardSubtext)}</span>`;
+          html += `</p>`;
+        }
+        html += `<p>${toSafeHtml(s.body)}</p>`;
+      });
+
+      html += `<p>${toSafeHtml(data.outro)}</p>`;
+      if (data.source) html += `<p>📌 공식 출처: ${toSafeHtml(data.source)}</p>`;
+      if (data.tags && data.tags.length) {
+        html += `<p>${data.tags.map(t => t.startsWith('#') ? t : `#${t}`).join(' ')}</p>`;
+      }
+      return html;
+    }
+
+    // ===== 여기까지 =====
 
     function toggleArchiveView() {
       isArchiveOpen = !isArchiveOpen;
@@ -194,6 +243,7 @@
       selectedCategory = cat;
     }
 
+    // 0단계: 주제 발굴 (상세 에러 얼럿 처리)
     async function recommendTopics() {
       const btn = document.getElementById('btnRecommend');
       const container = document.getElementById('topicsContainer');
@@ -257,6 +307,7 @@
       }
     }
 
+    // 1단계: 제목 생성
     async function generateTitles() {
       const kwInput = document.getElementById('keywordInput');
       const keyword = kwInput.value.trim();
@@ -302,7 +353,7 @@
       window.scrollTo({ top: input.offsetTop - 20, behavior: 'smooth' });
     }
 
-    // 2단계: 형광펜(mark) 및 볼드(strong) 태그 온전히 살리는 렌더링
+    // 2단계: 본문 집필
     async function generateArticle() {
       const keyword = document.getElementById('keywordInput').value.trim();
       const title = document.getElementById('selectedTitleInput').value.trim();
@@ -334,59 +385,54 @@
 
         if (data) {
           resultSec.style.display = 'block';
-          
-          let htmlContent = "";
 
-          // 1. 썸네일 가이드
+          // 복사용 리치 텍스트 HTML을 미리 만들어 window에 저장
+          window._articleHtml = buildArticleHtml(data, title);
+
+          let fullText = "";
+
           if (data.thumbnail) {
-            htmlContent += `<p><strong>[대표 이미지 / 썸네일 가이드]</strong><br>`;
-            htmlContent += `• 상단 뱃지: ${data.thumbnail.badge || ''}<br>`;
-            htmlContent += `• 메인 문구: <strong>${data.thumbnail.mainTitle || keyword}</strong><br>`;
-            htmlContent += `• 서브 문구: ${data.thumbnail.subTitle || ''}</p>`;
-            htmlContent += `<hr style="border:none; border-top:1px dashed #CBD5E1; margin:16px 0;">`;
+            fullText += `[대표 이미지 / 썸네일 가이드]\n`;
+            fullText += `• 상단 뱃지: ${data.thumbnail.badge || ''}\n`;
+            fullText += `• 메인 문구: ${data.thumbnail.mainTitle || keyword}\n`;
+            fullText += `• 서브 문구: ${data.thumbnail.subTitle || ''}\n\n`;
+            fullText += `----------------------------------------\n\n`;
           }
 
-          // 2. 글 제목
-          htmlContent += `<h2 style="font-size:17px; font-weight:800; margin:14px 0 10px;">[글 제목]<br>${title}</h2>`;
+          fullText += `[글 제목]\n${title}\n\n`;
+          fullText += `[도입부]\n${cleanHtmlTags(data.intro)}\n\n`;
+          fullText += `📸 [추천 이미지 배치: 주제와 관련된 대표 정책 포스터 또는 분위기 사진]\n\n`;
 
-          // 3. 도입부
-          htmlContent += `<p><strong>[도입부]</strong><br>${formatToHtml(data.intro)}</p>`;
-          htmlContent += `<p style="color:#64748B; font-size:13px; margin:10px 0;">📸 [추천 이미지 배치: 주제와 관련된 대표 정책 포스터 또는 분위기 사진]</p>`;
-
-          // 4. 섹션별 본문 및 카드뉴스
           if (data.sections && data.sections.length > 0) {
             data.sections.forEach((s, idx) => {
-              htmlContent += `<h3 style="font-size:15px; font-weight:700; margin-top:20px;">■ ${s.step || `체크 0${idx+1}`}. ${s.title}</h3>`;
+              fullText += `■ ${s.step || `체크 0${idx+1}`}. ${s.title}\n\n`;
               
               if (s.cardHighlight) {
-                htmlContent += `
-                  <div style="background:#F1F5F9; border-left:4px solid #3182F6; padding:10px 14px; margin:10px 0; border-radius:4px;">
-                    <div style="font-weight:700; color:#1E293B;">📌 핵심 요약 카드: <mark>${s.cardHighlight}</mark></div>
-                    ${s.cardSubtext ? `<div style="font-size:12.5px; color:#475569; margin-top:4px;">💡 Tip: ${s.cardSubtext}</div>` : ''}
-                  </div>
-                `;
+                fullText += `┌─ 📌 핵심 요약 카드 ──────────────────\n`;
+                fullText += `│ ${s.cardHighlight}\n`;
+                if (s.cardSubtext) {
+                  fullText += `│ 💡 Tip: ${s.cardSubtext}\n`;
+                }
+                fullText += `└───────────────────────────────────────\n\n`;
               }
 
-              htmlContent += `<p>${formatToHtml(s.body)}</p>`;
-              htmlContent += `<p style="color:#64748B; font-size:13px; margin:10px 0;">📸 [추천 이미지 배치: ${s.title} 설명에 도움되는 안내 인포그래픽/도표]</p>`;
+              fullText += `${cleanHtmlTags(s.body)}\n\n`;
+              fullText += `📸 [추천 이미지 배치: ${s.title} 설명에 도움되는 안내 인포그래픽/도표]\n\n`;
             });
           }
 
-          // 5. 마무리
-          htmlContent += `<p style="margin-top:16px;"><strong>[마무리 요약]</strong><br>${formatToHtml(data.outro)}</p>`;
+          fullText += `[마무리 요약]\n${cleanHtmlTags(data.outro)}\n\n`;
 
-          // 6. 공식 출처
           if (data.source) {
-            htmlContent += `<p style="margin-top:10px;"><strong>[공식 확인처 / 출처]</strong><br>• ${data.source}</p>`;
+            fullText += `[공식 확인처 / 출처]\n• ${data.source}\n\n`;
           }
 
-          // 7. 추천 태그
           if (data.tags && data.tags.length > 0) {
             const formattedTags = data.tags.map(t => t.startsWith('#') ? t : `#${t}`).join(' ');
-            htmlContent += `<p style="margin-top:14px; color:#1B64DA; font-weight:600;"><strong>[추천 태그]</strong><br>${formattedTags}</p>`;
+            fullText += `[추천 태그]\n${formattedTags}`;
           }
 
-          output.innerHTML = htmlContent;
+          output.textContent = fullText;
           resultSec.scrollIntoView({ behavior: 'smooth' });
         }
       } catch (err) {
@@ -397,38 +443,27 @@
       }
     }
 
-    // 스마트에디터에 서식(형광펜, 굵게, 인용상자)을 그대로 복사하는 함수
-    function copyArticle() {
-      const output = document.getElementById('articleOutput');
-      if (!output || !output.innerHTML) return alert("복사할 내용이 없습니다.");
+    // 복사 버튼: 서식(mark/strong) + 카드 색상 포함 복사
+    async function copyArticle() {
+      const text = document.getElementById('articleOutput').textContent;
+      const html = window._articleHtml || text;
 
-      // 클립보드에 HTML(서식)과 일반 텍스트를 동시에 주입
-      const htmlData = output.innerHTML;
-      const textData = output.innerText;
-
-      if (navigator.clipboard && window.ClipboardItem) {
-        const blobHtml = new Blob([htmlData], { type: 'text/html' });
-        const blobText = new Blob([textData], { type: 'text/plain' });
-        const item = new ClipboardItem({
-          'text/html': blobHtml,
-          'text/plain': blobText
-        });
-
-        navigator.clipboard.write([item]).then(() => {
-          alert("형광펜과 굵은 글씨 서식이 포함된 본문이 복사되었습니다!\n블로그 에디터에 바로 붙여넣기(Ctrl+V)하세요.");
-        }).catch(() => {
-          // 브라우저 권한 제한 시 Fallback 처리
-          fallbackCopyText(textData);
-        });
-      } else {
-        fallbackCopyText(textData);
+      try {
+        if (navigator.clipboard && window.ClipboardItem) {
+          const item = new ClipboardItem({
+            'text/html': new Blob([html], { type: 'text/html' }),
+            'text/plain': new Blob([text], { type: 'text/plain' })
+          });
+          await navigator.clipboard.write([item]);
+          alert("본문이 복사되었습니다! (하이라이트 서식 포함 ✅)");
+        } else {
+          await navigator.clipboard.writeText(text);
+          alert("본문이 복사되었습니다! (이 브라우저는 서식 복사 미지원)");
+        }
+      } catch (e) {
+        await navigator.clipboard.writeText(text);
+        alert("본문이 복사되었습니다! (서식 없이 텍스트만)");
       }
-    }
-
-    function fallbackCopyText(text) {
-      navigator.clipboard.writeText(text).then(() => {
-        alert("본문이 복사되었습니다! (텍스트 복사)");
-      });
     }
 
     function saveTopicsToStorage(newTopics) {
