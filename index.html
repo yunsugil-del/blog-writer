@@ -23,6 +23,7 @@
 
     .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
     .cat-chip { background: #FAFAFB; border: 1.5px solid #E5E8EB; border-radius: 12px; padding: 12px 10px; font-size: 13px; font-weight: 600; color: #4E5968; cursor: pointer; text-align: center; transition: all 0.15s ease; font-family: inherit; }
+    .cat-chip:active { transform: scale(0.97); }
     .cat-chip.active { background: #E8F3FF !important; border-color: #3182F6 !important; color: #1B64DA !important; font-weight: 700 !important; }
 
     .form-input { width: 100%; height: 48px; border: 1.5px solid #E5E8EB; border-radius: 12px; padding: 0 14px; font-size: 14px; font-weight: 500; color: #191F28; background: #FAFAFB; outline: none; font-family: inherit; }
@@ -36,19 +37,28 @@
     .btn-green:active { background: #059669; transform: scale(0.98); }
     .btn-action:disabled { background: #E5E8EB; color: #8B95A1; box-shadow: none; cursor: not-allowed; }
     
-    .topic-result-list, .title-result-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-    .topic-card-item { background: #FAFAFB; border: 1.5px solid #F2F4F6; border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: 0.2s; }
-    .topic-card-item:active { background: #E8F3FF; border-color: #3182F6; transform: scale(0.99); }
-    .topic-card-kw { font-size: 14px; font-weight: 700; color: #1B64DA; margin-bottom: 2px; }
-    .topic-card-why { font-size: 12px; color: #6B7684; line-height: 1.4; }
+    /* 0단계 발굴 리스트 */
+    .topic-result-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+    .topic-card-item { background: #FAFAFB; border: 1.5px solid #E5E8EB; border-radius: 14px; padding: 14px 16px; cursor: pointer; transition: 0.2s; }
+    .topic-card-item:hover, .topic-card-item:active { background: #E8F3FF; border-color: #3182F6; }
+    .topic-card-kw { font-size: 15px; font-weight: 700; color: #1B64DA; margin-bottom: 6px; }
+    .topic-card-why { font-size: 13px; color: #333D4B; line-height: 1.5; margin-bottom: 8px; font-weight: 500; }
+    .topic-q-box { background: #FFFFFF; border-radius: 8px; padding: 8px 12px; border: 1px solid #E5E8EB; }
+    .topic-q-label { font-size: 11px; font-weight: 700; color: #6B7684; margin-bottom: 4px; }
+    .topic-q-list { list-style: none; padding: 0; margin: 0; }
+    .topic-q-list li { font-size: 12px; color: #4E5968; line-height: 1.4; position: relative; padding-left: 10px; }
+    .topic-q-list li::before { content: "•"; position: absolute; left: 0; color: #3182F6; font-weight: bold; }
     
+    /* 1단계 제목 선택 */
+    .title-result-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
     .title-card-item { background: #FAFAFB; border: 1.5px solid #E5E8EB; border-radius: 10px; padding: 12px 14px; font-size: 13.5px; font-weight: 600; color: #333D4B; cursor: pointer; line-height: 1.4; transition: 0.15s; }
     .title-card-item:active { background: #E8F3FF; border-color: #3182F6; color: #1B64DA; }
     
+    /* 2단계 본문 결과 */
     .result-box { background: #FAFAFB; border: 1px solid #E5E8EB; border-radius: 12px; padding: 16px; font-size: 14px; line-height: 1.7; color: #191F28; white-space: pre-wrap; word-break: break-all; max-height: 500px; overflow-y: auto; margin-top: 12px; }
     .btn-copy { background: #F2F4F6; border: none; color: #4E5968; font-size: 13.5px; font-weight: 700; height: 42px; border-radius: 10px; width: 100%; cursor: pointer; font-family: inherit; }
 
-    /* 보관함 내부 스타일 */
+    /* 보관함 UI */
     .filter-bar { display: flex; gap: 6px; margin-bottom: 16px; }
     .filter-btn { padding: 6px 14px; border: 1px solid #E5E8EB; background: #FFFFFF; border-radius: 20px; font-size: 13px; font-weight: 600; color: #4E5968; cursor: pointer; font-family: inherit; }
     .filter-btn.active { background: #3182F6; color: #FFFFFF; border-color: #3182F6; }
@@ -57,12 +67,13 @@
     .topic-list { list-style: none; }
     .topic-item { padding: 14px 18px; border-bottom: 1px solid #F2F4F6; }
     .topic-item:last-child { border-bottom: none; }
-    .topic-main { display: flex; justify-content: space-between; align-items: center; }
-    .topic-title { font-size: 14px; font-weight: 700; color: #191F28; display: flex; align-items: center; gap: 6px; }
+    .topic-main { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .topic-title { font-size: 14px; font-weight: 700; color: #191F28; display: flex; align-items: center; gap: 6px; flex: 1; }
     .topic-detail { display: none; margin-top: 10px; padding: 12px; background: #F8FAFC; border-radius: 10px; font-size: 12.5px; color: #4E5968; }
-    .topic-actions { display: flex; gap: 6px; margin-top: 10px; }
+    .topic-actions { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
     .btn-sm { padding: 6px 10px; font-size: 12px; font-weight: 600; border-radius: 6px; border: 1px solid #E5E8EB; background: #FFFFFF; cursor: pointer; font-family: inherit; color: #4E5968; }
     .btn-write { background: #3182F6; color: #FFFFFF; border-color: #3182F6; }
+    .btn-delete { color: #DC2626; border-color: #FECACA; background: #FEF2F2; }
   </style>
 </head>
 <body>
@@ -72,7 +83,7 @@
       <button type="button" class="btn-nav-toggle" id="btnToggleArchive" onclick="toggleArchiveView()">📚 주제 보관함</button>
     </header>
 
-    <!-- [1] 글 생성 파이프라인 뷰 -->
+    <!-- [1] 글 생성 파이프라인 화면 -->
     <div id="pipelineView">
       <!-- 0단계 -->
       <section class="pipeline-card">
@@ -117,7 +128,7 @@
         </div>
       </section>
 
-      <!-- 결과 화면 -->
+      <!-- 결과 -->
       <section id="resultSection" class="pipeline-card" style="display: none;">
         <div class="card-header">
           <span class="step-badge step-amber">COMPLETE</span>
@@ -128,7 +139,7 @@
       </section>
     </div>
 
-    <!-- [2] 주제 보관함 뷰 (404 없이 내부 화면 전환) -->
+    <!-- [2] 주제 보관함 화면 -->
     <div id="archiveView" style="display: none;">
       <div class="filter-bar">
         <button class="filter-btn active" onclick="setArchiveFilter('all', this)">전체</button>
@@ -140,7 +151,6 @@
   </div>
 
   <script>
-    // 1. 기본 설정
     const WORKER_URL = "https://blog-writer.yunsugil.workers.dev";
     const STORAGE_KEY = 'blog_topic_archive';
     let selectedCategory = "경제·복지·지원금";
@@ -148,7 +158,6 @@
     let currentArchiveFilter = 'all';
     let isArchiveOpen = false;
 
-    // 한국 시간 구하기
     function getKoreaDate() {
       return new Intl.DateTimeFormat('en-CA', {
         timeZone: 'Asia/Seoul',
@@ -158,7 +167,6 @@
       }).format(new Date());
     }
 
-    // 화면 전환 (404 원천 차단)
     function toggleArchiveView() {
       isArchiveOpen = !isArchiveOpen;
       const pipelineView = document.getElementById('pipelineView');
@@ -180,14 +188,13 @@
       }
     }
 
-    // 카테고리 칩 선택
     function setCategory(btn, cat) {
       document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
       btn.classList.add('active');
       selectedCategory = cat;
     }
 
-    // 0단계: 주제 5개 발굴
+    // 0단계: 실시간 주제 발굴
     async function recommendTopics() {
       const btn = document.getElementById('btnRecommend');
       const container = document.getElementById('topicsContainer');
@@ -206,12 +213,25 @@
           saveTopicsToStorage(data.topics);
           window._topicsData = data.topics;
           container.style.display = 'flex';
-          container.innerHTML = data.topics.map((t, idx) => `
-            <div class="topic-card-item" onclick="selectTopicByIndex(${idx})">
-              <div class="topic-card-kw">📌 ${t.keyword}</div>
-              <div class="topic-card-why">${t.whySelected}</div>
-            </div>
-          `).join('');
+          
+          container.innerHTML = data.topics.map((t, idx) => {
+            const qListHtml = (t.questions && t.questions.length > 0) 
+              ? `<div class="topic-q-box">
+                   <div class="topic-q-label">🔍 사람들이 가장 궁금해하는 점</div>
+                   <ul class="topic-q-list">
+                     ${t.questions.map(q => `<li>${q}</li>`).join('')}
+                   </ul>
+                 </div>`
+              : '';
+
+            return `
+              <div class="topic-card-item" onclick="selectTopicByIndex(${idx})">
+                <div class="topic-card-kw">📌 ${t.keyword}</div>
+                <div class="topic-card-why">💡 ${t.whySelected}</div>
+                ${qListHtml}
+              </div>
+            `;
+          }).join('');
         } else {
           alert("주제를 불러오지 못했습니다. 다시 시도해주세요.");
         }
@@ -327,7 +347,7 @@
       navigator.clipboard.writeText(text).then(() => alert("본문이 복사되었습니다!"));
     }
 
-    // 로컬스토리지 보관함 처리
+    // 보관함 스토리지 로직
     function saveTopicsToStorage(newTopics) {
       const todayStr = getKoreaDate();
       let archive = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -359,14 +379,14 @@
       const container = document.getElementById('archiveList');
       const todayStr = getKoreaDate();
 
-      if (archive.length === 0) {
+      if (archive.length === 0 || archive.every(g => g.topics.length === 0)) {
         container.innerHTML = '<p style="text-align:center; color:#8B95A1; padding:40px 0; font-size:14px;">보관된 주제가 없습니다.</p>';
         return;
       }
 
       container.innerHTML = archive.map((group, gIdx) => {
         const filtered = group.topics.filter(t => currentArchiveFilter === 'all' || t.status === currentArchiveFilter);
-        if (filtered.length === 0 && currentArchiveFilter !== 'all') return '';
+        if (filtered.length === 0) return '';
 
         const isToday = group.date === todayStr;
         return `
@@ -392,7 +412,7 @@
                       <div class="topic-actions">
                         <button class="btn-sm btn-write" onclick="startWriteTopic('${group.date}', '${t.id}')">이 주제로 작성</button>
                         <button class="btn-sm" onclick="updateTopicStatus('${group.date}', '${t.id}', 'completed')">완료</button>
-                        <button class="btn-sm" onclick="updateTopicStatus('${group.date}', '${t.id}', 'discarded')">폐기</button>
+                        <button class="btn-sm btn-delete" onclick="deleteTopic('${group.date}', '${t.id}')">🗑️ 삭제</button>
                       </div>
                     </div>
                   </li>
@@ -402,6 +422,23 @@
           </div>
         `;
       }).join('');
+    }
+
+    // 주제 완전 삭제 함수
+    function deleteTopic(date, id) {
+      if (!confirm("이 주제를 보관함에서 완전히 삭제하시겠습니까?")) return;
+
+      let archive = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const group = archive.find(g => g.date === date);
+      if (group) {
+        group.topics = group.topics.filter(t => t.id !== id);
+        // 날짜 그룹 내 주제가 하나도 없으면 날짜 그룹도 제거
+        if (group.topics.length === 0) {
+          archive = archive.filter(g => g.date !== date);
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(archive));
+        renderArchive();
+      }
     }
 
     function setArchiveFilter(f, btn) {
@@ -422,7 +459,7 @@
     }
 
     function getStatusBadge(st) {
-      const m = { pending: '🟡 미작성', in_progress: '🔵 작성중', completed: '🟢 작성완료', discarded: '⚫ 폐기' };
+      const m = { pending: '🟡 미작성', in_progress: '🔵 작성중', completed: '🟢 작성완료' };
       return m[st] || '🟡 미작성';
     }
 
@@ -446,7 +483,6 @@
       topic.status = 'in_progress';
       localStorage.setItem(STORAGE_KEY, JSON.stringify(archive));
 
-      // 메인 화면으로 전환 후 폼 채우기
       toggleArchiveView();
       document.getElementById('keywordInput').value = topic.keyword;
       currentQuestions = topic.questions || [];
