@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📚 주제 보관함</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .archive-container { max-width: 600px; margin: 20px auto; padding: 0 16px; font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif; }
+    .top-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .filter-bar { display: flex; gap: 6px; margin-bottom: 16px; }
+    .filter-btn { padding: 6px 12px; border: 1px solid #cbd5e1; background: #fff; border-radius: 20px; font-size: 13px; cursor: pointer; }
+    .filter-btn.active { background: #2563eb; color: #fff; border-color: #2563eb; font-weight: 600; }
+    .date-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+    .date-header { padding: 14px 16px; background: #f8fafc; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; font-size: 15px; }
+    .topic-list { list-style: none; padding: 0; margin: 0; }
+    .topic-item { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; }
+    .topic-main { display: flex; justify-content: space-between; align-items: center; }
+    .topic-title { font-size: 14px; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 6px; }
+    .topic-detail { display: none; margin-top: 10px; padding: 12px; background: #f8fafc; border-radius: 6px; font-size: 12px; color: #475569; }
+    .topic-actions { display: flex; gap: 6px; margin-top: 10px; }
+    .btn-sm { padding: 5px 10px; font-size: 12px; border-radius: 4px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; }
+    .btn-write { background: #2563eb; color: #fff; border-color: #2563eb; font-weight: 600; }
+  </style>
+</head>
+<body style="background: #f1f5f9; margin: 0;">
+  <div class="archive-container">
+    <div class="top-nav">
+      <h2 style="font-size: 18px; margin: 0;">📚 주제 보관함</h2>
+      <a href="index.html" style="font-size: 13px; color: #64748b; text-decoration: none;">← 메인으로</a>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="setFilter('all', this)">전체</button>
+      <button class="filter-btn" onclick="setFilter('pending', this)">🟡 미작성</button>
+      <button class="filter-btn" onclick="setFilter('completed', this)">🟢 작성완료</button>
+    </div>
+
+    <div id="archiveList"></div>
+  </div>
+
+  <script src="topics.js"></script>
+</body>
+</html>
