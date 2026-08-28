@@ -1,7 +1,6 @@
 const STORAGE_KEY = 'blog_topic_archive';
 let currentFilter = 'all';
 
-// 한국 시간(KST) YYYY-MM-DD 포맷 함수
 function getKoreaDate() {
   return new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Seoul',
@@ -36,11 +35,9 @@ function startWrite(date, topicId) {
   const topic = group?.topics.find(t => t.id === topicId);
   if (!topic) return;
 
-  // 상태를 작성중으로 명시 변경 후 저장
   topic.status = 'in_progress';
   saveArchive(archive);
 
-  // 전달 데이터 저장 후 메인 화면으로 이동
   localStorage.setItem('selected_topic_for_write', JSON.stringify(topic));
   window.location.href = 'index.html';
 }
@@ -78,7 +75,7 @@ function renderArchive() {
   const todayStr = getKoreaDate();
   
   if (archive.length === 0) {
-    container.innerHTML = '<p style="text-align:center; color:#94a3b8; padding:40px 0;">보관된 주제가 없습니다.</p>';
+    container.innerHTML = '<p style="text-align:center; color:#8B95A1; padding:40px 0; font-size:14px;">보관된 주제가 없습니다.</p>';
     return;
   }
 
@@ -94,7 +91,7 @@ function renderArchive() {
       <div class="date-card">
         <div class="date-header" onclick="toggleAccordion('group_${gIdx}')">
           <span>📅 ${group.date} (${filteredTopics.length}개)</span>
-          <span style="font-size:12px; color:#64748b;">${arrow}</span>
+          <span style="font-size:12px; color:#8B95A1;">${arrow}</span>
         </div>
         <div id="group_${gIdx}" style="display: ${bodyDisplay};">
           <ul class="topic-list">
