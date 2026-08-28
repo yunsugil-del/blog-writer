@@ -167,7 +167,7 @@
         .replace(/<[^>]+>/g, "");
     }
 
-    // ===== 리치 텍스트 복사용 함수들 =====
+    // ===== 여기부터 새로 추가된 부분 (리치 텍스트 복사용) =====
 
     // HTML 이스케이프 후 mark/strong/br만 실제 태그로 복원
     function toSafeHtml(str) {
@@ -204,6 +204,14 @@
           html += `</p>`;
         }
         html += `<p>${toSafeHtml(s.body)}</p>`;
+        if (s.table && s.table.headers && s.table.rows) {
+          html += `<table style="width:100%;border-collapse:collapse;margin:10px 0;">`;
+          html += `<tr>${s.table.headers.map(h => `<th style="border:1px solid #DDE1E5;background:#F2F4F6;padding:8px 10px;font-size:13px;">${toSafeHtml(h)}</th>`).join('')}</tr>`;
+          s.table.rows.forEach(row => {
+            html += `<tr>${row.map(cell => `<td style="border:1px solid #DDE1E5;padding:8px 10px;font-size:13px;text-align:center;">${toSafeHtml(String(cell))}</td>`).join('')}</tr>`;
+          });
+          html += `</table>`;
+        }
       });
 
       html += `<p>${toSafeHtml(data.outro)}</p>`;
@@ -214,7 +222,7 @@
       return html;
     }
 
-    // ===== 여기까지 =====
+    // ===== 새로 추가된 부분 끝 =====
 
     function toggleArchiveView() {
       isArchiveOpen = !isArchiveOpen;
@@ -386,8 +394,9 @@
         if (data) {
           resultSec.style.display = 'block';
 
-          // 복사용 리치 텍스트 HTML을 미리 만들어 window에 저장
+          // ===== 새로 추가: 복사용 리치 텍스트 HTML을 미리 만들어 window에 저장 =====
           window._articleHtml = buildArticleHtml(data, title);
+          // ===== 여기까지 =====
 
           let fullText = "";
 
@@ -417,6 +426,15 @@
               }
 
               fullText += `${cleanHtmlTags(s.body)}\n\n`;
+
+              if (s.table && s.table.headers && s.table.rows) {
+                fullText += `[표: ${s.table.headers.join(' | ')}]\n`;
+                s.table.rows.forEach(row => {
+                  fullText += `${row.join(' | ')}\n`;
+                });
+                fullText += `\n`;
+              }
+
               fullText += `📸 [추천 이미지 배치: ${s.title} 설명에 도움되는 안내 인포그래픽/도표]\n\n`;
             });
           }
@@ -443,7 +461,7 @@
       }
     }
 
-    // 복사 버튼: 서식(mark/strong) + 카드 색상 포함 복사
+    // ===== copyArticle 교체됨: 서식(mark/strong) 포함 복사 =====
     async function copyArticle() {
       const text = document.getElementById('articleOutput').textContent;
       const html = window._articleHtml || text;
@@ -465,6 +483,7 @@
         alert("본문이 복사되었습니다! (서식 없이 텍스트만)");
       }
     }
+    // ===== 교체 끝 =====
 
     function saveTopicsToStorage(newTopics) {
       const todayStr = getKoreaDate();
