@@ -19,16 +19,46 @@
     .step-badge.step-green { background: #E8F7EE; color: #15803D; }
     .step-badge.step-amber { background: #FEF3C7; color: #B45309; }
     .step-title { font-size: 15px; font-weight: 700; color: #333D4B; }
-    .input-group { display: flex; flex-direction: column; gap: 8px; }
-    .form-select, .form-input { width: 100%; height: 48px; border: 1.5px solid #E5E8EB; border-radius: 12px; padding: 0 14px; font-size: 14px; font-weight: 500; color: #191F28; background: #FAFAFB; outline: none; font-family: inherit; }
-    .form-select:focus, .form-input:focus { background: #FFFFFF; border-color: #3182F6; box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.12); }
+
+    /* 4개 카테고리 칩 그리드 */
+    .category-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .cat-chip {
+      background: #FAFAFB;
+      border: 1.5px solid #E5E8EB;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #4E5968;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .cat-chip:active { transform: scale(0.97); }
+    .cat-chip.active {
+      background: #E8F3FF;
+      border-color: #3182F6;
+      color: #1B64DA;
+      font-weight: 700;
+    }
+
+    .form-input { width: 100%; height: 48px; border: 1.5px solid #E5E8EB; border-radius: 12px; padding: 0 14px; font-size: 14px; font-weight: 500; color: #191F28; background: #FAFAFB; outline: none; font-family: inherit; }
+    .form-input:focus { background: #FFFFFF; border-color: #3182F6; box-shadow: 0 0 0 3px rgba(49, 130, 246, 0.12); }
     .form-input[readonly] { background: #F2F4F6; color: #6B7684; }
+    
     .btn-action { width: 100%; height: 48px; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; font-family: inherit; }
     .btn-blue { background: #3182F6; color: #FFFFFF; box-shadow: 0 4px 10px rgba(49, 130, 246, 0.2); }
     .btn-blue:active { background: #1B64DA; transform: scale(0.98); }
     .btn-green { background: #10B981; color: #FFFFFF; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
     .btn-green:active { background: #059669; transform: scale(0.98); }
     .btn-action:disabled { background: #E5E8EB; color: #8B95A1; box-shadow: none; cursor: not-allowed; }
+    
     .topic-result-list, .title-result-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
     .topic-card-item { background: #FAFAFB; border: 1.5px solid #F2F4F6; border-radius: 12px; padding: 12px 14px; cursor: pointer; transition: 0.2s; }
     .topic-card-item:active { background: #E8F3FF; border-color: #3182F6; transform: scale(0.99); }
@@ -48,21 +78,21 @@
       <a href="topics.html" class="btn-archive-nav">📚 주제 보관함</a>
     </header>
 
-    <!-- 0단계 -->
+    <!-- 0단계: 상단 2x2 클릭형 카테고리 칩 -->
     <section class="pipeline-card">
       <div class="card-header">
         <span class="step-badge">STEP 0</span>
         <h2 class="step-title">실시간 트렌드 발굴</h2>
       </div>
-      <div class="input-group">
-        <select id="categorySelect" class="form-select">
-          <option value="경제·복지·지원금 (정부지원금, 복지, 세금, 환급, 정책)">💰 경제·복지·지원금 (지원금, 세금, 정책)</option>
-          <option value="생활·교통·할인 (교통, 카드 할인, 생활비 절약, 각종 할인·혜택)">🚌 생활·교통·할인 (교통비, 카드할인, 혜택)</option>
-          <option value="청년·취업·육아 (청년정책, 취업, 출산·육아, 부모 지원)">👶 청년·취업·육아 (청년정책, 취업, 육아)</option>
-          <option value="부동산·금융·재테크 (청약, 주거지원, 대출, 금리, 금융혜택, 재테크)">📈 부동산·금융·재테크 (청약, 대출, 재테크)</option>
-        </select>
-        <button type="button" id="btnRecommend" class="btn-action btn-blue">🔍 실시간 주제 5개 발굴</button>
+
+      <div class="category-grid">
+        <button type="button" class="cat-chip active" data-val="경제·복지·지원금">💰 경제·복지·지원금</button>
+        <button type="button" class="cat-chip" data-val="생활·교통·할인">🚌 생활·교통·할인</button>
+        <button type="button" class="cat-chip" data-val="청년·취업·육아">👶 청년·취업·육아</button>
+        <button type="button" class="cat-chip" data-val="부동산·금융·재테크">📈 부동산·금융·재테크</button>
       </div>
+
+      <button type="button" id="btnRecommend" class="btn-action btn-blue">🔍 실시간 주제 5개 발굴</button>
       <div id="topicsContainer" class="topic-result-list" style="display: none;"></div>
     </section>
 
@@ -72,7 +102,7 @@
         <span class="step-badge">STEP 1</span>
         <h2 class="step-title">롱테일 제목 추출</h2>
       </div>
-      <div class="input-group">
+      <div style="display: flex; flex-direction: column; gap: 8px;">
         <input type="text" id="keywordInput" class="form-input" placeholder="키워드를 직접 입력하거나 위에서 선택하세요">
         <button type="button" id="btnGenerateTitles" class="btn-action btn-blue">💡 롱테일 제목 5개 뽑기</button>
       </div>
@@ -85,7 +115,7 @@
         <span class="step-badge step-green">STEP 2</span>
         <h2 class="step-title">팩트체크 본문 집필</h2>
       </div>
-      <div class="input-group">
+      <div style="display: flex; flex-direction: column; gap: 8px;">
         <input type="text" id="selectedTitleInput" class="form-input" placeholder="위에서 제목을 선택하면 자동 입력됩니다" readonly>
         <button type="button" id="btnGenerateArticle" class="btn-action btn-green">⚡ 팩트체크 본문 & 카드뉴스 집필</button>
       </div>
