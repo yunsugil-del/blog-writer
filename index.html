@@ -489,7 +489,6 @@
       document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
       btn.classList.add('active');
       selectedCategory = cat;
-      recommendTopics();
     }
 
     async function recommendTopics() {
@@ -498,7 +497,7 @@
       btn.disabled = true;
       btn.textContent = "AI 실시간 검색 중...";
 
-      // 최근 키워드 15개로 슬라이딩 윈도우 제한 (토큰 누적 방어)
+      // 최근 키워드 15개로 제한 (토큰 누적 방어)
       const archive = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
       const recentKeywords = archive
         .flatMap(group => group.topics.map(t => t.keyword))
@@ -513,8 +512,15 @@
             excludeKeywords: recentKeywords
           })
         });
-        const data = await res.json();
-        if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+
+        const data = await res.json().catch(() => null);
+
+        if (!res.ok) {
+          const serverErrMsg = data?.error || `HTTP 상태 에러: ${res.status}`;
+          throw new Error(serverErrMsg);
+        }
+
+        if (!data) throw new Error("서버 응답(JSON)을 파싱할 수 없습니다.");
         
         if (data.topics && data.topics.length > 0) {
           saveTopicsToStorage(data.topics);
@@ -532,7 +538,7 @@
           container.innerHTML = '<div style="text-align:center; padding:16px; color:#8B95A1; font-size:13px;">현재 공식 등록된 최신 공고가 없습니다. 키워드를 직접 입력해 보세요.</div>';
         }
       } catch (err) {
-        alert("주제 발굴 실패:\n" + err.message);
+        alert("주제 발굴 실패:\n" + err.message + "\n\n(※ Cloudflare Worker 주소 및 대시보드 로그를 확인하세요)");
       } finally {
         btn.disabled = false;
         btn.textContent = "🔍 실시간 주제 발굴";
@@ -563,8 +569,10 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ category: selectedCategory, keyword })
         });
-        const data = await res.json();
-        if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok) throw new Error(data?.error || `HTTP 상태 에러: ${res.status}`);
+        if (!data) throw new Error("서버 응답(JSON)을 파싱할 수 없습니다.");
         
         if (data.questions && data.questions.length > 0) {
           currentQuestions = data.questions;
@@ -608,8 +616,10 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ category: selectedCategory, keyword, title, questions: currentQuestions })
         });
-        const data = await res.json();
-        if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok) throw new Error(data?.error || `HTTP 상태 에러: ${res.status}`);
+        if (!data) throw new Error("서버 응답(JSON)을 파싱할 수 없습니다.");
 
         if (data) {
           resultSec.style.display = 'block';
@@ -776,7 +786,6 @@
       }).join('');
     }
 
-    // 날짜 그룹 전체 삭제 함수
     function deleteDateGroup(date) {
       if (!confirm(`[${date}] 날짜의 모든 보관 주제를 삭제하시겠습니까?`)) return;
       let archive = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
