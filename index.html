@@ -21,8 +21,8 @@
     .step-badge.step-amber { background: #FEF3C7; color: #B45309; }
     .step-title { font-size: 15px; font-weight: 700; color: #333D4B; }
 
-    .category-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-    .cat-chip { background: #FAFAFB; border: 1.5px solid #E5E8EB; border-radius: 12px; padding: 12px 10px; font-size: 13px; font-weight: 600; color: #4E5968; cursor: pointer; text-align: center; transition: all 0.15s ease; font-family: inherit; }
+    .category-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+    .cat-chip { background: #FAFAFB; border: 1.5px solid #E5E8EB; border-radius: 12px; padding: 12px 6px; font-size: 12.5px; font-weight: 600; color: #4E5968; cursor: pointer; text-align: center; transition: all 0.15s ease; font-family: inherit; }
     .cat-chip:active { transform: scale(0.97); }
     .cat-chip.active { background: #E8F3FF !important; border-color: #3182F6 !important; color: #1B64DA !important; font-weight: 700 !important; }
 
@@ -68,7 +68,8 @@
     .filter-btn { padding: 6px 14px; border: 1px solid #E5E8EB; background: #FFFFFF; border-radius: 20px; font-size: 13px; font-weight: 600; color: #4E5968; cursor: pointer; font-family: inherit; }
     .filter-btn.active { background: #3182F6; color: #FFFFFF; border-color: #3182F6; }
     .date-card { background: #FFFFFF; border-radius: 16px; margin-bottom: 12px; overflow: hidden; box-shadow: 0 4px 14px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.04); }
-    .date-header { padding: 14px 18px; background: #FAFAFB; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F2F4F6; font-size: 14.5px; color: #333D4B; }
+    .date-header { padding: 14px 18px; background: #FAFAFB; font-weight: 700; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F2F4F6; font-size: 14.5px; color: #333D4B; }
+    .date-header-left { display: flex; align-items: center; gap: 8px; cursor: pointer; flex: 1; }
     .topic-list { list-style: none; }
     .topic-item { padding: 14px 18px; border-bottom: 1px solid #F2F4F6; }
     .topic-item:last-child { border-bottom: none; }
@@ -95,12 +96,11 @@
           <h2 class="step-title">실시간 트렌드 발굴</h2>
         </div>
         <div class="category-grid">
-          <button type="button" class="cat-chip active" onclick="setCategory(this, '경제·복지·지원금')">💰 경제·복지·지원금</button>
-          <button type="button" class="cat-chip" onclick="setCategory(this, '생활·교통·할인')">🚌 생활·교통·할인</button>
-          <button type="button" class="cat-chip" onclick="setCategory(this, '청년·취업·육아')">👶 청년·취업·육아</button>
-          <button type="button" class="cat-chip" onclick="setCategory(this, '부동산·금융·재테크')">📈 부동산·금융·재테크</button>
+          <button type="button" class="cat-chip active" onclick="setCategory(this, '돈되는 정부지원금')">💰 정부지원금</button>
+          <button type="button" class="cat-chip" onclick="setCategory(this, '알뜰살뜰 생활꿀팁')">🛒 생활꿀팁</button>
+          <button type="button" class="cat-chip" onclick="setCategory(this, '내 돈 지키는 재테크')">📈 재테크</button>
         </div>
-        <button type="button" id="btnRecommend" class="btn-action btn-blue" onclick="recommendTopics()">🔍 실시간 주제 5개 발굴</button>
+        <button type="button" id="btnRecommend" class="btn-action btn-blue" onclick="recommendTopics()">🔍 실시간 주제 발굴</button>
         <div id="topicsContainer" class="topic-result-list" style="display: none;"></div>
       </section>
 
@@ -153,15 +153,10 @@
   <script>
     const WORKER_URL = "https://blog-writer.yunsugil.workers.dev";
     const STORAGE_KEY = 'blog_topic_archive';
-    let selectedCategory = "경제·복지·지원금";
+    let selectedCategory = "돈되는 정부지원금";
     let currentQuestions = [];
     let currentArchiveFilter = 'all';
     let isArchiveOpen = false;
-
-    // [버그 패치] 키워드를 직접 입력할 때는 이전 추천 주제 질문을 비워줌
-    document.getElementById('keywordInput').addEventListener('input', () => {
-      currentQuestions = [];
-    });
 
     function getKoreaDate() {
       return new Intl.DateTimeFormat('en-CA', {
@@ -312,7 +307,6 @@
       ctx.textBaseline = 'alphabetic';
     }
 
-    // 5종 컬러 비비드 썸네일 엔진
     function renderThumbnailCanvas(canvas, thumbData) {
       canvas.width = 800;
       canvas.height = 800;
@@ -495,6 +489,7 @@
       document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
       btn.classList.add('active');
       selectedCategory = cat;
+      recommendTopics();
     }
 
     async function recommendTopics() {
@@ -502,14 +497,25 @@
       const container = document.getElementById('topicsContainer');
       btn.disabled = true;
       btn.textContent = "AI 실시간 검색 중...";
+
+      // 최근 키워드 15개로 슬라이딩 윈도우 제한 (토큰 누적 방어)
+      const archive = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const recentKeywords = archive
+        .flatMap(group => group.topics.map(t => t.keyword))
+        .slice(0, 15);
+
       try {
         const res = await fetch(`${WORKER_URL}/api/recommend-trending-topics`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ category: selectedCategory })
+          body: JSON.stringify({ 
+            category: selectedCategory,
+            excludeKeywords: recentKeywords
+          })
         });
         const data = await res.json();
         if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+        
         if (data.topics && data.topics.length > 0) {
           saveTopicsToStorage(data.topics);
           window._topicsData = data.topics;
@@ -521,12 +527,15 @@
               ${t.questions ? `<div class="topic-q-box"><div class="topic-q-label">🔍 핵심 질문</div><ul class="topic-q-list">${t.questions.map(q => `<li>${q}</li>`).join('')}</ul></div>` : ''}
             </div>
           `).join('');
+        } else {
+          container.style.display = 'flex';
+          container.innerHTML = '<div style="text-align:center; padding:16px; color:#8B95A1; font-size:13px;">현재 공식 등록된 최신 공고가 없습니다. 키워드를 직접 입력해 보세요.</div>';
         }
       } catch (err) {
         alert("주제 발굴 실패:\n" + err.message);
       } finally {
         btn.disabled = false;
-        btn.textContent = "🔍 실시간 주제 5개 발굴";
+        btn.textContent = "🔍 실시간 주제 발굴";
       }
     }
 
@@ -547,7 +556,7 @@
       const container = document.getElementById('titlesContainer');
       if (!keyword) return alert("키워드를 입력해주세요.");
       btn.disabled = true;
-      btn.textContent = "제목 생성 중...";
+      btn.textContent = "제목 및 질문 분석 중...";
       try {
         const res = await fetch(`${WORKER_URL}/api/generate-titles`, {
           method: 'POST',
@@ -556,6 +565,11 @@
         });
         const data = await res.json();
         if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+        
+        if (data.questions && data.questions.length > 0) {
+          currentQuestions = data.questions;
+        }
+
         if (data.titles) {
           container.style.display = 'flex';
           container.innerHTML = data.titles.map(t => `
@@ -729,9 +743,12 @@
         const isToday = group.date === todayStr;
         return `
           <div class="date-card">
-            <div class="date-header" onclick="toggleAccordion('grp_${gIdx}')">
-              <span>📅 ${group.date} (${filtered.length}개)</span>
-              <span style="font-size:12px; color:#8B95A1;">${isToday ? '▼' : '▶'}</span>
+            <div class="date-header">
+              <div class="date-header-left" onclick="toggleAccordion('grp_${gIdx}')">
+                <span>📅 ${group.date} (${filtered.length}개)</span>
+                <span style="font-size:12px; color:#8B95A1;">${isToday ? '▼' : '▶'}</span>
+              </div>
+              <button type="button" class="btn-sm btn-delete" onclick="deleteDateGroup('${group.date}')" style="padding:4px 8px; font-size:11.5px;">🗑️ 날짜 삭제</button>
             </div>
             <div id="grp_${gIdx}" style="display: ${isToday ? 'block' : 'none'};">
               <ul class="topic-list">
@@ -757,6 +774,15 @@
           </div>
         `;
       }).join('');
+    }
+
+    // 날짜 그룹 전체 삭제 함수
+    function deleteDateGroup(date) {
+      if (!confirm(`[${date}] 날짜의 모든 보관 주제를 삭제하시겠습니까?`)) return;
+      let archive = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      archive = archive.filter(g => g.date !== date);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(archive));
+      renderArchive();
     }
 
     function deleteTopic(date, id) {
